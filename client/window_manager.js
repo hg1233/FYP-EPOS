@@ -5,6 +5,7 @@ class PageManager {
         this.available_pages = [];
         this.default_page = null;
         this.currently_active_page = null;
+        this.window = null;
     }
 
     // Getters & Setters for default & active page variables
@@ -21,6 +22,14 @@ class PageManager {
 
     getAllPages() { return this.available_pages; }
 
+    launch() {
+        this.window = new BrowserWindow({
+            width: 800,
+            height: 600,
+        });
+
+        this.window.loadFile(this.getDefaultPage().page_file);
+    }
 
 }
 
@@ -38,8 +47,8 @@ function init() {
     // create test hello world page and add to page manager
     test_page = new Page("Test", "templates/test.html");
     pm.addPage(test_page);
+    pm.setDefaultPage(test_page);
 
-    console.log(pm.getAllPages().length);
 
 }
 
