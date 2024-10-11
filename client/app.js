@@ -8,7 +8,6 @@ windowManager.init();
 app.whenReady().then( () => {
 
     // open first screen
-    console.log("Hello world.");
     windowManager.pm.launch();
 
 });
