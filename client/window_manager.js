@@ -31,6 +31,9 @@ class PageManager {
         // make window take up all screen space
         this.window.setFullScreen(true);
 
+        // disable top menu bar
+        this.window.setMenu(null);
+
         // load default page
         this.window.loadFile(this.getDefaultPage().page_file);
     }
