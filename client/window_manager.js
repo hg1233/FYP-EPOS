@@ -28,6 +28,10 @@ class PageManager {
             height: 600,
         });
 
+        // make window take up all screen space
+        this.window.setFullScreen(true);
+
+        // load default page
         this.window.loadFile(this.getDefaultPage().page_file);
     }
 
