@@ -1,4 +1,5 @@
 const { BrowserWindow } = require("electron/main");
+const path = require('path');
 
 class PageManager {
     constructor() {
@@ -18,7 +19,16 @@ class PageManager {
 
     setActivePage(page) { this.currently_active_page = page; }
 
-    addPage(page) { this.available_pages.push(page); }
+    addPage(page) { 
+
+        // check if page already exists
+        if(this.getPageByName(page.page_name) !== undefined) {
+            throw new Error("A page with that name already exists.")
+        }
+        
+        this.available_pages.push(page);
+    
+    }
 
     getAllPages() { return this.available_pages; }
 
@@ -40,6 +50,12 @@ class PageManager {
         this.window = new BrowserWindow({
             width: 800,
             height: 600,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                sandbox: false,
+                contextIsolation: true,
+                nodeIntegration: false,
+            }
         });
 
         // make window take up all screen space
