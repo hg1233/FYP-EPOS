@@ -12,6 +12,15 @@
         },
         "args" : ["."],
         "outputCapture": "std"
+      },
+      {
+        "name": "Auto Test Client",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/client",
+        "runtimeExecutable": "npm",
+        "args" : ["run", "test"],
+        "outputCapture": "std"
       }
     ]
   }
