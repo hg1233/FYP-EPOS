@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Client",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/client",
+        "runtimeExecutable": "${workspaceFolder}/client/node_modules/.bin/electron",
+        "windows": {
+          "runtimeExecutable": "${workspaceFolder}/client/node_modules/.bin/electron.cmd"
+        },
+        "args" : ["."],
+        "outputCapture": "std"
+      }
+    ]
+  }

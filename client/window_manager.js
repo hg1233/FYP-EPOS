@@ -17,6 +17,10 @@ class PageManager {
 
     setActivePage(page) { this.currently_active_page = page; }
 
+    addPage(page) { this.available_pages.push(page); }
+
+    getAllPages() { return this.available_pages; }
+
 
 }
 
@@ -31,8 +35,11 @@ const pm = new PageManager()
 
 function init() {
 
-    // create test hello world page
+    // create test hello world page and add to page manager
     test_page = new Page("Test", "templates/test.html");
+    pm.addPage(test_page);
+
+    console.log(pm.getAllPages().length);
 
 }
 
