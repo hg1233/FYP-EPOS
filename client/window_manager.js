@@ -22,6 +22,20 @@ class PageManager {
 
     getAllPages() { return this.available_pages; }
 
+    getPageByName(name) {
+        return this.available_pages.find(page => page.page_name == name);
+    }
+
+    showPage(page) {
+        if(this.window == null) { return null; } // ensure window has been initalised
+        if(page == null) { return null; } // ensure page is defined
+
+        this.window.loadFile(page.page_file);
+        this.setActivePage(page);
+        return 1;
+        
+    }
+
     launch() {
         this.window = new BrowserWindow({
             width: 800,
@@ -35,7 +49,8 @@ class PageManager {
         this.window.setMenu(null);
 
         // load default page
-        this.window.loadFile(this.getDefaultPage().page_file);
+        this.showPage(this.getDefaultPage());
+
     }
 
 }
@@ -55,6 +70,9 @@ function init() {
     test_page = new Page("Test", "templates/test.html");
     pm.addPage(test_page);
     pm.setDefaultPage(test_page);
+
+    test_page = new Page("Test2", "templates/test2.html");
+    pm.addPage(test_page);
 
 
 }

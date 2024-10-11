@@ -10,4 +10,8 @@ app.whenReady().then( () => {
     // open first screen
     windowManager.pm.launch();
 
+    setTimeout(function() {
+        windowManager.pm.showPage(windowManager.pm.getPageByName("Test2"));
+    }, 5000);
+
 });
