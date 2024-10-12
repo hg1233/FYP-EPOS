@@ -1,6 +1,7 @@
 const { app } = require('electron/main'); // import electron
 
 // enable automated testing bridge
+// TODO - improve this conditional logic
 if (process.env.TEST != undefined) {
     require('wdio-electron-service/main')
 }
