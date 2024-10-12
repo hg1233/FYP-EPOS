@@ -78,7 +78,7 @@ class Page {
     }
 }
 
-const pm = new PageManager()
+const instance = new PageManager()
 
 function init() {
 
@@ -93,4 +93,4 @@ function init() {
 
 }
 
-module.exports = {init, pm}
+module.exports = {init, instance}

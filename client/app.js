@@ -11,14 +11,18 @@ if (process.env.TEST != undefined) {
 const windowManager = require("./managers/window_manager.js");
 windowManager.init();
 
+// import & setup module manager
+const moduleManager = require("./managers/module_manager.js");
+moduleManager.init();
+
 
 app.whenReady().then( () => {
 
     // open first screen
-    windowManager.pm.launch();
+    windowManager.instance.launch();
 
     setTimeout(function() {
-        windowManager.pm.showPage(windowManager.pm.getPageByName("Test2"));
+        windowManager.instance.showPage(windowManager.instance.getPageByName("Test2"));
     }, 5000);
 
 });
