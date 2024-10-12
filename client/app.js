@@ -8,7 +8,7 @@ if (process.env.TEST != undefined) {
 
 
 // import & setup window manager
-const windowManager = require("./window_manager.js");
+const windowManager = require("./managers/window_manager.jsr.js");
 windowManager.init();
 
 
