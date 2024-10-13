@@ -53,7 +53,17 @@ class ModuleManager {
 
     sendEventPrivately(module_name, event, event_data) {
         // send event directly to one module
-        // TODO
+        let module = this.getModuleByName(module_name);
+        if(typeof module == 'undefined' || typeof module == 'null') {
+            throw new Error('Unable to send event privately - module not found.');
+        }
+
+        // check module is setup to handle events
+        if(typeof module.handleEvent === 'function') {
+            module.handleEvent(event, event_data);
+        } else {
+            throw new Error(`Module ${module.module_name} is not setup to handle events.`);
+        }
     }
 
 }
