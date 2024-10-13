@@ -37,8 +37,12 @@ class ModuleManager {
         return this.modules[module_name];
     }
 
+    getAllModuleNames() {
+        return Object.keys(this.modules);
+    }
+
 }
 
 const instance = new ModuleManager();
 
-module.exports = {init, instance}
+module.exports = {instance}
