@@ -41,6 +41,21 @@ class ModuleManager {
         return Object.keys(this.modules);
     }
 
+    broadcastEvent(event, event_data) {
+        // iterate over all modules
+        for(var [module_name, module_object] of Object.entries(this.modules)) {
+            // check module is setup to handle events
+            if(typeof module_object.handleEvent === 'function') {
+                module_object.handleEvent(event, event_data);
+            }
+        }
+    }
+
+    sendEventPrivately(module_name, event, event_data) {
+        // send event directly to one module
+        // TODO
+    }
+
 }
 
 const instance = new ModuleManager();
