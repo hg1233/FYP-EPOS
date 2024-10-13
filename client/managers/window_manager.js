@@ -84,11 +84,11 @@ function init() {
 
     // create test hello world page and add to page manager
     test_page = new Page("Test", "templates/test.html");
-    pm.addPage(test_page);
-    pm.setDefaultPage(test_page);
+    instance.addPage(test_page);
+    instance.setDefaultPage(test_page);
 
     test_page = new Page("Test2", "templates/test2.html");
-    pm.addPage(test_page);
+    instance.addPage(test_page);
 
 
 }
