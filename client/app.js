@@ -11,9 +11,8 @@ if (process.env.TEST != undefined) {
 const windowManager = require("./managers/window_manager.js");
 windowManager.init();
 
-// import & setup module manager
+// import module manager
 const moduleManager = require("./managers/module_manager.js");
-moduleManager.init();
 
 
 app.whenReady().then( () => {
