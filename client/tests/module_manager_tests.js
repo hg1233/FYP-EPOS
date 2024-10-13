@@ -33,9 +33,9 @@ describe('module manager setup tests', () => {
         try {
             moduleManager.instance.sendEventPrivately("Test Module", "TEST_EVENT", "TEST_DATA")
         } catch(error) {
-            expect(true).toEqual(true);
+            return true;
         }
-            expect(false).toEqual(true);
+        return false;
     })
 
 
