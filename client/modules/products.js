@@ -15,8 +15,31 @@ class ProductsModule {
             {"id": 3, "name": "Pint of Water", "price": 120},
         ]
         hardcodedProducts.forEach(product => this.addProduct(product));
-        console.log(`Loaded hardcoded products (total: ${hardcodedProducts.length()}).`)
+        console.log(`Loaded hardcoded products (total: ${hardcodedProducts.length}).`)
     }
 
-    
+    validateProductData(product) {
+        // check core product info supplied
+        if(!product.id || !product.name || typeof product.price !== 'number') {
+            throw new Error("Invalid product data.");
+        }
+        // check price is not negative
+        if(product.price < 0) {
+            throw new Error("Product price cannot be a negative number.");
+        }
+    }
+
+    addProduct(product) {
+        try {
+            this.validateProductData(product);
+            this.products[product.id] = product;
+        } catch(err) {
+            return;
+        }
+    }
+
+
 }
+
+const instance = new ProductsModule();
+module.exports = {instance};
