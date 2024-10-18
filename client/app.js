@@ -14,6 +14,9 @@ windowManager.init();
 // import module manager
 const moduleManager = require("./managers/module_manager.js");
 
+// register products module
+moduleManager.instance.registerModule('products', require('./modules/products.js').instance)
+
 
 app.whenReady().then( () => {
 
