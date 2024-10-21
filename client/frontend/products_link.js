@@ -1,13 +1,13 @@
 var products;
 
-async function getAllProducts() {
-    const body = document.getElementsByTagName('body')[0];
+async function updateProducts() {
     var products = await window.electronAPI.products_getAllProducts();
     this.products = products;
-
-    for(var x = 1; x <= Object.entries(products).length; x++) {
-        body.innerHTML = body.innerHTML + products[x].name + "<br>";
-    }
 }
 
-getAllProducts();
+updateProducts();
+
+setTimeout(() => {
+    // update products in the browser's local variable every 60 seconds
+    updateProducts();
+}, 60*1000);
