@@ -1,4 +1,5 @@
 class ProductsModule {
+    
     constructor() {
         this.products = {};
     }
@@ -37,6 +38,14 @@ class ProductsModule {
             return;
         }
     }
+
+    getAllProducts() { return this.products; }
+
+
+    getProductByID(id) { 
+        return this.products[id];
+    }
+    
 
 
 }

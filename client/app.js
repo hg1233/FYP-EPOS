@@ -1,4 +1,4 @@
-const { app } = require('electron/main'); // import electron
+const { app, BrowserWindow, ipcMain } = require('electron/main'); // import electron &  required options
 
 // enable automated testing bridge
 // TODO - improve this conditional logic
@@ -23,8 +23,14 @@ app.whenReady().then( () => {
     // open first screen
     windowManager.instance.launch();
 
-    setTimeout(function() {
+    /**setTimeout(function() {
         windowManager.instance.showPage(windowManager.instance.getPageByName("Test2"));
-    }, 5000);
+    }, 5000);**/
+
+    // handle get products func from browser
+    ipcMain.handle('products.get-all-products', async () => {
+        var productsModule = moduleManager.instance.getModuleByName('products');
+        return productsModule.getAllProducts();
+    });
 
 });
