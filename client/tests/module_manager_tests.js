@@ -11,7 +11,18 @@ class TestModule {
     }
 }
 
-// TODO - write tests to confirm that module manager setup works as expected
+class TestModule2 {
+    handleEvent(event, data) {
+        switch(event) {
+            case 'TEST_EVENT_WITH_NO_DATA':
+                return true;
+            case 'TEST_EVENT_WITH_DATA':
+                return data;
+            default:
+                throw new Error("Event not found.");
+        }
+    }
+}
 
 describe('module manager setup tests', () => {
     let testModule = new TestModule();
@@ -34,6 +45,21 @@ describe('module manager setup tests', () => {
             moduleManager.instance.sendEventPrivately("Test Module", "TEST_EVENT", "TEST_DATA")
         } catch(error) {
             return true;
+        }
+        return false;
+    })
+
+    it('should handle an event when properly configured', () => {
+        moduleManager.instance.registerModule("Test Module 2", new TestModule2());
+        expect(moduleManager.instance.sendEventPrivately("Test Module 2", "TEST_EVENT_WITH_NO_DATA")).toEqual(true);
+        expect(moduleManager.instance.sendEventPrivately("Test Module 2", "TEST_EVENT_WITH_DATA", 12345)).toEqual(12345);
+    })
+
+    it('should error when sending an event that is not configured to be handled', () => {
+        try {
+            moduleManager.instance.sendEventPrivately("Test Module 2", "SOME_RANDOM_EVENT", "SOME_RANDOM_DATA")
+        } catch(error) {
+            expect(error.message).toEqual("Event not found.");
         }
         return false;
     })

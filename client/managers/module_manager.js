@@ -59,6 +59,7 @@ class ModuleManager {
     }
 
     sendEventPrivately(module_name, event, event_data) {
+        let eventResponse;
         // send event directly to one module
         let module = this.getModuleByName(module_name);
         if(typeof module == 'undefined' || typeof module == 'null') {
@@ -67,10 +68,12 @@ class ModuleManager {
 
         // check module is setup to handle events
         if(typeof module.handleEvent === 'function') {
-            module.handleEvent(event, event_data);
+            eventResponse = module.handleEvent(event, event_data);
         } else {
             throw new Error(`Module ${module.module_name} is not setup to handle events.`);
         }
+
+        return eventResponse;
     }
 
 }
