@@ -42,13 +42,20 @@ class ModuleManager {
     }
 
     broadcastEvent(event, event_data) {
+        console.info(`Broadcasting event: ${event}`)
+
+        let eventResponse = {};
+
         // iterate over all modules
         for(var [module_name, module_object] of Object.entries(this.modules)) {
             // check module is setup to handle events
             if(typeof module_object.handleEvent === 'function') {
-                module_object.handleEvent(event, event_data);
+                console.info(`Event ${event} sent to module ${module_name}.`)
+                eventResponse[module_name] = module_object.handleEvent(event, event_data);
             }
         }
+
+        return eventResponse;
     }
 
     sendEventPrivately(module_name, event, event_data) {
