@@ -46,6 +46,16 @@ class ProductsModule {
         return this.products[id];
     }
     
+    handleEvent(event, data) {
+        switch(event) {
+            case 'GET_PRODUCT':
+                return this.getProductByID(data.id);
+            case 'GET_ALL_PRODUCTS':
+                return this.getAllProducts();
+            default:
+                console.error(`Unknown event: ${event}`)
+        }
+    }
 
 
 }
