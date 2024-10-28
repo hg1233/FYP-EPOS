@@ -2,6 +2,8 @@
   <head>
     <!-- include master-style.css for global styling -->
     <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include login.css for login page specific styling -->
+    <link href="../frontend/login.css" rel="stylesheet"> 
   </head>
   <body>
     <div class="container">
@@ -13,31 +15,61 @@
         <input type="password" id="pin-entry" placeholder="Enter PIN" readonly>
 
         <div class="login-keypad">
-          <div class="keypad-row">
+          <div class="login-keypad-row">
             <button class="login-keypad-key" onclick="addNumber('1')">1</button>
             <button class="login-keypad-key" onclick="addNumber('2')">2</button>
             <button class="login-keypad-key" onclick="addNumber('3')">3</button>
           </div>
-          <div class="keypad-row">
+          <div class="login-keypad-row">
             <button class="login-keypad-key" onclick="addNumber('4')">4</button>
             <button class="login-keypad-key" onclick="addNumber('5')">5</button>
             <button class="login-keypad-key" onclick="addNumber('6')">6</button>
           </div>
-          <div class="keypad-row">
+          <div class="login-keypad-row">
             <button class="login-keypad-key" onclick="addNumber('7')">7</button>
             <button class="login-keypad-key" onclick="addNumber('8')">8</button>
             <button class="login-keypad-key" onclick="addNumber('9')">9</button>
           </div>
-          <div class="keypad-row">
+          <div class="login-keypad-row">
             <button class="login-keypad-key" onclick="clearPinEntry()">X</button>
             <button class="login-keypad-key" onclick="addNumber('0')">0</button>
-            <button class="login-keypad-key" onclick="login()">Y</button>
+            <button class="login-keypad-key login-btn" onclick="login()">Y</button>
           </div>
         </div>
       </div>
     </div>
   </body>
   <script>
-    // TODO - create JS to handle keypad functions
+    // Function to update the clock to the current time
+    function updateClock() {
+      const clock = document.getElementById('live-clock');
+      const current_time = new Date();
+      var hrs = String(current_time.getHours()).padStart(2, '0');
+      var mins = String(current_time.getMinutes()).padStart(2, '0');
+      var secs = String(current_time.getSeconds()).padStart(2, '0');
+      clock.textContent = `${hrs}:${mins}:${secs}`;
+    }
+
+    // refresh clock every second
+    setInterval(updateClock, 1000);
+
+    // refresh clock on page load
+    updateClock();
+
+    // add number to input field on keypad button press
+    function addNumber(number) {
+      document.getElementById('pin-entry').value += number;
+    }
+
+    // clear pin entry
+    function clearPinEntry() {
+      document.getElementById('pin-entry').value = '';
+    }
+
+    function login() {
+      // TODO
+      alert("Login attempt: " + document.getElementById('pin-entry').value )
+    }
+
   </script>
 </html>

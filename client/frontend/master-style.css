@@ -1,0 +1,17 @@
+:root {
+  --lime-green: #00ffb3;
+  --grey: #2b2b2b;
+  --default-font: 'Lexend', sans-serif !important;
+}
+
+body {
+  font-family: 'Lexend', sans-serif !important;
+  height: 100vh;
+  background-color: #1f1f1f;
+  color: #e3e3e3;
+
+}
+
+.container {
+  text-align: center;
+}
