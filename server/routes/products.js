@@ -2,13 +2,13 @@
 const express = require('express');
 
 // import db connection
-const db = require('./database.js');
+const db = require('../database.js');
 
 // setup route handler
 const router = express.Router();
 
 // endpoint to retrieve all products
-app.get("/get_all", (request, response) => {
+router.get("/get_all", (request, response) => {
     products = [
         {
             "product_id": 1,
@@ -26,3 +26,5 @@ app.get("/get_all", (request, response) => {
 
     response.send(products);
 })
+
+module.exports = router

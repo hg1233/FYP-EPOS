@@ -16,21 +16,6 @@ app.get("/status", (request, response) => {
     response.send({"status": "ok"})
 });
 
-app.get("/products", (request, response) => {
-    products = [
-        {
-            "product_id": 1,
-            "product_name": "Pint of Beer",
-            "product_price": 450,
-            "product_enabled": true,
-        },
-        {
-            "product_id": 2,
-            "product_name": "Half Pint of Beer",
-            "product_price": 230,
-            "product_enabled": true,
-        },
-    ]
-
-    response.send(products);
-})
+// import product routes
+const productRoutes = require('./routes/products')
+app.use("/api/products", productRoutes)
