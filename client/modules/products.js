@@ -39,6 +39,24 @@ class ProductsModule {
         }
     }
 
+    updateProduct(new_data) {
+        var product_id = new_data.id;
+
+        if(!this.products[product_id]) {
+            console.error(`Cannot update product with ID ${product_id} - product not found.`);
+            return;
+        }
+
+        try {
+            this.validateProductData(new_data);
+        } catch(error) {
+            console.error(`Cannot update product with ID ${product_id} - product data invalid.`);
+            return;
+        }
+
+        this.products[product_id] = new_data;
+    }
+
     getAllProducts() { return this.products; }
 
 
