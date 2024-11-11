@@ -90,6 +90,10 @@ function init() {
     test_page = new Page("Test2", "templates/test2.html");
     instance.addPage(test_page);
 
+    // setup clerk login page
+    clerk_login_page = new Page("Clerk Login", "templates/clerk_login.html");
+    instance.addPage(clerk_login_page);
+
 
 }
 
