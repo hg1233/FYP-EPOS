@@ -17,6 +17,11 @@ const Products = {
 
     update: (id, name, price) => {
         return knex('products').where({id}).update({name, price}).returning(['id', 'name', 'price'])
-    }
+    },
 
+    delete: (id) => {
+        return knex('products').where({id}).del();
+    }
 }
+
+module.exports = Products;
