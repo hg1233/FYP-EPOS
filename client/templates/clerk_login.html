@@ -67,9 +67,16 @@
     }
 
     function login() {
-      // TODO
-      alert("Login attempt: " + document.getElementById('pin-entry').value )
+      if(document.getElementById('pin-entry').value == '5555') {
+        showPage('Dash');
+        return;
+      }
+      alert("Invalid login")
+      clearPinEntry();
+
+      // TODO - implement server-side auth system - used for testing / MVP / POC
     }
 
   </script>
+  <script src="../frontend/window_manager_link.js"></script>
 </html>
