@@ -14,9 +14,13 @@ windowManager.init();
 // import module manager
 const moduleManager = require("./managers/module_manager.js");
 
-// register products module
-moduleManager.instance.registerModule('products', require('./modules/products.js').instance)
+// import network manager
+const netManager = require("./managers/net_manager.js").instance;
 
+// register products module
+var products_module = require('./modules/products.js').instance
+products_module.netManager = netManager;
+moduleManager.instance.registerModule('products', products_module)
 
 app.whenReady().then( () => {
 

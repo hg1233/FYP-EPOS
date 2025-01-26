@@ -1,22 +1,22 @@
 class ProductsModule {
     
+    netManager;
+    products;
+    
     constructor() {
         this.products = {};
+        this.netManager = null;
     }
 
     init() {
         this.loadProducts();
     }
 
-    loadProducts() {
-        // TODO - replace this with a web callout (maybe web requests / api access as separate module?)
-        const hardcodedProducts = [
-            {"id": 1, "name": "Pint of Beer", "price": 450},
-            {"id": 2, "name": "Half Pint of Beer", "price": 240},
-            {"id": 3, "name": "Pint of Water", "price": 120},
-        ]
-        hardcodedProducts.forEach(product => this.addProduct(product));
-        console.log(`Loaded hardcoded products (total: ${hardcodedProducts.length}).`)
+    async loadProducts() {
+        const products = await this.netManager.pre_ready_request('/api/products/get/all');
+        // have to use pre-ready request as electron net not enabled until app.onReady is done
+        products.forEach(product => this.addProduct(product))
+        console.log(`Loaded products (total: ${products.length}).`)
     }
 
     validateProductData(product) {
