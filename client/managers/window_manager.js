@@ -85,7 +85,6 @@ function init() {
     // create test hello world page and add to page manager
     test_page = new Page("Test", "templates/test.html");
     instance.addPage(test_page);
-    instance.setDefaultPage(test_page);
 
     test_page = new Page("Test2", "templates/test2.html");
     instance.addPage(test_page);
@@ -93,6 +92,7 @@ function init() {
     // setup clerk login page
     clerk_login_page = new Page("Clerk Login", "templates/clerk_login.html");
     instance.addPage(clerk_login_page);
+    instance.setDefaultPage(clerk_login_page);
 
 
 }
