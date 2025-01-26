@@ -70,6 +70,9 @@ class ProductsModule {
                 return this.getProductByID(data.id);
             case 'GET_ALL_PRODUCTS':
                 return this.getAllProducts();
+            case 'RELOAD_PRODUCTS':
+                this.products = {}; // clear 1st before reloading
+                return this.loadProducts();
             default:
                 console.error(`Unknown event: ${event}`)
         }
