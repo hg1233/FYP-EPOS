@@ -12,14 +12,18 @@ class NetManager {
     }
 
     async pre_ready_request(endpoint) {
-
+        // TODO - implement try/catch to prevent error if unable to reach server
+        
         return new Promise( (resolve, reject) => {
             https.get(this.server_host + endpoint, (response) => {
-                let data = ''
+                let data = '' 
+
+                    // data returned in buffers, need to add in batches to overall output
                     response.on('data', (d) => {
                         data += d;
                     })
-        
+
+                    // all data received
                     response.on('end', (e) => {
                         resolve(JSON.parse(data)); // return 
                     });
