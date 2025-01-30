@@ -35,6 +35,7 @@ class ProductsModule {
             this.validateProductData(product);
             this.products[product.id] = product;
         } catch(err) {
+            // dont add product if it fails validation
             return;
         }
     }
