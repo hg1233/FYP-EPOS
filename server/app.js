@@ -19,3 +19,7 @@ app.get("/status", (request, response) => {
 // import product routes
 const productRoutes = require('./routes/products')
 app.use("/api/products", productRoutes)
+
+// import clerk routes
+const clerkRoutes = require('./routes/clerks')
+app.use("/api/clerks", clerkRoutes)
