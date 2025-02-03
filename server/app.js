@@ -4,6 +4,9 @@ const express = require('express');
 const app = express();
 // define communication format (JSON)
 app.use(express.json());
+// allow communication via form data
+app.use(express.urlencoded({extended: true}));
+
 // define port to host server on
 const port = process.env.PORT || 3000;
 
