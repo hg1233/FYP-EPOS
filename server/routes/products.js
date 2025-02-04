@@ -69,26 +69,41 @@ router.post("/create", async (request, response) => {
 router.post("/disable", async (request, response) => {
 
     try {
-
-        var product_id = request.body["id"];
-
-        // check if product exists
-        var product = await Products.getByID(product_id);
-        if(product == undefined) {
-            response.json({error: "Product not found"});
-            return;
-        }
-
-        var status = await Products.toggle_status(product.id, false);
-        response.status(200).json({message: "Successfully changed product visiblilty", enabled: status[0].enabled})
-
+        toggleProductVisibility(request, response, false)
     } catch(error) {
         console.log(error);
-        response.status(500).json({error: "Error disabling product"})
+        response.status(500).json({error: "Error changing product status"})
     }
 
+})
+
+router.post("/enable", async (request, response) => {
+
+    try {
+        toggleProductVisibility(request, response, true)
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Error changing product status"})
+    }
 
 })
+
+async function toggleProductVisibility(request, response, status) { 
+
+    var product_id = request.body["id"];
+
+    // check if product exists
+    var product = await Products.getByID(product_id);
+    if(product == undefined) {
+        response.json({error: "Product not found"});
+        return;
+    }
+
+    var status = await Products.toggle_status(product.id, status);
+    response.status(200).json({message: "Successfully changed product visiblilty", enabled: status[0].enabled})
+
+
+}
 
 function isProductNameValid(name) {
    return name != undefined || name.trim() != ""
