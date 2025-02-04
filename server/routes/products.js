@@ -80,8 +80,7 @@ router.post("/disable", async (request, response) => {
         }
 
         var status = await Products.toggle_status(product.id, false);
-        console.log(status[0])
-        response.status(200).json({message: "Successfully disabled product"})
+        response.status(200).json({message: "Successfully changed product visiblilty", enabled: status[0].enabled})
 
     } catch(error) {
         console.log(error);
