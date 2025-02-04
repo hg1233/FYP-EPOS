@@ -113,9 +113,9 @@ router.post("/update", async (request, response) => {
             return;
         }
 
-        
-
-        // TODO - update validated product details in DB
+        var status = await Products.update(product_id, desired_name, desired_price);
+        var new_product_details = status[0];
+        response.status(200).json({message: "Product updated successfully.", product_id: new_product_details.id, new_name: new_product_details.name, new_price: new_product_details.price})
 
     } catch(error) {
         console.log(error);
@@ -140,7 +140,7 @@ async function toggleProductVisibility(request, response, status) {
 }
 
 async function isProductIDValid(id) {
-    return await Products.getByID(product_id) != undefined
+    return await Products.getByID(id) != undefined
 }
 
 function isProductNameValid(name) {
