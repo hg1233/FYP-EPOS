@@ -3,7 +3,7 @@ const knex = require('../../database.js')
 const Products = {
     create: (name, price) => {
         return knex('products')
-        .insert({name, price, enabled})
+        .insert({name, price})
         .returning(['id', 'name', 'price', 'enabled'])
     },
 
