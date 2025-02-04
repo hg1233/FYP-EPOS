@@ -33,6 +33,7 @@ class ProductsModule {
     addProduct(product) {
         try {
             this.validateProductData(product);
+            // TODO - replace with remote update on server, then update locally also
             this.products[product.id] = product;
         } catch(err) {
             // dont add product if it fails validation
@@ -55,6 +56,7 @@ class ProductsModule {
             return;
         }
 
+        // TODO - replace with remote update on server, then update locally also
         this.products[product_id] = new_data;
     }
 
