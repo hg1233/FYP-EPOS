@@ -88,13 +88,32 @@ router.post("/enable", async (request, response) => {
 
 })
 
+router.post("/update", async (request, response) => {
+    try{
+
+        var product_id = request.body["id"];
+
+        if(!isProductIDValid(product_id)) {
+            response.status(400).json({error: "Product not found"});
+            return;
+        }
+        
+        // TODO - validate update details (name & price)
+
+        // TODO - update validated product details in DB
+
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Error occurred updating product details"})
+    }
+})
+
 async function toggleProductVisibility(request, response, status) { 
 
     var product_id = request.body["id"];
 
     // check if product exists
-    var product = await Products.getByID(product_id);
-    if(product == undefined) {
+    if(!isProductIDValid(product_id)) {
         response.json({error: "Product not found"});
         return;
     }
@@ -103,6 +122,10 @@ async function toggleProductVisibility(request, response, status) {
     response.status(200).json({message: "Successfully changed product visiblilty", enabled: status[0].enabled})
 
 
+}
+
+async function isProductIDValid(id) {
+    return await Products.getByID(product_id) != undefined
 }
 
 function isProductNameValid(name) {
