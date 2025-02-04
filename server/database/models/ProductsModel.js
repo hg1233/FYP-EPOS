@@ -3,8 +3,8 @@ const knex = require('../../database.js')
 const Products = {
     create: (name, price) => {
         return knex('products')
-        .insert({name, price})
-        .returning(['id', 'name', 'price'])
+        .insert({name, price, enabled})
+        .returning(['id', 'name', 'price', 'enabled'])
     },
 
     getAll: () => {
@@ -16,7 +16,7 @@ const Products = {
     },
 
     update: (id, name, price) => {
-        return knex('products').where({id}).update({name, price}).returning(['id', 'name', 'price'])
+        return knex('products').where({id}).update({name, price, enabled}).returning(['id', 'name', 'price', 'enabled'])
     },
 
     delete: (id) => {
