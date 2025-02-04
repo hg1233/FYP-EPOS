@@ -98,7 +98,22 @@ router.post("/update", async (request, response) => {
             return;
         }
         
-        // TODO - validate update details (name & price)
+        var desired_name = request.body["name"];
+        var desired_price = request.body["price"];
+
+        // check name is defined & not blank
+        if(!isProductNameValid(desired_name)) {
+            response.status(400).json({error: "Failed to update product - invalid name"})
+            return;
+        }
+
+        // check price is defined, a finite number and not blank
+        if(!isProductPriceValid(desired_price)) {
+            response.status(400).json({error: "Failed to update product - invalid price"})
+            return;
+        }
+
+        
 
         // TODO - update validated product details in DB
 
