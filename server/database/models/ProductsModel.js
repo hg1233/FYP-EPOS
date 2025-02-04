@@ -16,11 +16,11 @@ const Products = {
     },
 
     update: (id, name, price) => {
-        return knex('products').where({id}).update({name, price, enabled}).returning(['id', 'name', 'price', 'enabled'])
+        return knex('products').where({id}).update({name, price}).returning(['id', 'name', 'price', 'enabled'])
     },
 
-    delete: (id) => {
-        return knex('products').where({id}).del();
+    toggle_status: (id, enabled) => {
+        return knex('products').where({id}).update({enabled}).returning(['id', 'name', 'price', 'enabled']);
     }
 }
 
