@@ -4,6 +4,7 @@ class ProductsModule {
     products;
     
     constructor() {
+        // current structure - { id: 1, name: 'Beer', price: 519, enabled: 1 }
         this.products = {};
         this.netManager = null;
     }
@@ -33,8 +34,14 @@ class ProductsModule {
     addProduct(product) {
         try {
             this.validateProductData(product);
-            // TODO - replace with remote update on server, then update locally also
-            this.products[product.id] = product;
+            
+            var remoteUpdate = this.netManager.async_post('/api/products/create', {name: product.name, price: product.price});
+
+            if(remoteUpdate["message"] != undefined) {
+                this.products[product_id] = product;
+            } else {
+                return {error: "Error occurred carrying out remote update"}
+            }
         } catch(err) {
             // dont add product if it fails validation
             return;
@@ -56,8 +63,13 @@ class ProductsModule {
             return;
         }
 
-        // TODO - replace with remote update on server, then update locally also
-        this.products[product_id] = new_data;
+        var remoteUpdate = this.netManager.async_post('/api/products/update', {id: product_id, name: new_data.name, price: new_data.price});
+
+        if(remoteUpdate["message"] != undefined) {
+            this.products[product_id] = new_data;
+        } else {
+            return {error: "Error occurred carrying out remote update"}
+        }
     }
 
     getAllProducts() { return this.products; }
@@ -65,6 +77,14 @@ class ProductsModule {
 
     getProductByID(id) { 
         return this.products[id];
+    }
+
+    createProduct(product_data) {
+        // TODO
+    }
+
+    toggleProductStatus(id, status) {
+        // TODO
     }
     
     handleEvent(event, data) {
@@ -76,6 +96,10 @@ class ProductsModule {
             case 'RELOAD_PRODUCTS':
                 this.products = {}; // clear 1st before reloading
                 return this.loadProducts();
+            case 'TOGGLE_PRODUCT_STATUS':
+                return this.toggleProductStatus(data.id, data.status);
+            case 'CREATE_PRODUCT':
+                return this.createProduct(data);
             default:
                 console.error(`Unknown event: ${event}`)
         }
