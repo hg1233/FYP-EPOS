@@ -153,6 +153,13 @@ class ProductsModule {
         ipcMain.handle('products.get-product-by-id', async (event, id) => {
             return this.getProductByID(id);
         })
+
+        ipcMain.handle('products.reload-products', async () => {
+            this.products = {}; // clear 1st before reloading
+            this.loadProducts();
+            return this.getAllProducts();
+        })
+
     }
 
 
