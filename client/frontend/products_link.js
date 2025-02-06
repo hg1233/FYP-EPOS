@@ -5,6 +5,14 @@ async function updateProducts() {
     this.products = products;
 }
 
+async function getProductByID(id) {
+    var product = await window.electronAPI.products_getProductByID(id);
+    return product;
+    var product = null;
+    promise.then(response => { product = response; })
+    return product;
+}
+
 updateProducts();
 
 setTimeout(() => {

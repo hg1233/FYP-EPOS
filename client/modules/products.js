@@ -152,6 +152,10 @@ class ProductsModule {
 
         // handle get product by ID func from browser
         ipcMain.handle('products.get-product-by-id', async (event, id) => {
+            console.debug("Get Product By ID called in module")
+            var productsModule = moduleManager.instance.broadcastEvent('GET_PRODUCT', {id: id});
+            console.debug(productsModule["products"])
+            return productsModule["products"];
             return this.getProductByID(id);
         })
     }
