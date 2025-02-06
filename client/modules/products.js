@@ -79,10 +79,6 @@ class ProductsModule {
         return this.products[id];
     }
 
-    createProduct(product_data) {
-        // TODO
-    }
-
     toggleProductStatus(id, status) {
         // TODO
     }
@@ -99,7 +95,7 @@ class ProductsModule {
             case 'TOGGLE_PRODUCT_STATUS':
                 return this.toggleProductStatus(data.id, data.status);
             case 'CREATE_PRODUCT':
-                return this.createProduct(data);
+                return this.addProduct(data);
             default:
                 console.error(`Unknown event: ${event}`)
         }
