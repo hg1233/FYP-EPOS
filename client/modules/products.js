@@ -133,7 +133,8 @@ class ProductsModule {
                 return this.getAllProducts(); 
             case 'RELOAD_PRODUCTS':
                 this.products = {}; // clear 1st before reloading
-                return this.loadProducts();
+                this.loadProducts();
+                return this.getAllProducts();
             case 'TOGGLE_PRODUCT_STATUS':
                 return this.toggleProductStatus(data.id, data.status);
             case 'CREATE_PRODUCT':
