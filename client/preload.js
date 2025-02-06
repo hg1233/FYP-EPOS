@@ -5,7 +5,13 @@ if (process.env.TEST != undefined) {
 // expose send request for getting all products
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
+
+  /*** Window Manager ***/
+
   winmngr_showPage: (page_name) => ipcRenderer.send('winmngr:show-page', page_name),
+
+  /*** Products Module ***/
+
   products_getAllProducts: async () => ipcRenderer.invoke('products:get-all-products'),
   products_getProductByID: async (id) => ipcRenderer.invoke('products:get-product-by-id', id),
   products_reloadProducts: async () => ipcRenderer.invoke('products:reload-products'),
