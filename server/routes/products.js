@@ -58,7 +58,7 @@ router.post("/create", async (request, response) => {
 
         // have to use brackets & index 0 as returns array of results, only want 1st entry as is an insert sql cmd
         var product = (await Products.create(desired_name, desired_price))[0]
-        response.status(200).json({message: "Successfully created product.", product_id: product.id, "test": "test"});
+        response.status(200).json({message: "Successfully created product.", product_id: product.id});
 
     } catch(error) {
         console.log(error);
