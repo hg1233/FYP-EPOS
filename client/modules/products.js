@@ -16,7 +16,7 @@ class ProductsModule {
     async loadProducts() {
         const products = await this.netManager.pre_ready_request('/api/products/get/all');
         // have to use pre-ready request as electron net not enabled until app.onReady is done
-        products.forEach(product => this.addProduct(product))
+        products.forEach(product => this.addProductToLocalStorage(product))
         console.log(`Loaded products (total: ${products.length}).`)
     }
 
@@ -31,20 +31,31 @@ class ProductsModule {
         }
     }
 
-    addProduct(product) {
+    addProductToLocalStorage(product) {
+        try {
+            this.validateProductData(product);
+            this.products[product.id] = product;
+        } catch(err) {
+            // dont add product if it fails validation
+            return;
+        }
+    }
+
+    createProduct(product) {
         try {
             this.validateProductData(product);
             
             var remoteUpdate = this.netManager.async_post('/api/products/create', {name: product.name, price: product.price});
 
             if(remoteUpdate["message"] != undefined) {
-                this.products[product_id] = product;
+                this.products[product.id] = product;
                 return true;
             } else {
                 return {error: "Error occurred carrying out remote update"}
             }
         } catch(err) {
             // dont add product if it fails validation
+            console.debug(`Validation failed for product ID ${product.id}`)
             return;
         }
     }
@@ -126,7 +137,7 @@ class ProductsModule {
             case 'TOGGLE_PRODUCT_STATUS':
                 return this.toggleProductStatus(data.id, data.status);
             case 'CREATE_PRODUCT':
-                return this.addProduct(data);
+                return this.createProduct(data);
             default:
                 console.error(`Unknown event: ${event}`)
         }
