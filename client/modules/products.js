@@ -47,14 +47,19 @@ class ProductsModule {
         }
     }
 
-    createProduct(product) {
+    async createProduct(product) {
         try {
+
+            // used as placeholder for validation in next line
+            product.id = -999;
+
             this.validateProductData(product);
             
-            var remoteUpdate = this.netManager.async_post('/api/products/create', {name: product.name, price: product.price});
-
+            var remoteUpdate = await this.netManager.async_post('/api/products/create', {name: product.name, price: product.price});
+            
             if(remoteUpdate["message"] != undefined) {
-                this.products[product.id] = product;
+                
+                this.products[remoteUpdate.product_id] = product;
                 return true;
             } else {
                 return {error: "Error occurred carrying out remote update"}
@@ -174,6 +179,11 @@ class ProductsModule {
         // handle product toggle status func from browser
         ipcMain.handle('products:change-status', async (event, id, new_status) => {
             return this.changeProductStatus(id, new_status);
+        })
+
+        // handle create product func from browser
+        ipcMain.handle('products:create-product', async (event, product_data) => {
+            return this.createProduct(product_data)
         })
 
     }
