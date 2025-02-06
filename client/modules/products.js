@@ -14,8 +14,14 @@ class ProductsModule {
     }
 
     async loadProducts() {
-        const products = await this.netManager.pre_ready_request('/api/products/get/all');
         // have to use pre-ready request as electron net not enabled until app.onReady is done
+        const products = await this.netManager.pre_ready_request('/api/products/get/all');
+
+        products.forEach(product => {
+            // parse 0 & 1 as true & false
+            product["enabled"] = Boolean(product["enabled"])
+        })
+        
         products.forEach(product => this.addProductToLocalStorage(product))
         console.log(`Loaded products (total: ${products.length}).`)
     }
@@ -92,7 +98,7 @@ class ProductsModule {
         return this.products[id];
     }
 
-    toggleProductStatus(id, status) {
+    async changeProductStatus(id, status) {
 
         // check product exists
         if(!this.products[id]) {
@@ -100,8 +106,8 @@ class ProductsModule {
             return;
         }
 
-        // check desired status valid
-        if(typeof status != Boolean) {
+        // check desired status is a boolean (& therefore valid)
+        if(typeof status != "boolean") {
             console.error(`Cannot update product with ID ${id} - invalid status defined`);
             return;
         }
@@ -114,13 +120,16 @@ class ProductsModule {
             endpoint = "/api/products/disable";
         }
 
-        var remoteUpdate = this.netManager.async_post(endpoint, {id: product_id});
+        var remoteUpdate = await this.netManager.async_post(endpoint, {id: id});
 
+        // check if updating remote server was successsful
         if(remoteUpdate["message"] != undefined) {
-            this.products[product_id] = new_data;
+            this.products[id]["enabled"] = status;
             return true;
         } else {
-            return {error: "Error occurred carrying out remote product status change"}
+            console.error("Error making remote product status update")
+            console.error(remoteUpdate)
+            return null;
         }
 
     }
@@ -135,8 +144,8 @@ class ProductsModule {
                 this.products = {}; // clear 1st before reloading
                 this.loadProducts();
                 return this.getAllProducts();
-            case 'TOGGLE_PRODUCT_STATUS':
-                return this.toggleProductStatus(data.id, data.status);
+            case 'CHANGE_PRODUCT_STATUS':
+                return this.changeProductStatus(data.id, data.status);
             case 'CREATE_PRODUCT':
                 return this.createProduct(data);
             default:
@@ -160,6 +169,12 @@ class ProductsModule {
             this.products = {}; // clear 1st before reloading
             this.loadProducts();
             return this.getAllProducts();
+        })
+
+        // handle product toggle status func from browser
+        ipcMain.handle('products:change-status', async (event, id, new_status) => {
+            console.debug(typeof new_status)
+            return this.changeProductStatus(id, new_status);
         })
 
     }

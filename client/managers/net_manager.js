@@ -49,27 +49,49 @@ class NetManager {
     }
 
     async async_post(endpoint, data) {
-        try { 
-            var response = await net.request(
-                {
+        return new Promise( (resolve, reject) => {
+            try { 
+
+                let output = '';
+
+                // convert to json encoded string for transport 
+                data = JSON.stringify(data);
+
+                const req = net.request({
                     method: "POST",
                     url: this.server_host + endpoint,
+                    path: endpoint,
                     headers: {
-                        'EPOS_API_KEY': this.api_key,
-                    },
-                    body: JSON.stringify(data) // convert data to JSON before making request
-                }
-            );
+                        'Content-Type': 'application/json',
+                    }
+                })
 
-            const result = await response.json();
-            return result;
-        } catch(error) {
-            console.log(`An error occurred making a POST request to endpoint ${endpoint}`);
-            console.log(error);
-            return null;
-        }
+                req.on('response', (res) => {
+
+                    res.on('data', (chunk) => {
+                        output += chunk;
+                    })
+
+                    res.on('end', () => {
+                        resolve(JSON.parse(output));
+                    })
+
+                })
+
+                req.on('error', (error) => {
+                    throw error;
+                })
+
+                req.write(data);
+                req.end();
+
+            } catch(error) {
+                console.error(`An error occurred making a POST request to endpoint ${endpoint}`);
+                console.error(error);
+                return null;
+            }
+        });
     }
-
     
 
 }

@@ -133,7 +133,7 @@ async function toggleProductVisibility(request, response, status) {
         return;
     }
 
-    var status = await Products.toggle_status(product.id, status);
+    var status = await Products.toggle_status(product_id, status);
     response.status(200).json({message: "Successfully changed product visiblilty", enabled: status[0].enabled})
 
 

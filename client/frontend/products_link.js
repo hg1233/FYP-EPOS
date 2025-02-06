@@ -13,6 +13,10 @@ async function getProductByID(id) {
     return await window.electronAPI.products_getProductByID(id);
 }
 
+async function changeProductStatus(id, new_status) {
+    return await window.electronAPI.products_changeStatus(id, new_status);
+}
+
 updateProducts();
 
 setTimeout(() => {
