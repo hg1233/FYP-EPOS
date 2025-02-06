@@ -38,9 +38,4 @@ app.whenReady().then( () => {
         return productsModule["products"];
     });
 
-    setTimeout(function() {
-        var productsModule = moduleManager.instance.getModuleByName('products');
-        productsModule.addProduct({"id": 4, "name": "Pint of Cider", "price": 550});
-    }, 10*1000)
-
 });
