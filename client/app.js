@@ -27,7 +27,7 @@ app.whenReady().then( () => {
     // open first screen
     windowManager.instance.launch();
 
-    ipcMain.on('winmngr.show-page', (event, page_name) => {
+    ipcMain.on('winmngr:show-page', (event, page_name) => {
         var page = windowManager.instance.getPageByName(page_name)
         windowManager.instance.showPage(page);
     });

@@ -146,16 +146,17 @@ class ProductsModule {
 
     invokeIPCHandles(moduleManager, ipcMain) {
         // handle get products func from browser
-        ipcMain.handle('products.get-all-products', async () => {
+        ipcMain.handle('products:get-all-products', async () => {
             return this.getAllProducts();
         });
 
         // handle get product by ID func from browser
-        ipcMain.handle('products.get-product-by-id', async (event, id) => {
+        ipcMain.handle('products:get-product-by-id', async (event, id) => {
             return this.getProductByID(id);
         })
 
-        ipcMain.handle('products.reload-products', async () => {
+        // handle reload products func from browser
+        ipcMain.handle('products:reload-products', async () => {
             this.products = {}; // clear 1st before reloading
             this.loadProducts();
             return this.getAllProducts();
