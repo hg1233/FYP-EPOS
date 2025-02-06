@@ -64,7 +64,7 @@ class NetManager {
             const result = await response.json();
             return result;
         } catch(error) {
-            console.log('An error occurred making a POST request');
+            console.log(`An error occurred making a POST request to endpoint ${endpoint}`);
             console.log(error);
             return null;
         }
