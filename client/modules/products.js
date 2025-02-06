@@ -39,6 +39,7 @@ class ProductsModule {
 
             if(remoteUpdate["message"] != undefined) {
                 this.products[product_id] = product;
+                return true;
             } else {
                 return {error: "Error occurred carrying out remote update"}
             }
@@ -67,8 +68,9 @@ class ProductsModule {
 
         if(remoteUpdate["message"] != undefined) {
             this.products[product_id] = new_data;
+            return true;
         } else {
-            return {error: "Error occurred carrying out remote update"}
+            return {error: "Error occurred carrying out remote product update"}
         }
     }
 
@@ -80,7 +82,36 @@ class ProductsModule {
     }
 
     toggleProductStatus(id, status) {
-        // TODO
+
+        // check product exists
+        if(!this.products[id]) {
+            console.error(`Cannot update product with ID ${id} - product not found.`);
+            return;
+        }
+
+        // check desired status valid
+        if(typeof status != Boolean) {
+            console.error(`Cannot update product with ID ${id} - invalid status defined`);
+            return;
+        }
+
+        var endpoint = "";
+        
+        if(status == true) {
+            endpoint = "/api/products/enable";
+        } else {
+            endpoint = "/api/products/disable";
+        }
+
+        var remoteUpdate = this.netManager.async_post(endpoint, {id: product_id});
+
+        if(remoteUpdate["message"] != undefined) {
+            this.products[product_id] = new_data;
+            return true;
+        } else {
+            return {error: "Error occurred carrying out remote product status change"}
+        }
+
     }
     
     handleEvent(event, data) {
@@ -88,7 +119,7 @@ class ProductsModule {
             case 'GET_PRODUCT':
                 return this.getProductByID(data.id);
             case 'GET_ALL_PRODUCTS':
-                return this.getAllProducts();
+                return this.getAllProducts(); 
             case 'RELOAD_PRODUCTS':
                 this.products = {}; // clear 1st before reloading
                 return this.loadProducts();
