@@ -132,6 +132,19 @@ class ProductsModule {
         }
     }
 
+    invokeIPCHandles(moduleManager, ipcMain) {
+        // handle get products func from browser
+        ipcMain.handle('products.get-all-products', async () => {
+            var productsModule = moduleManager.instance.broadcastEvent('GET_ALL_PRODUCTS', null);
+            return productsModule["products"];
+        });
+
+        // handle get product by ID func from browser
+        ipcMain.handle('products.get-product-by-id', async (event, id) => {
+            return this.getProductByID(id);
+        })
+    }
+
 
 }
 

@@ -32,10 +32,7 @@ app.whenReady().then( () => {
         windowManager.instance.showPage(page);
     });
 
-    // handle get products func from browser
-    ipcMain.handle('products.get-all-products', async () => {
-        var productsModule = moduleManager.instance.broadcastEvent('GET_ALL_PRODUCTS', null);
-        return productsModule["products"];
-    });
+    // invoke & setup handles for client backend, server backend & client frontend data transfer
+    products_module.invokeIPCHandles(moduleManager, ipcMain);
 
 });
