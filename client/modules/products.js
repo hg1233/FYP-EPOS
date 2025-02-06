@@ -173,7 +173,6 @@ class ProductsModule {
 
         // handle product toggle status func from browser
         ipcMain.handle('products:change-status', async (event, id, new_status) => {
-            console.debug(typeof new_status)
             return this.changeProductStatus(id, new_status);
         })
 
