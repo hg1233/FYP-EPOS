@@ -49,7 +49,25 @@ class NetManager {
     }
 
     async async_post(endpoint, data) {
-        // TODO
+        try { 
+            var response = await net.request(
+                {
+                    method: "POST",
+                    url: this.server_host + endpoint,
+                    headers: {
+                        'EPOS_API_KEY': this.api_key,
+                    },
+                    body: JSON.stringify(data) // convert data to JSON before making request
+                }
+            );
+
+            const result = await response.json();
+            return result;
+        } catch(error) {
+            console.log('An error occurred making a POST request');
+            console.log(error);
+            return null;
+        }
     }
 
     
