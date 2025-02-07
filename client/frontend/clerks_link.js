@@ -12,3 +12,9 @@ async function getClerkByID(id) {
     return await window.electronAPI.clerks_getClerkByID(id);
 }
 
+updateClerks();
+
+setTimeout(() => {
+    // update clerks in the browser's local variable every 60 seconds
+    updateClerks();
+}, 60*1000);
