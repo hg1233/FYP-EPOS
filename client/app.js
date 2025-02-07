@@ -22,6 +22,11 @@ var products_module = require('./modules/products.js').instance
 products_module.netManager = netManager;
 moduleManager.instance.registerModule('products', products_module)
 
+// register clerks module
+var clerks_module = require('./modules/clerks.js').instance
+clerks_module.net_manager = netManager;
+moduleManager.instance.registerModule('clerks', clerks_module)
+
 app.whenReady().then( () => {
 
     // open first screen
@@ -34,5 +39,6 @@ app.whenReady().then( () => {
 
     // invoke & setup handles for client backend, server backend & client frontend data transfer
     products_module.invokeIPCHandles(moduleManager, ipcMain);
+    clerks_module.invokeIPCHandles(moduleManager, ipcMain)
 
 });
