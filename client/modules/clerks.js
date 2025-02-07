@@ -33,7 +33,10 @@ class ClerksModule {
     }
 
     validateClerkData() {
-        // TODO
+        // check core clerk info supplied
+        if(!clerk.id || !clerk.name || typeof clerk.pin !== 'string') {
+            throw new Error("Invalid product data.");
+        }
     }
 
     async findClerkByPIN(pin) {
