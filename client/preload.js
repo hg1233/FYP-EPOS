@@ -17,4 +17,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   products_reloadProducts: async () => ipcRenderer.invoke('products:reload-products'),
   products_changeStatus: async (id, new_status) => ipcRenderer.invoke('products:change-status', id, new_status),
   products_createProduct: async (product_data) => ipcRenderer.invoke('products:create-product', product_data),
+
+  /*** Clerks Module ***/
+
+  clerks_getAllClerks: async () => ipcRenderer.invoke('clerks:get-all-clerks'),
+  clerks_getClerkByID: async () => ipcRenderer.invoke('clerks:get-clerk-by-id'),
+  clerks_getClerkByPIN: async (pin) => ipcRenderer.invoke('clerks:get-clerk-by-pin', pin),
 })
