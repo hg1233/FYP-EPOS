@@ -18,8 +18,9 @@ class ClerksModule {
         var clerks = await this.net_manager.pre_ready_request('/api/clerks/get/all');
         // TODO - convert api data into local array (organised by PIN # maybe?)
 
+        // convert api data into local array - organised by ID #
         clerks.forEach(clerk => this.addClerkToLocalCache(clerk))
-        console.log(`Loaded products (total: ${this.clerks.length}).`)
+        console.log(`Loaded clerks (total: ${Object.keys(this.clerks).length}).`)
     }
 
     async addClerkToLocalCache(clerk) {
@@ -32,15 +33,34 @@ class ClerksModule {
         }
     }
 
-    validateClerkData() {
+    validateClerkData(clerk) {
         // check core clerk info supplied
-        if(!clerk.id || !clerk.name || typeof clerk.pin !== 'string') {
+        if(typeof clerk.id != "number" || !clerk.name || typeof clerk.pin !== "string"){ 
             throw new Error("Invalid product data.");
         }
+        
     }
 
     async findClerkByPIN(pin) {
-        // TODO
+        // iterate through local storage of clerks
+        for(const [clerk_id, clerk_data] of Object.entries(this.clerks)) {
+            
+            if(clerk_data["pin"] == pin) {
+                return clerk_data;
+            }
+            
+        }
+        
+        // clerk not found
+        return null;
+    }
+
+    invokeIPCHandles(moduleManager, ipcMain) {
+        
+        // find clerk by PIN #
+        ipcMain.handle('clerks:get-clerk-by-pin', async (event, pin) => {
+            return this.findClerkByPIN(pin);
+        });
     }
     
 }
