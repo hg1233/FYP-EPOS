@@ -16,8 +16,6 @@ class ClerksModule {
 
     async cacheClerks() {
         var clerks = await this.net_manager.pre_ready_request('/api/clerks/get/all');
-        // TODO - convert api data into local array (organised by PIN # maybe?)
-
         // convert api data into local array - organised by ID #
         clerks.forEach(clerk => this.addClerkToLocalCache(clerk))
         console.log(`Loaded clerks (total: ${Object.keys(this.clerks).length}).`)
