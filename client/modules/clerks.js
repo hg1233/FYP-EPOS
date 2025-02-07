@@ -55,6 +55,17 @@ class ClerksModule {
 
     invokeIPCHandles(moduleManager, ipcMain) {
         
+        // get all clerks
+        ipcMain.handle('clerks:get-all-clerks', async () => {
+            return this.clerks;
+        });
+
+        // get all clerks
+        ipcMain.handle('clerks:get-clerk-by-id', async (event, id) => {
+            console.debug("clerk ID:", id)
+            return this.clerks[id];
+        });
+
         // find clerk by PIN #
         ipcMain.handle('clerks:get-clerk-by-pin', async (event, pin) => {
             return this.findClerkByPIN(pin);
