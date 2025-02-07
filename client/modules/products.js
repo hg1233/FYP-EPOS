@@ -23,7 +23,7 @@ class ProductsModule {
         })
         
         products.forEach(product => this.addProductToLocalStorage(product))
-        console.log(`Loaded products (total: ${products.length}).`)
+        console.log(`Loaded products (total: ${Object.keys(this.products).length}).`)
     }
 
     validateProductData(product) {
