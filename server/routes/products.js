@@ -144,11 +144,11 @@ async function isProductIDValid(id) {
 }
 
 function isProductNameValid(name) {
-   return name != undefined || name.trim() != ""
+   return name != undefined && name.trim() != ""
 }
 
 function isProductPriceValid(price) {
-    return price != undefined || !isNaN(price) || isFinite(price) || price.trim() != "";
+    return price != undefined && !isNaN(price) && isFinite(price) && price.trim() != "";
 }
 
 module.exports = router
