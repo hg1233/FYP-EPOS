@@ -80,6 +80,11 @@ class ClerksModule {
         }
     }
 
+    async reloadClerks() {
+        this.clerks = {};
+        this.cacheClerks();
+    }
+
 
     invokeIPCHandles(moduleManager, ipcMain) {
         
@@ -101,7 +106,12 @@ class ClerksModule {
 
         // create clerk
         ipcMain.handle('clerks:create-clerk', async (event, clerk_data) => {
-            return this.createClerk(clerk_data)
+            return this.createClerk(clerk_data);
+        });
+
+        // reload clerks
+        ipcMain.handle('clerks:reload-clerks', async (event, clerk_data) => {
+            return this.reloadClerks();
         });
     }
     
