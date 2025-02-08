@@ -56,7 +56,7 @@ router.post("/create", async (request, response) => {
         }
 
         // check pin not already in use
-        if(Clerks.getByPIN(desired_pin) != undefined) {
+        if(await Clerks.getByPIN(desired_pin) != undefined) {
             response.status(400).json({error: "Failed to create clerk - pin already in use"})
             return;
         }
@@ -75,7 +75,7 @@ router.post("/create", async (request, response) => {
 
 // pin must be at least 1 char, an integer & not be undefined
 function isPinValid(pin) {
-    return pin.length != 0 && Number.isInteger(pin) && pin != undefined;
+    return pin.length != 0 && pin != undefined;
 }
 
 // name must not be undefined, not be blank & be longer than 0 chars

@@ -53,6 +53,34 @@ class ClerksModule {
         return null;
     }
 
+    async createClerk(clerk) {
+        try {
+
+            // used as placeholder for validation in next line
+            clerk.id = -999;
+
+            this.validateClerkData(clerk);
+            
+            var remoteUpdate = await this.net_manager.async_post('/api/clerks/create', {name: clerk.name, pin: clerk.pin});
+            
+            if(remoteUpdate["message"] != undefined) {
+                
+                // replace placeholder with actual ID value
+                clerk.id = remoteUpdate.clerk_id;
+
+                this.clerks[remoteUpdate.clerk_id] = clerk;
+                return true;
+            } else {
+                return {error: "Error occurred carrying out remote update", details: remoteUpdate["error"]}
+            }
+        } catch(err) {
+            // dont add product if it fails validation
+            console.debug(`Error occurred adding new clerk: ${err}`)
+            return;
+        }
+    }
+
+
     invokeIPCHandles(moduleManager, ipcMain) {
         
         // get all clerks
@@ -69,6 +97,11 @@ class ClerksModule {
         // find clerk by PIN #
         ipcMain.handle('clerks:get-clerk-by-pin', async (event, pin) => {
             return this.findClerkByPIN(pin);
+        });
+
+        // create clerk
+        ipcMain.handle('clerks:create-clerk', async (event, clerk_data) => {
+            return this.createClerk(clerk_data)
         });
     }
     

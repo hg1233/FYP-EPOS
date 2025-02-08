@@ -23,4 +23,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clerks_getAllClerks: async () => ipcRenderer.invoke('clerks:get-all-clerks'),
   clerks_getClerkByID: async (id) => ipcRenderer.invoke('clerks:get-clerk-by-id', id),
   clerks_getClerkByPIN: async (pin) => ipcRenderer.invoke('clerks:get-clerk-by-pin', pin),
+  clerks_createClerk: async (clerk_data) => ipcRenderer.invoke('clerks:create-clerk', clerk_data)
 })
