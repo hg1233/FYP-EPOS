@@ -26,6 +26,12 @@ async function updateClerk(id, name, pin) {
     return result;
 }
 
+async function setClerkRole(id, is_manager) {
+    let result = await window.electronAPI.clerks_changeRole(id, is_manager);
+    reloadClerks();
+    return result;
+}
+
 reloadClerks();
 
 setTimeout(() => {

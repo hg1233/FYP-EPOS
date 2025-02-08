@@ -123,13 +123,35 @@ router.post("/update", async (request, response) => {
 
         var status = await Clerks.update(clerk_id, desired_name, desired_pin);
         var new_clerk_details = status[0];
-        response.status(200).json({message: "Clerk updated successfully.", new_data: {id: new_clerk_details.id, name: new_clerk_details.name, pin: new_clerk_details.pin, enabled: new_clerk_details.enabled}})
+        response.status(200).json({message: "Clerk updated successfully.", new_data: new_clerk_details})
 
     } catch(error) {
         console.log(error);
         response.status(500).json({error: "Error occurred updating clerk details"})
     }
 })
+
+router.post("/manager", async (request, response) => {
+    var clerk_id = request.body["id"];
+    var is_manager = Boolean(request.body["is_manager"]);
+
+    var clerk = await Clerks.getByID(clerk_id);
+
+    // check if clerk exists
+    if(clerk == undefined) {
+        response.json({error: "Clerk not found"});
+        return;
+    }
+
+    // check status change is defined correctly
+    if(typeof is_manager != "boolean") {
+        response.json({error: "Invalid role setting defined"})
+        return;
+    }
+
+    var status = await Clerks.change_role(clerk_id, is_manager);
+    response.status(200).json({message: "Successfully changed clerk role", is_manager: status[0].is_manager})
+}) 
 
 async function changeClerkStatus(request, response, status) {
 

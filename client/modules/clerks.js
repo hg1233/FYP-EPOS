@@ -20,6 +20,7 @@ class ClerksModule {
         clerks.forEach(clerk => {
             // parse 0 & 1 as true & false
             clerk["enabled"] = Boolean(clerk["enabled"])
+            clerk["is_manager"] = Boolean(clerk["is_manager"])
         })
 
         // convert api data into local array - organised by ID #
@@ -130,7 +131,6 @@ class ClerksModule {
     async updateClerk(new_data) {
 
         var clerk_id = new_data["id"];
-        console.debug(clerk_id)
 
         if(!this.clerks[clerk_id]) {
             console.error(`Cannot update clerk with ID ${clerk_id} - clerk not found.`);
@@ -154,6 +154,28 @@ class ClerksModule {
         } else {
             console.debug(remoteUpdate)
             return {error: "Error occurred carrying out remote clerk update"}
+        }
+    }
+
+    async changeRole(id, new_role) {
+
+        var clerk_id = id;
+
+        if(!this.clerks[clerk_id]) {
+            console.error(`Cannot update clerk with ID ${clerk_id} - clerk not found.`);
+            return;
+        }
+
+        var remoteUpdate = await this.net_manager.async_post('/api/clerks/manager', {id: clerk_id, is_manager: new_role});
+
+        if(remoteUpdate["message"] != undefined) {
+            // parse boolean int values 0 & 1 to true/false
+            remoteUpdate["is_manager"] = Boolean(remoteUpdate["is_manager"]);
+            this.clerks[clerk_id]["is_manager"] = remoteUpdate["is_manager"];
+            return true;
+        } else {
+            console.debug(remoteUpdate)
+            return {error: "Error occurred carrying out remote clerk role change"}
         }
     }
 
@@ -193,6 +215,11 @@ class ClerksModule {
         // update clerk
         ipcMain.handle('clerks:update-clerk', async (event, new_data) => {
             return this.updateClerk(new_data)
+        })
+
+        // change role
+        ipcMain.handle('clerks:change-role', async (event, id, new_role) => {
+            return this.changeRole(id, new_role)
         })
     }
     

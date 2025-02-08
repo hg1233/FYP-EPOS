@@ -4,7 +4,7 @@ const Clerks = {
     create: (name, pin) => {
         return knex('clerks')
         .insert({name, pin})
-        .returning(['id', 'name', 'pin'])
+        .returning(['id', 'name', 'pin', 'is_manager'])
     },
 
     getAll: () => {
@@ -20,7 +20,7 @@ const Clerks = {
     },
 
     update: (id, name, pin) => {
-        return knex('clerks').where({id}).update({name, pin}).returning(['id', 'name', 'pin', 'enabled'])
+        return knex('clerks').where({id}).update({name, pin}).returning(['id', 'name', 'pin', 'enabled', 'is_manager'])
     },
 
     delete: (id) => {
@@ -28,7 +28,11 @@ const Clerks = {
     },
 
     change_status: (id, enabled) => {
-        return knex('clerks').where({id}).update({enabled}).returning(['id', 'name', 'pin', 'enabled']);
+        return knex('clerks').where({id}).update({enabled}).returning(['id', 'name', 'pin', 'enabled', 'is_manager']);
+    },
+
+    change_role: (id, is_manager) => {
+        return knex('clerks').where({id}).update({is_manager}).returning(['id', 'name', 'pin', 'enabled', 'is_manager']);
     }
 }
 

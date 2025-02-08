@@ -7,11 +7,10 @@
   </head>
   <body>
     <div class="container">
-      <!-- TODO - make clock live using JS -->
       <div class="live-clock" id="live-clock">14:30:00</div>  
 
       <div class="login-container">
-        <h1>Please Sign In</h1>
+        <h1 id="login-header">Please Sign In</h1>
         <input type="password" id="pin-entry" placeholder="Enter PIN" readonly>
 
         <div class="login-keypad">
@@ -66,17 +65,38 @@
       document.getElementById('pin-entry').value = '';
     }
 
-    function login() {
-      if(document.getElementById('pin-entry').value == '5555') {
-        showPage('Dash');
+    async function login() {
+
+      let pin_input = document.getElementById('pin-entry').value;
+      let clerk = await getClerkByPIN(pin_input)
+
+      // check if clerk with matching pin found & that the clerk is enabled
+      if(clerk == null || clerk["enabled"] == false) {
+        // login unsuccessful - no matching pin found
+        let title = document.getElementById('login-header')
+        
+        // change contents of title & change to red
+        title.innerHTML = "Invalid Login";
+        title.classList.add('error-text');
+        clearPinEntry();
+        
+        // revert styling back after 3 sec
+        setTimeout(() => {
+          title.innerHTML = "Please Sign In";
+          title.classList.remove('error-text')
+        }, 3*1000);
+
         return;
       }
-      alert("Invalid login")
-      clearPinEntry();
 
-      // TODO - implement server-side auth system - used for testing / MVP / POC
+      // pin matches an enabled clerk - login success
+
+      showPage('Test'); // TODO - change to dashboard, set local storage of current user
+      return;
+
     }
 
   </script>
   <script src="../frontend/window_manager_link.js"></script>
+  <script src="../frontend/clerks_link.js"></script>
 </html>
