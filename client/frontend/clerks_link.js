@@ -13,6 +13,9 @@ async function getClerkByID(id) {
 }
 
 updateClerks();
+async function createClerk(name, pin) {
+    return await window.electronAPI.clerks_createClerk({name: name, pin: pin});
+}
 
 setTimeout(() => {
     // update clerks in the browser's local variable every 60 seconds
