@@ -21,7 +21,9 @@ async function reloadClerks() {
 }
 
 async function updateClerk(id, name, pin) {
-    return await window.electronAPI.clerks_updateClerk({id: id, name: name, pin: pin})
+    let result = await window.electronAPI.clerks_updateClerk({id: id, name: name, pin: pin})
+    reloadClerks();
+    return result;
 }
 
 reloadClerks();
