@@ -72,6 +72,44 @@ router.post("/create", async (request, response) => {
     }
 })
 
+router.post("/disable", async (request, response) => {
+
+    try {
+        changeClerkStatus(request, response, false)
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Error changing clerk status"})
+    }
+
+})
+
+router.post("/enable", async (request, response) => {
+
+    try {
+        changeClerkStatus(request, response, true)
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Error changing clerk status"})
+    }
+
+})
+
+async function changeClerkStatus(request, response, status) {
+
+    var clerk_id = request.body["id"];
+
+    var clerk = await Clerks.getByID(clerk_id);
+
+
+    // check if clerk exists
+    if(clerk == undefined) {
+        response.json({error: "Clerk not found"});
+        return;
+    }
+
+    var status = await Clerks.change_status(clerk_id, status);
+    response.status(200).json({message: "Successfully changed clerk visiblilty", enabled: status[0].enabled})
+}
 
 // pin must be at least 1 char, an integer & not be undefined
 function isPinValid(pin) {

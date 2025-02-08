@@ -16,6 +16,12 @@ class ClerksModule {
 
     async cacheClerks() {
         var clerks = await this.net_manager.pre_ready_request('/api/clerks/get/all');
+
+        clerks.forEach(clerk => {
+            // parse 0 & 1 as true & false
+            clerk["enabled"] = Boolean(clerk["enabled"])
+        })
+
         // convert api data into local array - organised by ID #
         clerks.forEach(clerk => this.addClerkToLocalCache(clerk))
         console.log(`Loaded clerks (total: ${Object.keys(this.clerks).length}).`)
@@ -85,6 +91,42 @@ class ClerksModule {
         this.cacheClerks();
     }
 
+    async changeClerkStatus(id, status) {
+
+        // check product exists
+        if(!this.clerks[id]) {
+            console.error(`Cannot update clerk with ID ${id} - clerk not found.`);
+            return;
+        }
+
+        // check desired status is a boolean (& therefore valid)
+        if(typeof status != "boolean") {
+            console.error(`Cannot update clerk with ID ${id} - invalid status defined`);
+            return;
+        }
+
+        var endpoint = "";
+        
+        if(status == true) {
+            endpoint = "/api/clerks/enable";
+        } else {
+            endpoint = "/api/clerks/disable";
+        }
+
+        var remoteUpdate = await this.net_manager.async_post(endpoint, {id: id});
+
+        // check if updating remote server was successsful
+        if(remoteUpdate["message"] != undefined) {
+            this.clerks[id]["enabled"] = status;
+            return true;
+        } else {
+            console.error("Error making remote clerk status update")
+            console.error(remoteUpdate)
+            return null;
+        }
+
+    }
+
 
     invokeIPCHandles(moduleManager, ipcMain) {
         
@@ -113,6 +155,11 @@ class ClerksModule {
         ipcMain.handle('clerks:reload-clerks', async (event, clerk_data) => {
             return this.reloadClerks();
         });
+
+        // change clerk status
+        ipcMain.handle('clerks:change-clerk-status', async (event, clerk_id, status) => {
+            return this.changeClerkStatus(clerk_id, status)
+        })
     }
     
 }
