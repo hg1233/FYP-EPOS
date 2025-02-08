@@ -40,7 +40,7 @@ class ClerksModule {
     validateClerkData(clerk) {
         // check core clerk info supplied
         if(typeof clerk.id != "number" || !clerk.name || typeof clerk.pin !== "string"){ 
-            throw new Error("Invalid product data.");
+            throw new Error("Invalid clerk data.");
         }
         
     }
@@ -80,7 +80,7 @@ class ClerksModule {
                 return {error: "Error occurred carrying out remote update", details: remoteUpdate["error"]}
             }
         } catch(err) {
-            // dont add product if it fails validation
+            // dont add clerk if it fails validation
             console.debug(`Error occurred adding new clerk: ${err}`)
             return;
         }
@@ -93,7 +93,7 @@ class ClerksModule {
 
     async changeClerkStatus(id, status) {
 
-        // check product exists
+        // check clerk exists
         if(!this.clerks[id]) {
             console.error(`Cannot update clerk with ID ${id} - clerk not found.`);
             return;
@@ -127,6 +127,36 @@ class ClerksModule {
 
     }
 
+    async updateClerk(new_data) {
+
+        var clerk_id = new_data["id"];
+        console.debug(clerk_id)
+
+        if(!this.clerks[clerk_id]) {
+            console.error(`Cannot update clerk with ID ${clerk_id} - clerk not found.`);
+            return;
+        }
+
+        try {
+            this.validateClerkData(new_data);
+        } catch(error) {
+            console.error(`Cannot update clerk with ID ${clerk_id} - clerk data invalid.`);
+            return;
+        }
+
+        var remoteUpdate = await this.net_manager.async_post('/api/clerks/update', {id: clerk_id, name: new_data.name, pin: new_data.pin});
+
+        if(remoteUpdate["message"] != undefined) {
+            // parse boolean int values 0 & 1 to true/false
+            remoteUpdate["new_data"]["enabled"] = Boolean(remoteUpdate["new_data"]["enabled"]);
+            this.clerks[clerk_id] = remoteUpdate["new_data"];
+            return true;
+        } else {
+            console.debug(remoteUpdate)
+            return {error: "Error occurred carrying out remote clerk update"}
+        }
+    }
+
 
     invokeIPCHandles(moduleManager, ipcMain) {
         
@@ -137,7 +167,6 @@ class ClerksModule {
 
         // get all clerks
         ipcMain.handle('clerks:get-clerk-by-id', async (event, id) => {
-            console.debug("clerk ID:", id)
             return this.clerks[id];
         });
 
@@ -159,6 +188,11 @@ class ClerksModule {
         // change clerk status
         ipcMain.handle('clerks:change-clerk-status', async (event, clerk_id, status) => {
             return this.changeClerkStatus(clerk_id, status)
+        })
+
+        // update clerk
+        ipcMain.handle('clerks:update-clerk', async (event, new_data) => {
+            return this.updateClerk(new_data)
         })
     }
     

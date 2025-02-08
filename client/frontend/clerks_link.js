@@ -20,6 +20,10 @@ async function reloadClerks() {
     clerks = await window.electronAPI.clerks_reloadClerks();
 }
 
+async function updateClerk(id, name, pin) {
+    return await window.electronAPI.clerks_updateClerk({id: id, name: name, pin: pin})
+}
+
 reloadClerks();
 
 setTimeout(() => {

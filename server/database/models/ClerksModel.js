@@ -20,7 +20,7 @@ const Clerks = {
     },
 
     update: (id, name, pin) => {
-        return knex('clerks').where({id}).update({name, pin}).returning(['id', 'name', 'pin'])
+        return knex('clerks').where({id}).update({name, pin}).returning(['id', 'name', 'pin', 'enabled'])
     },
 
     delete: (id) => {
