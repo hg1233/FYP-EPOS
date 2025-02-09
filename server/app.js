@@ -23,6 +23,10 @@ app.get("/status", (request, response) => {
 const productRoutes = require('./routes/products')
 app.use("/api/products", productRoutes)
 
+// import category routes
+const catRoutes = require('./routes/categories')
+app.use("/api/categories", catoutes)
+
 // import clerk routes
 const clerkRoutes = require('./routes/clerks')
 app.use("/api/clerks", clerkRoutes)
