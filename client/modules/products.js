@@ -71,7 +71,7 @@ class ProductsModule {
         }
     }
 
-    updateProduct(new_data) {
+    async updateProduct(new_data) {
         var product_id = new_data.id;
 
         if(!this.products[product_id]) {
@@ -86,7 +86,7 @@ class ProductsModule {
             return;
         }
 
-        var remoteUpdate = this.netManager.async_post('/api/products/update', {id: product_id, name: new_data.name, price: new_data.price});
+        var remoteUpdate = await this.netManager.async_post('/api/products/update', {id: product_id, name: new_data.name, price: new_data.price});
 
         if(remoteUpdate["message"] != undefined) {
             this.products[product_id] = new_data;

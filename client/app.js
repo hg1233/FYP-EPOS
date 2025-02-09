@@ -22,6 +22,11 @@ var products_module = require('./modules/products.js').instance
 products_module.netManager = netManager;
 moduleManager.instance.registerModule('products', products_module)
 
+// register categories module
+var cats_module = require('./modules/categories.js').instance
+cats_module.net_manager = netManager;
+moduleManager.instance.registerModule('categories', cats_module)
+
 // register clerks module
 var clerks_module = require('./modules/clerks.js').instance
 clerks_module.net_manager = netManager;
@@ -46,5 +51,6 @@ app.whenReady().then( () => {
     products_module.invokeIPCHandles(moduleManager, ipcMain);
     clerks_module.invokeIPCHandles(moduleManager, ipcMain);
     venue_module.invokeIPCHandles(moduleManager, ipcMain);
+    cats_module.invokeIPCHandles(moduleManager, ipcMain);
 
 });

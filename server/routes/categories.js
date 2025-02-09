@@ -49,7 +49,7 @@ router.post("/create", async (request, response) => {
 
         // have to use brackets & index 0 as returns array of results, only want 1st entry as is an insert sql cmd
         var cat = (await Categories.create(desired_name))[0]
-        response.status(200).json({message: "Successfully created category.", category_id: cat.id});
+        response.status(200).json({message: "Successfully created category.", category_data: cat});
 
     } catch(error) {
         console.log(error);
@@ -131,7 +131,7 @@ router.post("/:id/priority", async (request, response) => {
 
     } catch(error) {
         console.log(error);
-        response.status(500).json({error: "Error occurred updating category details"})
+        response.status(500).json({error: "Error occurred updating category details", details: error})
     }
 })
 
@@ -160,7 +160,7 @@ function isCatNameValid(name) {
 }
 
 function isPriorityValid(input) {
-    return price != undefined && !isNaN(price) && isFinite(price) && price.trim() != ""; 
+    return input != undefined && !isNaN(input) && isFinite(input)
 }
 
 module.exports = router;

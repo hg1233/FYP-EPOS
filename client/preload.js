@@ -37,4 +37,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
   venue_addAttribute: async (attribute, value) => ipcRenderer.invoke('venue:add-attribute', attribute, value),
   venue_updateAttribute: async (attribute, new_value) => ipcRenderer.invoke('venue:update-attribute', attribute, new_value),
 
+  /*** Categories Module ***/
+
+  categories_getAll: async () => ipcRenderer.invoke('categories:get-all-categories'),
+  categories_getByID: async (id) => ipcRenderer.invoke('categories:get-category-by-id', id),
+  categories_getByName: async (name) => ipcRenderer.invoke('categories:get-category-by-name', name),
+  categories_reload: async () => ipcRenderer.invoke('categories:reload'),
+  categories_changeStatus: async (id, status) => ipcRenderer.invoke('categories:change-status', id, status),
+  categories_changeName: async (id, name) => ipcRenderer.invoke('categories:change-name', id, name),
+  categories_changePriority: async (id, priority) => ipcRenderer.invoke('categories:change-priority', id, priority),
+  categories_create: async (name) => ipcRenderer.invoke('categories:create', name),
+
+
 })
