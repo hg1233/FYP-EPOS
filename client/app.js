@@ -30,7 +30,7 @@ moduleManager.instance.registerModule('clerks', clerks_module)
 // register clerks module
 var venue_module = require('./modules/venue.js').instance
 venue_module.net_manager = netManager;
-venue_module.instance.registerModule('venue', venue_module)
+moduleManager.instance.registerModule('venue', venue_module)
 
 app.whenReady().then( () => {
 

@@ -28,4 +28,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clerks_changeClerkStatus: async (id, new_status) => ipcRenderer.invoke('clerks:change-clerk-status', id, new_status),
   clerks_updateClerk: async (clerk_data) => ipcRenderer.invoke('clerks:update-clerk', clerk_data),
   clerks_changeRole: async (id, new_status) => ipcRenderer.invoke('clerks:change-role', id, new_status),
+
+  /*** Venue Module ***/
+
+  venue_getAllInfo: async () => ipcRenderer.invoke('venue:get-all-info'),
+  venue_getInfoByAttribute: async (attribute) => ipcRenderer.invoke('venue:get-info-by-attribute', attribute),
+  venue_reload: async () => ipcRenderer.invoke('venue:reload'),
+  venue_addAttribute: async (attribute, value) => ipcRenderer.invoke('venue:add-attribute', attribute, value),
+  venue_updateAttribute: async (attribute, new_value) => ipcRenderer.invoke('venue:update-attribute', attribute, new_value),
+
 })

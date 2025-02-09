@@ -94,3 +94,5 @@ router.post("/update", async (request, response) => {
 function isEntryValid(input) {
     return input != undefined && input.trim() != ""
 }
+
+module.exports = router
