@@ -20,9 +20,9 @@ class ProductsModule {
         products.forEach(product => {
             // parse 0 & 1 as true & false
             product["enabled"] = Boolean(product["enabled"])
+            this.addProductToLocalStorage(product)
         })
         
-        products.forEach(product => this.addProductToLocalStorage(product))
         console.log(`Loaded products (total: ${Object.keys(this.products).length}).`)
     }
 
