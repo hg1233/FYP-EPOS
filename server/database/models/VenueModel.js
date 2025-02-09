@@ -21,3 +21,5 @@ const Venue = {
     }
     
 }
+
+module.exports = Venue;
