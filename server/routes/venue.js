@@ -50,7 +50,7 @@ router.post("/add", async (request, response) => {
             return;
         }
 
-        var attribute_exists = await Venue.getByAttribute(request.params.attribute) != undefined ? true : false;
+        var attribute_exists = await Venue.getByAttribute(desired_attribute) != undefined ? true : false;
 
         if(attribute_exists) {
             response.status(400).json({error: "Attribute already exists"});
@@ -81,7 +81,7 @@ router.post("/update", async (request, response) => {
         }
         
 
-        var status = await Venue.update(attribute, desired_value);
+        var status = await Venue.update(attribute_name, desired_value);
         var new_attribute_value = status[0]["value"];
         response.status(200).json({message: "Venue attribute updated successfully.", new_value: new_attribute_value})
 
