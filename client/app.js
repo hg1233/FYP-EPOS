@@ -45,5 +45,6 @@ app.whenReady().then( () => {
     // invoke & setup handles for client backend, server backend & client frontend data transfer
     products_module.invokeIPCHandles(moduleManager, ipcMain);
     clerks_module.invokeIPCHandles(moduleManager, ipcMain);
+    venue_module.invokeIPCHandles(moduleManager, ipcMain);
 
 });

@@ -80,6 +80,36 @@ class VenueModule {
         return name != undefined && name.trim() != ""
     }
 
+    invokeIPCHandles(moduleManager, ipcMain) {
+
+        // get all venue info
+        ipcMain.handle('venue:get-all-info', async () => {
+            return this.venue_info;
+        });
+
+        // get venue info by attribute
+        ipcMain.handle('venue:get-info-by-attribute', async (event, attribute) => {
+            return this.getValue(attribute)
+        });
+
+        // reload venue info
+        ipcMain.handle('venue:reload', async () => {
+            return this.reloadVenueData();
+        });
+
+        // add new venue attribute
+        ipcMain.handle('venue:add-attribute', async (event, attribute, value) => {
+            return this.addAttribute(attribute, value);
+        });
+
+        // update existing venue attribute
+        ipcMain.handle('venue:update-attribute', async (event, attribute, value) => {
+            return this.updateAttribute(attribute, value);
+        });
+
+
+    }
+
 }
 
 const instance = new VenueModule();
