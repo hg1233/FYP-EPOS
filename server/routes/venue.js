@@ -58,7 +58,7 @@ router.post("/add", async (request, response) => {
         }
 
         // have to use brackets & index 0 as returns array of results, only want 1st entry as is an insert sql cmd
-        var venue_data = (await Products.create(desired_attribute, desired_value))[0]
+        var venue_data = (await Venue.add(desired_attribute, desired_value))[0]
         response.status(200).json({message: "Successfully added venue data.", venue_data: venue_data});
 
     } catch(error) {
@@ -90,9 +90,6 @@ router.post("/update", async (request, response) => {
         response.status(500).json({error: "Error occurred updating venue attribute"})
     }
 })
-
-
-
 
 function isEntryValid(input) {
     return input != undefined && input.trim() != ""

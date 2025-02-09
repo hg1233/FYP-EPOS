@@ -26,3 +26,7 @@ app.use("/api/products", productRoutes)
 // import clerk routes
 const clerkRoutes = require('./routes/clerks')
 app.use("/api/clerks", clerkRoutes)
+
+// import venue routes
+const venueRoutes = require('./routes/venue')
+app.use("/api/venue", venueRoutes)
