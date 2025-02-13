@@ -24,6 +24,11 @@ async function createProduct(name, price) {
     await updateProducts();
 }
 
+async function updateProductData(id, name, price) {
+    await window.electronAPI.products_updateProduct({id: id, name: name, price: price});
+    await updateProducts();
+}
+
 updateProducts();
 
 setTimeout(() => {

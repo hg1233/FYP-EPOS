@@ -186,6 +186,10 @@ class ProductsModule {
             return this.createProduct(product_data)
         })
 
+        ipcMain.handle('products:update-product', async (event, product_data) => {
+            return this.updateProduct(product_data)
+        })
+
     }
 
 
