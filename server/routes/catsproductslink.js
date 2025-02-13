@@ -124,4 +124,47 @@ router.post("/create", async (request, response) => {
 
 })
 
+router.post("/remove", async (request, response) => {
+    try {
+
+        var cat_id = request.body["category_id"];
+        var prod_id = request.body["product_id"];
+
+        // check both supplied IDs exist in DB and are defined
+        if(Categories.getByID(cat_id) == undefined || Products.getByID(prod_id) == undefined
+            || cat_id == undefined || prod_id == undefined) {
+            response.status(400).json({error: "Invalid data - Category ID or Product ID not found"})
+            return;
+        }
+
+        // check link does not already exist
+        let check_exists = generateLinksResponse(await CatsProductsLink.getByProductID(prod_id), "category_id");
+
+        // if only 1 category linked to product ID currently
+        if(typeof check_exists == "number" && cat_id != check_exists) {
+            response.status(400).json({error: "Link between category & product does not exist"})
+            return;
+        }
+
+        // if more than 2 categories linked to product ID currently
+        if(typeof check_exists != "number") {
+            // check if link exists
+            if(!check_exists.includes(Number(cat_id))) {
+                response.status(400).json({error: "Link between category & product does not exist"})
+                return;
+            }
+            // else, continue with below logic
+        }
+
+        // link exists - remove it
+        await CatsProductsLink.removeLink(cat_id, prod_id);
+        return response.status(200).json({message: "Successfully removed link"});
+
+    } catch(err) {
+        response.status(500).json({error: "Error occurred removing category & product link"})
+    }
+
+
+})
+
 module.exports = router;
