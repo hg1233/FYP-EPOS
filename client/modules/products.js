@@ -172,7 +172,7 @@ class ProductsModule {
         // handle reload products func from browser
         ipcMain.handle('products:reload-products', async () => {
             this.products = {}; // clear 1st before reloading
-            this.loadProducts();
+            await this.loadProducts();
             return this.getAllProducts();
         })
 

@@ -1,8 +1,8 @@
 var products;
 
 async function updateProducts() {
-    var products = await window.electronAPI.products_reloadProducts();
-    this.products = products;
+    var result = await window.electronAPI.products_reloadProducts();
+    products = result;
 }
 
 async function getAllProducts() {
