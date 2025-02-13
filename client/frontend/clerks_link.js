@@ -21,6 +21,8 @@ async function reloadClerks() {
 }
 
 async function updateClerk(id, name, pin) {
+    // required for input validation
+    pin = pin.toString()
     let result = await window.electronAPI.clerks_updateClerk({id: id, name: name, pin: pin})
     reloadClerks();
     return result;
