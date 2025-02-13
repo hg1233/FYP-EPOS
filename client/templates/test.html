@@ -5,8 +5,11 @@
     <body>
         <h1>Developer Debug Screen</h1>
 
-        <div class="clerk_data">
+        <div>
             <h2>Clerks</h2>
+            <ul class="clerk_data">
+                <li>ID # 1 - Harrison - PIN 1234 - Enabled: YES - Manager: YES</li>
+            </ul>
         </div>
     </body>
     <script src="../frontend/products_link.js"></script>
@@ -16,12 +19,29 @@
     <script>
         
         document.addEventListener("DOMContentLoaded", function() {
-            refreshData();
+            
+            setTimeout(() => {
+                refreshData();
+            }, 1000);
+            
         });
 
         function refreshData() {
 
-            
+            /** Clerks section */
+            let clerk_data = document.getElementsByClassName('clerk_data')[0];
+
+            console.log(clerks)
+
+            // Clear data
+            clerk_data.innerHTML = ''
+
+            for(index = 1; index <= Object.keys(clerks).length; index++) {
+                // browser side js did not want to loop nicely, have to manually calculate & use index
+                clerk = clerks[index]
+                clerk_data.innerHTML += `<li>ID # ${index} - ${clerk.name} - PIN ${clerk.pin} - Enabled: ${clerk.enabled} - Manager: ${clerk.is_manager}</li>`;
+            }
+
 
         }
 
