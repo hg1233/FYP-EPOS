@@ -6,6 +6,10 @@ const CatsProductsLink = {
         return knex('cats_products_link')
         .insert({category_id, product_id})
         .returning(['category_id', 'product_id'])
+        .catch((err) => {
+            console.error("Error creating Category Products Link:")
+            console.error(err)
+        })
     },
 
     getAll: () => {

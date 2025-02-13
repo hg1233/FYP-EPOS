@@ -7,8 +7,10 @@ const db = require('../database.js');
 // setup route handler
 const router = express.Router();
 
-// import categories & products link db model
+// import categories, products & link db model
 const CatsProductsLink = require('../database/models/CatsProductsLinkModel.js');
+const Products = require('../database/models/ProductsModel.js');
+const Categories = require('../database/models/CategoriesModel.js');
 
 /**
  * Endpoint for retrieving a list of products which are linked to a specified category ID.
@@ -77,5 +79,49 @@ function generateLinksResponse(linked_data, key) {
     // return just 1st element
     return linked_data[0][key]
 }
+
+router.post("/create", async (request, response) => {
+
+    try {
+
+        var cat_id = request.body["category_id"];
+        var prod_id = request.body["product_id"];
+
+        // check both supplied IDs exist in DB and are defined
+        if(Categories.getByID(cat_id) == undefined || Products.getByID(prod_id) == undefined
+            || cat_id == undefined || prod_id == undefined) {
+            response.status(400).json({error: "Invalid data - Category ID or Product ID not found"})
+            return;
+        }
+
+        // check link does not already exist
+        let check_exists = generateLinksResponse(await CatsProductsLink.getByProductID(prod_id), "category_id");
+
+        // if only 1 category linked to product ID currently
+        if(typeof check_exists == "number" && cat_id == check_exists) {
+            response.status(400).json({error: "Link between category & product already exists"})
+            return;
+        }
+
+        // if more than 2 categories linked to product ID currently
+        if(typeof check_exists != "number") {
+            // check for duplicates
+            if(check_exists.includes(Number(cat_id))) {
+                response.status(400).json({error: "Link between category & product already exists"})
+                return;
+            }
+            // else, continue with below logic
+        }
+
+        // link does not already exist - create it
+        await CatsProductsLink.createLink(cat_id, prod_id);
+        return response.status(200).json({message: "Successfully created link"});
+
+    } catch(err) {
+        console.error(err)
+        response.status(500).json({error: "Error occurred creating product & category link"})
+    }
+
+})
 
 module.exports = router;
