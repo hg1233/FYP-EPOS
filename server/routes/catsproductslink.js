@@ -12,6 +12,17 @@ const CatsProductsLink = require('../database/models/CatsProductsLinkModel.js');
 const Products = require('../database/models/ProductsModel.js');
 const Categories = require('../database/models/CategoriesModel.js');
 
+router.get("/get/all", async (request, response) => {
+
+    try {
+        var links = await CatsProductsLink.getAll();
+        response.json(links);
+    } catch(err) {
+        response.status(500).json({error: "Error occurred retrieving all product category links"})
+    }
+
+})
+
 /**
  * Endpoint for retrieving a list of products which are linked to a specified category ID.
  * (e.g. Category X has Products X, Y and Z as members)
