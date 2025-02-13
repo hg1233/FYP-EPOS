@@ -89,7 +89,8 @@ class ClerksModule {
 
     async reloadClerks() {
         this.clerks = {};
-        this.cacheClerks();
+        await this.cacheClerks();
+        return this.clerks;
     }
 
     async changeClerkStatus(id, status) {
