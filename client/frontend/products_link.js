@@ -14,7 +14,9 @@ async function getProductByID(id) {
 }
 
 async function changeProductStatus(id, new_status) {
-    return await window.electronAPI.products_changeStatus(id, new_status);
+    let result = await window.electronAPI.products_changeStatus(id, new_status);
+    await updateProducts();
+    return result;
 }
 
 async function createProduct(name, price) {
