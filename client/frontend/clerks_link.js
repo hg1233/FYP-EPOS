@@ -34,6 +34,12 @@ async function setClerkRole(id, is_manager) {
     return result;
 }
 
+async function setClerkStatus(id, new_status) {
+    let result = await window.electronAPI.clerks_changeClerkStatus(id, new_status);
+    reloadClerks();
+    return result;
+}
+
 reloadClerks();
 
 setTimeout(() => {
