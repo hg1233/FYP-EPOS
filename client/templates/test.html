@@ -4,15 +4,25 @@
     </head>
     <body>
         <h1>Developer Debug Screen</h1>
-
+        <button onclick="refreshData()">Refresh</button>
         <div>
             <h2>Clerks</h2>
-            <ul class="clerk_data">
-                <li>ID # 1 - Harrison - PIN 1234 - Enabled: YES - Manager: YES</li>
-            </ul>
+            <ul class="clerk_data"></ul>
         </div>
+
+        <div>
+            <h2>Products</h2>
+            <ul class="products_data"></ul>
+        </div>
+
+        <div>
+            <h2>Categories</h2>
+            <ul class="categories_data"></ul>
+        </div>
+
     </body>
     <script src="../frontend/products_link.js"></script>
+    <script src="../frontend/categories_link.js"></script>
     <script src="../frontend/window_manager_link.js"></script>
     <script src="../frontend/clerks_link.js"></script>
 
@@ -26,22 +36,81 @@
             
         });
 
-        function refreshData() {
+        async function refreshData() {
 
-            /** Clerks section */
             let clerk_data = document.getElementsByClassName('clerk_data')[0];
+            let products_data = document.getElementsByClassName('products_data')[0];
+            let cats_data = document.getElementsByClassName('categories_data')[0];
 
-            console.log(clerks)
+            //console.log(clerks)
 
-            // Clear data
             clerk_data.innerHTML = ''
+            products_data.innerHTML = ''
+            cats_data.innerHTML = ''
+
+            await getAllCategories();
+            await sortCategories();
 
             for(index = 1; index <= Object.keys(clerks).length; index++) {
                 // browser side js did not want to loop nicely, have to manually calculate & use index
                 clerk = clerks[index]
-                clerk_data.innerHTML += `<li>ID # ${index} - ${clerk.name} - PIN ${clerk.pin} - Enabled: ${clerk.enabled} - Manager: ${clerk.is_manager}</li>`;
+                clerk_data.innerHTML += `<li>ID # ${index} - ${clerk.name} - PIN ${clerk.pin} - Enabled: ${clerk.enabled} - Manager: ${clerk.is_manager}` + 
+                    `<button onclick='clerkRoleChange(${index}, ${!clerk.is_manager})'>Promote/Demote</button>` +
+                    `<button onclick='clerkStatusChange(${index}, ${!clerk.enabled})'>Enable/Disable</button>` + `</li>`;
             }
 
+            for(index = 0; index < Object.keys(categories).length; index++) {
+                // browser side js did not want to loop nicely, have to manually calculate & use index
+                cat = categories[index]
+                cats_data.innerHTML += `<li>ID # ${cat.id} - ${cat.name} - Enabled: ${cat.enabled} - Priority ${cat.priority}` + `</li>`;
+            }
+
+            for(index = 1; index <= Object.keys(products).length; index++) {
+                // browser side js did not want to loop nicely, have to manually calculate & use index
+                product = products[index]
+                //console.log(index, product.enabled)
+                products_data.innerHTML += `<li>ID # ${index} - ${product.name} - Price £${(product.price / 100).toFixed(2)} - Enabled: ${product.enabled}`+
+                    `<button onclick='productStatusChange(${index}, ${!product.enabled})'>Enable/Disable</button>` +
+                    `<button onclick='productPriceChange(${index})'>Change Price (WIP)</button>` +
+                    `<button onclick='productNameChange(${index})'>Change Name (WIP)</button>` +
+                    `</li>`;
+            }
+
+            
+
+        }
+
+        async function clerkRoleChange(id, new_status) {
+            await setClerkRole(id, new_status);
+            setTimeout(() => {
+                refreshData();
+            }, 20);
+        }
+
+        async function clerkStatusChange(id, new_status) {
+            await setClerkStatus(id, new_status);
+            setTimeout(() => {
+                refreshData();
+            }, 20);
+        }
+
+        async function productStatusChange(id, new_status) {
+            await changeProductStatus(id, new_status);
+            setTimeout(() => {
+                refreshData();
+            }, 20);
+        }
+
+        async function productPriceChange(id) {
+            let new_price = await Number(prompt(`Enter the new price for Product ID # ${id}:`));
+
+            new_price = new_price * 100
+
+            await window.electronAPI.products_updateProduct({id: id, name: clerks[id]["name"], price: new_price});
+
+            setTimeout(() => {
+                refreshData();
+            }, 20);
 
         }
 
