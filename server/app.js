@@ -27,6 +27,10 @@ app.use("/api/products", productRoutes)
 const catRoutes = require('./routes/categories')
 app.use("/api/categories", catRoutes)
 
+// import category routes
+const catProdLinkRoutes = require('./routes/catsproductslink')
+app.use("/api/cat_link", catProdLinkRoutes)
+
 // import clerk routes
 const clerkRoutes = require('./routes/clerks')
 app.use("/api/clerks", clerkRoutes)
