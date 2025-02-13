@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   products_reloadProducts: async () => ipcRenderer.invoke('products:reload-products'),
   products_changeStatus: async (id, new_status) => ipcRenderer.invoke('products:change-status', id, new_status),
   products_createProduct: async (product_data) => ipcRenderer.invoke('products:create-product', product_data),
+  products_updateProduct: async (product_data) => ipcRenderer.invoke('products:update-product', product_data),
 
   /*** Clerks Module ***/
 
