@@ -1,7 +1,11 @@
 :root {
   --lime-green: #00ffb3;
   --grey: #2b2b2b;
+  --mid-grey: #3f3f3f;
+  --light-grey: #777;
   --error: indianred;
+  --info: lightskyblue;
+  --success: darkseagreen;
   --default-font: 'Lexend', sans-serif !important;
 }
 

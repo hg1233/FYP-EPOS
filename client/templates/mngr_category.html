@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for admin pages specific styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+    <div class="container">
+		<div class="admin-container">
+			<h1>Manage Categories</h1>
+		
+	
+			<input type="text" id="categoryName" placeholder="Enter category name">
+				<button onclick="createCat()">Create New Category</button>
+
+			<div class="spacer"></div>
+
+			<div class="category-list" id="catList">
+				<!-- auto generated from js -->
+
+				<div class="category-item" data-id="1">
+					<span>Draught</span>
+					<button class="btn-blue">Edit</button>
+					<button class="btn-red">Disable</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+  </body>
+</html>

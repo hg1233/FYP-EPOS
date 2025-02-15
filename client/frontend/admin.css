@@ -1,0 +1,66 @@
+.admin-container {
+    background: var(--grey);
+    padding: 2.5rem;
+    border-radius: 1.25rem;
+    width: 40rem;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
+}
+
+.admin-container h1 {
+    font-size: 1.8rem;
+    color: var(--lime-green);
+}
+
+body {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+input {
+    background-color: var(--mid-grey);
+    color: #fff;
+}
+
+input, button {
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.spacer {
+    padding: 1px;
+    margin: 5px 0;
+    background-color: var(--lime-green);
+    border-radius: 5px;
+}
+
+.category-list {
+    text-align: left;
+}
+
+.category-item {
+    background-color: var(--mid-grey);
+    border: none;
+    border-radius: 5px;
+    padding: 2 2 2 15px;
+    margin: 5px 0;
+    display: grid;
+    grid-template-columns: 70% auto auto;
+    align-items: center;
+}
+
+.category-item button {
+    margin: 5px 5px;
+    padding: 20px;
+}
+
+.btn-blue {
+    background-color: var(--info);
+}
+
+.btn-red {
+    background-color: var(--error);
+}
