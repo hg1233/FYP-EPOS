@@ -132,6 +132,47 @@ router.post("/enable", async (request, response) => {
 
 })
 
+router.post("/update", async (request, response) => {
+
+    try {
+
+        var table_id = request.body["id"]
+        var display_name = request.body["display_name"]
+        var seats = request.body["seats"]
+        
+        // check table ID valid
+        if(table == undefined) {
+            console.log(`[Tables > Update] Table with ID # ${table_id} not found`)
+            response.status(400).json({error: "Error updating table - table not found"});
+            return;
+        }
+
+        // input validation
+        if(!isDisplayNameValid(display_name)) {
+            console.log("[Tables > Update] Input validation failed for display_name - creation of table prevented");
+            response.status(400).json({error: "Error updating table - display name invalid"})
+            return;
+        }
+
+        // check seats input is a valid number
+        if(!isSeatsValid(seats)) {
+            console.log("[Tables > Update] Input validation failed for seats - creation of table prevented");
+            response.status(400).json({error: "Error updating table - seats input invalid"})
+            return;
+        }
+
+        // all data valid, update record
+        // TODO
+
+
+
+    } catch(err) {
+        console.error("Error updating table:", err)
+        response.status(500).json({error: "Error occurred updating table"})
+    }
+
+})
+
 // name must not be undefined, not be blank & be longer than 0 chars
 function isDisplayNameValid(name) {
     return name != undefined && name.trim() != "" && name.length != 0;
