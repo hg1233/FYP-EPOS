@@ -20,7 +20,9 @@ const Tables = {
         return knex('tables').where({display_name}).first()
     },
 
-    
+    change_status: (id, enabled) => {
+        return knex('tables').where({id}).update({enabled}).returning(['id', 'display_name', 'seats', 'enabled']);
+    }
 
 }
 

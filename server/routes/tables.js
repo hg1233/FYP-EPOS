@@ -78,6 +78,60 @@ router.post("/create", async (request, response) => {
     }
 })
 
+router.post("/disable", async (request, response) => {
+
+    try {
+
+        var table_id = request.body["id"]
+        var table = await Tables.getByID(table_id)
+
+        // check table ID valid
+        if(table == undefined) {
+            console.log(`[Tables > Disable] Table with ID # ${table_id} not found`)
+            response.status(400).json({error: "Error disabling table - table not found"});
+            return;
+        }
+
+        var result = await Tables.change_status(table_id, false);
+        console.log(`[Tables > Disable] Disabled Table ID # ${table_id}`)
+        response.status(200).json({message: "Successfully changed table status", new_status: Boolean(result[0].enabled)})
+
+
+    } catch(err) {
+        console.error(`Error disabling table with ID # ${request.body["id"]} : `, err)
+        request.status(500).json({error: "Error occurred disabling table"})
+    }
+
+
+})
+
+router.post("/enable", async (request, response) => {
+
+    try {
+
+        var table_id = request.body["id"]
+        var table = await Tables.getByID(table_id)
+
+        // check table ID valid
+        if(table == undefined) {
+            console.log(`[Tables > Enable] Table with ID # ${table_id} not found`)
+            response.status(400).json({error: "Error enabling table - table not found"});
+            return;
+        }
+
+        var result = await Tables.change_status(table_id, true);
+        console.log(`[Tables > Enable] Enabled Table ID # ${table_id}`)
+        response.status(200).json({message: "Successfully changed table status", new_status: Boolean(result[0].enabled)})
+
+
+    } catch(err) {
+        console.error(`Error enabling table with ID # ${request.body["id"]} : `, err)
+        request.status(500).json({error: "Error occurred enabling table"})
+    }
+
+
+})
+
 // name must not be undefined, not be blank & be longer than 0 chars
 function isDisplayNameValid(name) {
     return name != undefined && name.trim() != "" && name.length != 0;
