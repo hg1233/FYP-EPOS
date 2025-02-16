@@ -22,7 +22,11 @@ const Tables = {
 
     change_status: (id, enabled) => {
         return knex('tables').where({id}).update({enabled}).returning(['id', 'display_name', 'seats', 'enabled']);
-    }
+    },
+
+    update: (id, display_name, seats) => {
+        return knex('tables').where({id}).update({display_name, seats}).returning(['id', 'display_name', 'seats', 'enabled']);
+    },
 
 }
 

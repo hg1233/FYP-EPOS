@@ -139,6 +139,8 @@ router.post("/update", async (request, response) => {
         var table_id = request.body["id"]
         var display_name = request.body["display_name"]
         var seats = request.body["seats"]
+
+        var table = await Tables.getByID(table_id);
         
         // check table ID valid
         if(table == undefined) {
@@ -162,9 +164,9 @@ router.post("/update", async (request, response) => {
         }
 
         // all data valid, update record
-        // TODO
-
-
+        var new_data = (await Tables.update(table_id, display_name, seats))[0];
+        console.log(`[Tables > Update] Table ${table_id} updated`);
+        response.status(200).json({message: "Table updated successfully.", new_data: new_data})
 
     } catch(err) {
         console.error("Error updating table:", err)
