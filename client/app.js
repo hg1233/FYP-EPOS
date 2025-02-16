@@ -16,27 +16,39 @@ const moduleManager = require("./managers/module_manager.js");
 // import network manager
 const netManager = require("./managers/net_manager.js").instance;
 
-// register products module
-var products_module = require('./modules/products.js').instance
-products_module.netManager = netManager;
-moduleManager.instance.registerModule('products', products_module)
+let modules = [
+    {name: 'products', path: './modules/products.js'},
+    {name: 'categories', path: './modules/categories.js'},
+    {name: 'clerks', path: './modules/clerks.js'},
+    {name: 'venue', path: './modules/venue.js'},
+    {name: 'tables', path: './modules/tables.js'},
+]
 
-// register categories module
-var cats_module = require('./modules/categories.js').instance
-cats_module.net_manager = netManager;
-moduleManager.instance.registerModule('categories', cats_module)
-
-// register clerks module
-var clerks_module = require('./modules/clerks.js').instance
-clerks_module.net_manager = netManager;
-moduleManager.instance.registerModule('clerks', clerks_module)
-
-// register clerks module
-var venue_module = require('./modules/venue.js').instance
-venue_module.net_manager = netManager;
-moduleManager.instance.registerModule('venue', venue_module)
+// register all modules
+modules.forEach(module => {
+    try {
+        let module_obj = require(module.path).instance
+        module_obj.net_manager = netManager;
+        moduleManager.instance.registerModule(module.name, module_obj)
+    } catch(err) {
+        console.error(`Failed to initalise network manager for module '${module.name}':`)
+        console.error(err)
+    }
+});
 
 app.whenReady().then( () => {
+
+    // invoke & setup handles for client backend, server backend & client frontend data transfer
+    modules.forEach(module => {
+        try {
+            let module_obj = moduleManager.instance.getModuleByName(module.name)
+            module_obj.invokeIPCHandles(moduleManager, ipcMain)
+        } catch(err) {
+            console.error(`Failed to invoke IPC handles for module '${module.name}':`)
+            console.error(err);
+        }
+
+    });
 
     // open first screen
     windowManager.instance.launch();
@@ -46,10 +58,5 @@ app.whenReady().then( () => {
         windowManager.instance.showPage(page);
     });
 
-    // invoke & setup handles for client backend, server backend & client frontend data transfer
-    products_module.invokeIPCHandles(moduleManager, ipcMain);
-    clerks_module.invokeIPCHandles(moduleManager, ipcMain);
-    venue_module.invokeIPCHandles(moduleManager, ipcMain);
-    cats_module.invokeIPCHandles(moduleManager, ipcMain);
 
 });

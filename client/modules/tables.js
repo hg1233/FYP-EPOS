@@ -5,6 +5,7 @@ class TablesModule {
 
     constructor() {
         this.tables = {};
+        this.net_manager = null;
     }
 
     init() {
@@ -78,6 +79,8 @@ class TablesModule {
 
     }
 
+    invokeIPCHandles(moduleManager, ipcMain) {}
+
     // name must not be undefined, not be blank & be longer than 0 chars
     isDisplayNameValid(name) {
         return name != undefined && name.trim() != "" && name.length != 0;
@@ -90,3 +93,6 @@ class TablesModule {
 
 
 }
+
+const instance = new TablesModule();
+module.exports = {instance};

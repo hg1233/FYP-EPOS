@@ -1,12 +1,12 @@
 class ProductsModule {
     
-    netManager;
+    net_manager;
     products;
     
     constructor() {
         // current structure - { id: 1, name: 'Beer', price: 519, enabled: 1 }
         this.products = {};
-        this.netManager = null;
+        this.net_manager = null;
     }
 
     init() {
@@ -15,7 +15,7 @@ class ProductsModule {
 
     async loadProducts() {
         // have to use pre-ready request as electron net not enabled until app.onReady is done
-        const products = await this.netManager.pre_ready_request('/api/products/get/all');
+        const products = await this.net_manager.pre_ready_request('/api/products/get/all');
 
         products.forEach(product => {
             // parse 0 & 1 as true & false
@@ -55,7 +55,7 @@ class ProductsModule {
 
             this.validateProductData(product);
             
-            var remoteUpdate = await this.netManager.async_post('/api/products/create', {name: product.name, price: product.price});
+            var remoteUpdate = await this.net_manager.async_post('/api/products/create', {name: product.name, price: product.price});
             
             if(remoteUpdate["message"] != undefined) {
                 
@@ -86,7 +86,7 @@ class ProductsModule {
             return;
         }
 
-        var remoteUpdate = await this.netManager.async_post('/api/products/update', {id: product_id, name: new_data.name, price: new_data.price});
+        var remoteUpdate = await this.net_manager.async_post('/api/products/update', {id: product_id, name: new_data.name, price: new_data.price});
 
         if(remoteUpdate["message"] != undefined) {
             this.products[product_id] = new_data;
@@ -125,7 +125,7 @@ class ProductsModule {
             endpoint = "/api/products/disable";
         }
 
-        var remoteUpdate = await this.netManager.async_post(endpoint, {id: id});
+        var remoteUpdate = await this.net_manager.async_post(endpoint, {id: id});
 
         // check if updating remote server was successsful
         if(remoteUpdate["message"] != undefined) {
