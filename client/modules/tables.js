@@ -79,7 +79,64 @@ class TablesModule {
 
     }
 
-    invokeIPCHandles(moduleManager, ipcMain) {}
+    async changeStatus(id, new_status) {
+      
+        // check clerk exists
+        if(!this.tables[id]) {
+            console.error(`Cannot update table with ID ${id} - table not found.`);
+            return;
+        }
+
+        // check desired status is a boolean (& therefore valid)
+        if(typeof new_status != "boolean") {
+            console.error(`Cannot update table with ID ${id} - invalid status defined`);
+            return;
+        }
+
+        // input validation passed - create table
+        
+        var endpoint = "";
+        
+        if(new_status == true) {
+            endpoint = "/api/tables/enable";
+        } else {
+            endpoint = "/api/tables/disable";
+        }
+
+        var response = await this.net_manager.async_post(endpoint, {id: id});
+
+        // check if updating remote server was successsful
+        if(response["message"] != undefined) {
+            this.tables[id]["enabled"] = new_status;
+            return true;
+        } else {
+            console.error("Error making remote table status update")
+            console.error(response)
+            return null;
+        }
+
+    }
+
+    invokeIPCHandles(moduleManager, ipcMain) {
+
+        ipcMain.handle('tables:get-all', async () => {
+            return this.getAllTables();
+        });
+
+        ipcMain.handle('tables:get-by-id', async (event, id) => {
+            return this.getTableByID(id);
+        })
+
+        ipcMain.handle('tables:create', async (event, display_name, seats) => {
+            return this.createTable(display_name, seats);
+        })
+
+        ipcMain.handle('tables:change-status', async (event, id, new_status) => {
+            return this.changeStatus(id, new_status);
+        })
+
+
+    }
 
     // name must not be undefined, not be blank & be longer than 0 chars
     isDisplayNameValid(name) {

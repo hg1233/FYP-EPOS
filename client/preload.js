@@ -49,5 +49,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   categories_changePriority: async (id, priority) => ipcRenderer.invoke('categories:change-priority', id, priority),
   categories_create: async (name) => ipcRenderer.invoke('categories:create', name),
 
+  /*** Tables Module ***/
+
+  tables_getAll: async () => ipcRenderer.invoke('tables:get-all'),
+  tables_getByID: async (id) => ipcRenderer.invoke('tables:get-by-id', id),
+  tables_create: async (display_name, seats) => ipcRenderer.invoke('tables:create', display_name, seats),
+  tables_changeStatus: async (id, new_status) => ipcRenderer.invoke('tables:change-status', id, new_status),
 
 })
