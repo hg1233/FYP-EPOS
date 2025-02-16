@@ -21,10 +21,10 @@ class ClerksModule {
             // parse 0 & 1 as true & false
             clerk["enabled"] = Boolean(clerk["enabled"])
             clerk["is_manager"] = Boolean(clerk["is_manager"])
+            // convert api data into local array - organised by ID #
+            this.addClerkToLocalCache(clerk)
         })
 
-        // convert api data into local array - organised by ID #
-        clerks.forEach(clerk => this.addClerkToLocalCache(clerk))
         console.log(`Loaded clerks (total: ${Object.keys(this.clerks).length}).`)
     }
 
