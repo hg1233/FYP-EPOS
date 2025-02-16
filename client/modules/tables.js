@@ -1,0 +1,92 @@
+class TablesModule {
+
+    net_manager;
+    tables;
+
+    constructor() {
+        this.tables = {};
+    }
+
+    init() {
+        this.cacheTableData();
+    }
+
+    async cacheTableData() {
+        var tables = await this.net_manager.pre_ready_request('/api/tables/get/all');
+
+        tables.forEach(table => {
+            // parse 0 & 1 as true & false
+            table["enabled"] = Boolean(table["enabled"])
+            this.addTableToLocalCache(table)
+        })
+
+        console.log(`Loaded tables (total: ${Object.keys(this.tables).length}).`)
+    }
+
+    addTableToLocalCache(table) {
+        try {
+            this.validateTableData(table);
+            this.tables[table.id] = table;
+        } catch(err) {
+            // dont add table if it fails validation
+            return;
+        }
+    }
+
+    validateTableData(table) {
+        // check core clerk info supplied
+        if(typeof table.id != "number" || !table.seats){ 
+            throw new Error("Invalid table data.");
+        }
+    }
+
+    async getAllTables() {
+        return this.tables;
+    }
+
+    async getTableByID(id) {
+        return this.tables[id];
+    }
+
+    async createTable(display_name, seats) {
+
+        // input validation
+        if(!isDisplayNameValid(display_name)) {
+            console.error(`Cannot create table - display_name invalid`);
+            return;
+        }
+
+        if(!isSeatsValid(seats)) {
+            console.error(`Cannot create table - seats invalid`);
+            return;
+        }
+
+        // input validation passed - create table
+        var response = await this.net_manager.async_post('/api/tables/create', {display_name: display_name, seats: seats});
+            
+        if(response["message"] != undefined) {
+            
+            // success - create local object
+            var table = {id: response.table_id, display_name: display_name, seats: seats, enabled: true}
+
+            this.tables[response.table_id] = table;
+            return true;
+        } else {
+            return {error: "Error occurred creating table", details: response["error"]}
+        }
+
+
+    }
+
+    // name must not be undefined, not be blank & be longer than 0 chars
+    isDisplayNameValid(name) {
+        return name != undefined && name.trim() != "" && name.length != 0;
+    }
+
+    // must be a valid number when parsed
+    isSeatsValid(seats) {
+        return !isNaN(Number(seats));
+}
+
+
+}
