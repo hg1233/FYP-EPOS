@@ -52,12 +52,12 @@ class TablesModule {
     async createTable(display_name, seats) {
 
         // input validation
-        if(!isDisplayNameValid(display_name)) {
+        if(!this.isDisplayNameValid(display_name)) {
             console.error(`Cannot create table - display_name invalid`);
             return;
         }
 
-        if(!isSeatsValid(seats)) {
+        if(!this.isSeatsValid(seats)) {
             console.error(`Cannot create table - seats invalid`);
             return;
         }
@@ -81,7 +81,7 @@ class TablesModule {
 
     async changeStatus(id, new_status) {
       
-        // check clerk exists
+        // check table exists
         if(!this.tables[id]) {
             console.error(`Cannot update table with ID ${id} - table not found.`);
             return;
@@ -117,6 +117,43 @@ class TablesModule {
 
     }
 
+    async updateTable(id, display_name, seats) {
+
+        // check table exists
+        if(!this.tables[id]) {
+            console.error(`Cannot update table with ID ${id} - table not found.`);
+            return;
+        }
+
+        // input validation
+        if(!this.isDisplayNameValid(display_name)) {
+            console.error(`Cannot update table with ID ${id} - display_name invalid`);
+            return;
+        }
+
+        if(!this.isSeatsValid(seats)) {
+            console.error(`Cannot update table with ID ${id} - seats invalid`);
+            return;
+        }
+
+
+
+        var response = await this.net_manager.async_post('/api/tables/update', {id: id, display_name: display_name, seats: seats});
+
+        if(response["message"] != undefined) {
+            // parse boolean int values 0 & 1 to true/false
+            response["new_data"]["enabled"] = Boolean(response["new_data"]["enabled"]);
+            // update local cached data
+            this.tables[id] = response["new_data"];
+            return true;
+        } else {
+            console.debug(response)
+            return {error: "Error occurred carrying out remote table update"}
+        }
+
+        
+    }
+
     invokeIPCHandles(moduleManager, ipcMain) {
 
         ipcMain.handle('tables:get-all', async () => {
@@ -133,6 +170,10 @@ class TablesModule {
 
         ipcMain.handle('tables:change-status', async (event, id, new_status) => {
             return this.changeStatus(id, new_status);
+        })
+
+        ipcMain.handle('tables:update', async (event, id, display_name, seats) => {
+            return this.updateTable(id, display_name, seats);
         })
 
 

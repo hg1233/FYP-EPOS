@@ -55,5 +55,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   tables_getByID: async (id) => ipcRenderer.invoke('tables:get-by-id', id),
   tables_create: async (display_name, seats) => ipcRenderer.invoke('tables:create', display_name, seats),
   tables_changeStatus: async (id, new_status) => ipcRenderer.invoke('tables:change-status', id, new_status),
+  tables_update: async (id, display_name, seats) => ipcRenderer.invoke('tables:update', id, display_name, seats),
 
 })
