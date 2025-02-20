@@ -13,7 +13,7 @@ const Products = require('../database/models/ProductsModel.js');
 // endpoint to retrieve all products
 router.get("/get/all", async (request, response) => {
     try {
-        var products = await Products.getAll();
+        var products = await Products.getAllWithCategoryData();
         response.json(products);
     } catch(error) {
         console.error(error)
