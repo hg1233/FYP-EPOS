@@ -23,7 +23,7 @@ router.get("/get/all", async (request, response) => {
 
 router.get("/get/:id", async (request, response) => {
     try {
-        var product = await Products.getByID(request.params.id);
+        var product = await Products.getByIDWithCategoryData(request.params.id);
 
         // if product not found
         if(product == undefined) {
