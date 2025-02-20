@@ -16,8 +16,18 @@ const Orders = {
         return knex('orders').select('*').where({id}).first();
     },
 
-    markOrderAsPaid: (id, is_paid, payment_method) => {
-        return knex('orders').update({is_paid, payment_method}).where({id});
+    getOrdersByTableID: (table_id) => {
+        return knex('orders').where({table_id});
+    },
+
+    markAsPaidAndCloseOrder: (id, is_paid, payment_method) => {
+        return knex('orders').where({id}).update(
+            {
+                is_paid: is_paid,
+                payment_method: payment_method,
+                is_open: false,
+            }
+        );
     }
 
 }
