@@ -24,18 +24,23 @@
 			</div>
 		</div>
 		<div class="modal-overlay">
-			<div class="modal" id="edit-category-form">
+			<div class="modal" id="edit-clerk-form">
 				<form onsubmit="event.preventDefault(); return updateCategory()">
-					<h3 id="edit-category-modal-header" style="color:#222">Editing Category 'Draught'</h3>
+					<h3 id="edit-clerk-modal-header" style="color:#222">Editing Clerk 'Default User'</h3>
 
-					<input hidden type="number" name="id" id="edit-category-input-id">
+					<input hidden type="number" name="id" id="edit-clerk-input-id">
 					<div>
-						<label style="color:#222;padding-right:15px;"for="name">Category Name: </label>
-						<input id="edit-category-input-name" type="text" name="name" placeholder="e.g. Main Meals" style="width: 60%;" required>
+						<label style="color:#222;padding-right:15px;"for="name">Clerk Name: </label>
+						<input id="edit-clerk-input-name" type="text" name="name" placeholder="e.g. Main Meals" style="width: 60%;" required>
 					</div>
 					<div>
-						<label style="color:#222;padding-right:15px;"for="name">Priority: </label>
-						<input id="edit-category-input-priority" type="number" name="priority" min="1" max="9999999" style="width: 60%;">
+						<label style="color:#222;padding-right:15px;"for="name">PIN Number: </label>
+						<input id="edit-clerk-input-pin" type="text" pattern="[0-9]+" name="pin" style="width: 60%;">
+					</div>
+					
+					<div style="align-items: center; justify-content: center; display: flex;">
+						<label style="color:#222;padding:25px; "for="name">Is this clerk a manager? </label>
+						<input id="edit-clerk-input-manager" class="styled-checkbox" type="checkbox" name="is_manager">
 					</div>
 
 					<button class="btn-green" type="submit" style="margin-right:10%;">Save Changes</button>
@@ -52,27 +57,34 @@
 
 	async function updateCategory() {
 
-		let modal_container = document.getElementById('edit-category-form');
+		let modal_container = document.getElementById('edit-clerk-form');
 		let form = modal_container.children[0];
 
-		let id = document.getElementById("edit-category-input-id").value
-		let name = document.getElementById("edit-category-input-name").value
-		let priority = document.getElementById("edit-category-input-priority").value
+		let name = document.getElementById("edit-clerk-input-name").value
+		let pin = document.getElementById("edit-clerk-input-pin").value
+		let id = document.getElementById("edit-clerk-input-id").value
+		let is_manager = document.getElementById("edit-clerk-input-manager").checked
 
-		await changeCatName(id, name)
-
-		// only update priority if changed
-		if(priority !== '') {
-			await changeCatPriority(id, priority);
-		}
+		setClerkRole(id, is_manager);
+		updateClerk(id, name, pin)
+		
 
 		// update name on front end
 		let local_clerks = document.getElementById('clerkList').children;
 
-		for(let clerk in local_clerks) {
+		console.log(local_clerks)
+
+		for(let clerk of local_clerks) {
+
+			console.log(clerk)
+			console.log(clerk.dataset)
+			console.log(clerk.dataset.id)
 
 			if(clerk.dataset.id == id) {
 				clerk.children[0].innerText = name;
+
+				if(is_manager) clerk.children[0].innerText += " (Manager)";
+
 			}
 
 		}
@@ -84,21 +96,19 @@
 
 	async function editClerk(id) {
 
-		let modal_container = document.getElementById('edit-category-form');
+		let modal_container = document.getElementById('edit-clerk-form');
 
-		let category_data = await getCategoryByID(id);
-
-		let name = category_data.name
-		let priority = category_data.priority
+		let clerk_data = await getClerkByID(id);
 
 		// populate form values with current data
-		document.getElementById("edit-category-input-id").value = id;
-		document.getElementById("edit-category-input-name").value = name;
-		document.getElementById("edit-category-input-priority").value = priority;
-		document.getElementById("edit-category-modal-header").innerText = `Editing Category '${name}'`
+		document.getElementById("edit-clerk-input-id").value = id;
+		document.getElementById("edit-clerk-input-name").value = clerk_data.name;
+		document.getElementById("edit-clerk-input-pin").value = clerk_data.pin;
+		document.getElementById("edit-clerk-input-manager").checked = clerk_data.is_manager;
+		document.getElementById("edit-clerk-modal-header").innerText = `Editing Clerk '${clerk_data.name}'`
 
 		// show modal box and overlay
-		document.getElementById('edit-category-form').style.display = 'block';
+		document.getElementById('edit-clerk-form').style.display = 'block';
 		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
 		
 
@@ -108,7 +118,7 @@
 
 		await setClerkStatus(id, !current_status)
 
-		let buttons = document.getElementsByClassName('category-status');
+		let buttons = document.getElementsByClassName('clerk-status');
 
 		for(let button of buttons) {	
 
@@ -190,7 +200,6 @@
 			let name_header = document.createElement('span');
 			name_header.innerText = clerk.name
 			if(clerk.is_manager) name_header.innerText += " (Manager)"
-			name_header.innerText += " - PIN: " + clerk.pin
 			entry.appendChild(name_header);
 
 			// create edit btn
@@ -202,7 +211,7 @@
 
 			// create status btn
 			let status_btn = document.createElement('button');
-			status_btn.classList.add('category-status')
+			status_btn.classList.add('clerk-status')
 			status_btn.setAttribute('onclick', `toggleClerkStatus(${clerk.id}, ${clerk.enabled})`) 
 			status_btn.dataset.id = clerk.id;
 			status_btn.dataset.enabled = clerk.enabled 
