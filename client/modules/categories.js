@@ -62,7 +62,7 @@ class CategoriesModule {
                 let cat = remoteUpdate["category_data"];
                 
                 this.categories[cat["id"]] = cat;
-                return true;
+                return cat["id"];
             } else {
                 return {error: "Error occurred carrying out remote update"}
             }

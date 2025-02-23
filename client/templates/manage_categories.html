@@ -10,7 +10,7 @@
 		<div class="admin-container">
 			<h1>Manage Categories</h1>
 		
-			<form onsubmit="event.preventDefault(); return createCat()">
+			<form id="create-category-form" onsubmit="event.preventDefault(); return createCat()">
 				<input type="text" id="create-category-input-name" placeholder="Enter category name" required>
 				<button type="submit">Create New Category</button>
 			</form>
@@ -48,7 +48,7 @@
 
   <script>
 
-	function updateCategory() {
+	async function updateCategory() {
 
 		let modal_container = document.getElementById('edit-category-form');
 		let form = modal_container.children[0];
@@ -57,23 +57,43 @@
 		let name = document.getElementById("edit-category-input-name").value
 		let priority = document.getElementById("edit-category-input-priority").value
 
-		// TODO - call preload func to update category data on client backend
+		await changeCatName(id, name)
+
+		// only update priority if changed
+		if(priority !== '') {
+			await changeCatPriority(id, priority);
+		}
+
+		// update name on front end
+		let local_categories = document.getElementById('catList').children;
+
+		for(let cat of local_categories) {
+
+			if(cat.dataset.id == id) {
+				cat.children[0].innerText = name;
+			}
+
+		}
+
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
+
 
 	}
 
-	function editCat(id) {
+	async function editCat(id) {
 
 		let modal_container = document.getElementById('edit-category-form');
 
-		// TODO - get category data from preload
-		let name = 'Draught'
-		let priority = 2
+		let category_data = await getCategoryByID(id);
+
+		let name = category_data.name
+		let priority = category_data.priority
 
 		// populate form values with current data
 		document.getElementById("edit-category-input-id").value = id;
 		document.getElementById("edit-category-input-name").value = name;
 		document.getElementById("edit-category-input-priority").value = priority;
-		document.getElementById("edit-category-modal-header").value = `Editing Category '${name}'`
+		document.getElementById("edit-category-modal-header").innerText = `Editing Category '${name}'`
 
 		// show modal box and overlay
 		document.getElementById('edit-category-form').style.display = 'block';
@@ -111,10 +131,21 @@
 		}
 	}
 
-	function createCat() {
+	async function createCat() {
 		let name = document.getElementById('create-category-input-name').value;
 
-		// TODO - create category via preload
+		if(name.trim().length == 0) {
+			document.getElementById('create-category-input-name').value = '';
+			document.getElementById("create-category-input-name").reportValidity();
+			return;
+		}
+
+		let new_id = await createCategory(name);
+		let cat_data = await getCategoryByID(new_id);
+		let list_container = document.getElementById('catList');
+		list_container.appendChild(generateCategoryEntry(cat_data));
+
+
 	}
 
 	function generateCategoryList(categories) {
