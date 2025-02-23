@@ -19,12 +19,6 @@
 
 			<div class="category-list" id="catList">
 				<!-- auto generated from js -->
-
-				<div class="category-item" data-id="1">
-					<span>Draught</span>
-					<button class="btn-blue" onclick="editCat(1)">Edit</button>
-					<button class="category-status btn-red" onclick="changeCatStatus(1)" data-id="1" data-enabled="true">Disable</button>
-				</div>
 			</div>
 		</div>
 		<div class="modal-overlay">
@@ -177,6 +171,15 @@
   </script>
 
   <script src="../frontend/categories_link.js"></script>
+
+  <script>
+	// load data
+	document.addEventListener("DOMContentLoaded", async (event) => {
+		await getAllCategories();
+		generateCategoryList(categories);
+	});
+	
+  </script>
 
 
 </html>
