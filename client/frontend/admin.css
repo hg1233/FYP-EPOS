@@ -48,7 +48,7 @@ input, button {
     padding: 2 2 2 15px;
     margin: 5px 0;
     display: grid;
-    grid-template-columns: 70% auto auto;
+    grid-template-columns: 60% 20% 20%;
     align-items: center;
 }
 
@@ -63,4 +63,30 @@ input, button {
 
 .btn-red {
     background-color: var(--error);
+}
+
+.btn-green {
+    background-color: var(--success);
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #111111DD;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    display: none;
+    background-color: #fff;
+    z-index:10;
+    height: auto;
+    width: 40rem;
+    border: none;
+    border-radius: 5px;
 }

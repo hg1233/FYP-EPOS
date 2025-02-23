@@ -10,9 +10,10 @@
 		<div class="admin-container">
 			<h1>Manage Categories</h1>
 		
-	
-			<input type="text" id="categoryName" placeholder="Enter category name">
-				<button onclick="createCat()">Create New Category</button>
+			<form onsubmit="event.preventDefault(); return createCat()">
+				<input type="text" id="create-category-input-name" placeholder="Enter category name" required>
+				<button type="submit">Create New Category</button>
+			</form>
 
 			<div class="spacer"></div>
 
@@ -21,13 +22,159 @@
 
 				<div class="category-item" data-id="1">
 					<span>Draught</span>
-					<button class="btn-blue">Edit</button>
-					<button class="btn-red">Disable</button>
+					<button class="btn-blue" onclick="editCat(1)">Edit</button>
+					<button class="category-status btn-red" onclick="changeCatStatus(1)" data-id="1" data-enabled="true">Disable</button>
 				</div>
+			</div>
+		</div>
+		<div class="modal-overlay">
+			<div class="modal" id="edit-category-form">
+				<form onsubmit="event.preventDefault(); return updateCategory()">
+					<h3 id="edit-category-modal-header" style="color:#222">Editing Category 'Draught'</h3>
 
+					<input hidden type="number" name="id" id="edit-category-input-id">
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Category Name: </label>
+						<input id="edit-category-input-name" type="text" name="name" placeholder="e.g. Main Meals" style="width: 60%;" required>
+					</div>
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Priority: </label>
+						<input id="edit-category-input-priority" type="number" name="priority" min="1" max="9999999" style="width: 60%;">
+					</div>
+
+					<button class="btn-green" type="submit" style="margin-right:10%;">Save Changes</button>
+					<button class="btn-red" type="reset" onclick="document.getElementsByClassName('modal-overlay')[0].style.display = 'none';">Cancel</button>
+
+				</form>
 			</div>
 		</div>
 	</div>
 
   </body>
+
+  <script>
+
+	function updateCategory() {
+
+		let modal_container = document.getElementById('edit-category-form');
+		let form = modal_container.children[0];
+
+		let id = document.getElementById("edit-category-input-id").value
+		let name = document.getElementById("edit-category-input-name").value
+		let priority = document.getElementById("edit-category-input-priority").value
+
+		// TODO - call preload func to update category data on client backend
+
+	}
+
+	function editCat(id) {
+
+		let modal_container = document.getElementById('edit-category-form');
+
+		// TODO - get category data from preload
+		let name = 'Draught'
+		let priority = 2
+
+		// populate form values with current data
+		document.getElementById("edit-category-input-id").value = id;
+		document.getElementById("edit-category-input-name").value = name;
+		document.getElementById("edit-category-input-priority").value = priority;
+		document.getElementById("edit-category-modal-header").value = `Editing Category '${name}'`
+
+		// show modal box and overlay
+		document.getElementById('edit-category-form').style.display = 'block';
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
+		
+
+	}
+
+	function changeCatStatus(id) {
+		// TODO - call preload func to change status
+		let response = true;
+
+		if(response == true) {
+			let buttons = document.getElementsByClassName('category-status');
+			
+			for(let button of buttons) {	
+
+				if(button.dataset["id"] == id) {
+
+					if(button.dataset["enabled"] == "true") {
+						// toggle button colour, text and data value if changing from enabled to disabled
+						button.classList.add('btn-green')
+						button.classList.remove('btn-red')
+						button.innerText = 'Enable'
+						button.dataset["enabled"] = false
+					} else {
+						// do the opposite
+						button.classList.remove('btn-green')
+						button.classList.add('btn-red')
+						button.innerText = 'Disable'
+						button.dataset["enabled"] = true
+					}
+				}
+			}
+		}
+	}
+
+	function createCat() {
+		let name = document.getElementById('create-category-input-name').value;
+
+		// TODO - create category via preload
+	}
+
+	function generateCategoryList(categories) {
+		let list_container = document.getElementById('catList');
+
+		for(let cat of categories) {
+
+			let entry = generateCategoryEntry(cat)
+
+			list_container.appendChild(entry)
+
+		}
+	}
+
+	function generateCategoryEntry(cat) {
+		// build category entry element
+		let entry = document.createElement('div');
+			entry.classList.add('category-item')
+			entry.dataset.id = cat.id
+
+			// build and add category name to entry
+			let name_header = document.createElement('span');
+			name_header.innerText = cat.name
+			entry.appendChild(name_header);
+
+			// create edit btn
+			let edit_btn = document.createElement('button');
+			edit_btn.classList.add('btn-blue');
+			edit_btn.setAttribute('onclick', `editCat(${cat.id})`) 
+			edit_btn.innerText = "Edit"
+			entry.appendChild(edit_btn)
+
+			// create status btn
+			let status_btn = document.createElement('button');
+			status_btn.classList.add('category-status')
+			status_btn.setAttribute('onclick', `changeCatStatus(${cat.id})`) 
+			status_btn.dataset.id = cat.id;
+			status_btn.dataset.enabled = cat.enabled 
+
+			// set colour and text of status btn based on cat status
+			if(cat.enabled == true) {
+				status_btn.classList.add('btn-red')
+				status_btn.innerText = 'Disable'
+			} else {
+				status_btn.classList.add('btn-green')
+				status_btn.innerText = 'Enable'
+			}
+
+			entry.appendChild(status_btn)
+
+			return entry;
+	}
+
+  </script>
+
+
 </html>
