@@ -76,7 +76,7 @@ class ClerksModule {
                 clerk.id = remoteUpdate.clerk_id;
 
                 this.clerks[remoteUpdate.clerk_id] = clerk;
-                return true;
+                return clerk.id;
             } else {
                 return {error: "Error occurred carrying out remote update", details: remoteUpdate["error"]}
             }

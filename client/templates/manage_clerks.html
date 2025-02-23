@@ -1,0 +1,245 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for admin pages specific styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+	<button class="btn-back" onclick="showPage('Test')">⮨ Go Back</button>
+    <div class="container">
+		<div class="admin-container">
+			<h1>Manage Clerks</h1>
+		
+			<form id="create-clerk-form" onsubmit="event.preventDefault(); return createNewClerk()">
+				<input type="text" id="create-clerk-input-name" placeholder="Enter clerk name" required>
+				<input type="text" id="create-clerk-input-pin" placeholder="Enter pin" pattern="[0-9]+" required>
+				<button type="submit">Create New Clerk</button>
+			</form>
+
+			<div class="spacer"></div>
+
+			<div class="category-list" id="clerkList">
+				<!-- auto generated from js -->
+			</div>
+		</div>
+		<div class="modal-overlay">
+			<div class="modal" id="edit-category-form">
+				<form onsubmit="event.preventDefault(); return updateCategory()">
+					<h3 id="edit-category-modal-header" style="color:#222">Editing Category 'Draught'</h3>
+
+					<input hidden type="number" name="id" id="edit-category-input-id">
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Category Name: </label>
+						<input id="edit-category-input-name" type="text" name="name" placeholder="e.g. Main Meals" style="width: 60%;" required>
+					</div>
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Priority: </label>
+						<input id="edit-category-input-priority" type="number" name="priority" min="1" max="9999999" style="width: 60%;">
+					</div>
+
+					<button class="btn-green" type="submit" style="margin-right:10%;">Save Changes</button>
+					<button class="btn-red" type="reset" onclick="document.getElementsByClassName('modal-overlay')[0].style.display = 'none';">Cancel</button>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+  </body>
+
+  <script>
+
+	async function updateCategory() {
+
+		let modal_container = document.getElementById('edit-category-form');
+		let form = modal_container.children[0];
+
+		let id = document.getElementById("edit-category-input-id").value
+		let name = document.getElementById("edit-category-input-name").value
+		let priority = document.getElementById("edit-category-input-priority").value
+
+		await changeCatName(id, name)
+
+		// only update priority if changed
+		if(priority !== '') {
+			await changeCatPriority(id, priority);
+		}
+
+		// update name on front end
+		let local_clerks = document.getElementById('clerkList').children;
+
+		for(let clerk in local_clerks) {
+
+			if(clerk.dataset.id == id) {
+				clerk.children[0].innerText = name;
+			}
+
+		}
+
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
+
+
+	}
+
+	async function editClerk(id) {
+
+		let modal_container = document.getElementById('edit-category-form');
+
+		let category_data = await getCategoryByID(id);
+
+		let name = category_data.name
+		let priority = category_data.priority
+
+		// populate form values with current data
+		document.getElementById("edit-category-input-id").value = id;
+		document.getElementById("edit-category-input-name").value = name;
+		document.getElementById("edit-category-input-priority").value = priority;
+		document.getElementById("edit-category-modal-header").innerText = `Editing Category '${name}'`
+
+		// show modal box and overlay
+		document.getElementById('edit-category-form').style.display = 'block';
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
+		
+
+	}
+
+	async function toggleClerkStatus(id, current_status) {
+
+		await setClerkStatus(id, !current_status)
+
+		let buttons = document.getElementsByClassName('category-status');
+
+		for(let button of buttons) {	
+
+			if(button.dataset["id"] == id) {
+
+				if(button.dataset["enabled"] == "true") {
+					// toggle button colour, text and data value if changing from enabled to disabled
+					button.classList.add('btn-green')
+					button.classList.remove('btn-red')
+					button.setAttribute('onclick', `toggleClerkStatus(${id}, false)`) 
+					button.innerText = 'Enable'
+					button.dataset["enabled"] = false
+				} else {
+					// do the opposite
+					button.classList.remove('btn-green')
+					button.classList.add('btn-red')
+					button.innerText = 'Disable'
+					button.setAttribute('onclick', `toggleClerkStatus(${id}, true)`) 
+					button.dataset["enabled"] = true
+				}
+			}
+		}
+	}
+
+	async function createNewClerk() {
+		let name = document.getElementById('create-clerk-input-name').value;
+
+		if(name.trim().length == 0) {
+			document.getElementById('create-clerk-input-name').value = '';
+			document.getElementById("create-clerk-input-name").reportValidity();
+			return;
+		}
+
+		let pin = document.getElementById('create-clerk-input-pin').value
+
+		let pin_in_use = await getClerkByPIN(pin);
+
+		if(pin_in_use !== null) {
+			alert("This PIN number is already in use by another clerk. Please choose a different PIN number.");
+			document.getElementById('create-clerk-input-pin').value = ''
+			document.getElementById('create-clerk-input-pin').focus();
+			return;
+		}
+
+
+
+		let new_id = await createClerk(name, pin);
+		let clerk_data = await getClerkByID(new_id);
+		let list_container = document.getElementById('clerkList');
+		list_container.appendChild(generateClerkEntry(clerk_data));
+
+		// clear input after creating clerk
+		document.getElementById('create-clerk-input-pin').value = '';
+		document.getElementById('create-clerk-input-name').value = '';
+
+
+	}
+
+	function generateClerkList(clerks) {
+		let list_container = document.getElementById('clerkList');
+
+		for(index = 1; index <= Object.keys(clerks).length; index++) {
+			clerk = clerks[index]
+
+			let entry = generateClerkEntry(clerk)
+
+			list_container.appendChild(entry)
+
+		}
+	}
+
+	function generateClerkEntry(clerk) {
+		// build clerk entry element
+		let entry = document.createElement('div');
+			entry.classList.add('category-item')
+			entry.dataset.id = clerk.id
+
+			// build and add clerk name to entry
+			let name_header = document.createElement('span');
+			name_header.innerText = clerk.name
+			if(clerk.is_manager) name_header.innerText += " (Manager)"
+			name_header.innerText += " - PIN: " + clerk.pin
+			entry.appendChild(name_header);
+
+			// create edit btn
+			let edit_btn = document.createElement('button');
+			edit_btn.classList.add('btn-blue');
+			edit_btn.setAttribute('onclick', `editClerk(${clerk.id})`) 
+			edit_btn.innerText = "Edit"
+			entry.appendChild(edit_btn)
+
+			// create status btn
+			let status_btn = document.createElement('button');
+			status_btn.classList.add('category-status')
+			status_btn.setAttribute('onclick', `toggleClerkStatus(${clerk.id}, ${clerk.enabled})`) 
+			status_btn.dataset.id = clerk.id;
+			status_btn.dataset.enabled = clerk.enabled 
+
+			// set colour and text of status btn based on cat status
+			if(clerk.enabled == true) {
+				status_btn.classList.add('btn-red')
+				status_btn.innerText = 'Disable'
+			} else {
+				status_btn.classList.add('btn-green')
+				status_btn.innerText = 'Enable'
+			}
+
+			entry.appendChild(status_btn)
+
+			return entry;
+	}
+
+  </script>
+
+  <script src="../frontend/clerks_link.js"></script>
+  <script src="../frontend/window_manager_link.js"></script>
+
+  <script>
+	// load data
+	document.addEventListener("DOMContentLoaded", async (event) => {
+		await getAllClerks();
+
+		if(clerks == undefined) {
+			setTimeout(() => {
+				generateClerkList(clerks);
+			}, 5);
+		}
+		
+	});
+	
+  </script>
+
+
+</html>
