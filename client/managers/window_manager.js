@@ -86,8 +86,8 @@ function init() {
     test_page = new Page("Test", "templates/test.html");
     instance.addPage(test_page);
 
-    test_page = new Page("Test2", "templates/test2.html");
-    instance.addPage(test_page);
+    manage_categories_page = new Page("Manage Categories", "templates/manage_categories.html");
+    instance.addPage(manage_categories_page);
 
     // setup clerk login page
     clerk_login_page = new Page("Clerk Login", "templates/clerk_login.html");
