@@ -82,7 +82,7 @@
 
 	}
 
-	function changeCatStatus(id) {
+	function toggleCatStatus(id) {
 		// TODO - call preload func to change status
 		let response = true;
 
@@ -150,7 +150,7 @@
 			// create status btn
 			let status_btn = document.createElement('button');
 			status_btn.classList.add('category-status')
-			status_btn.setAttribute('onclick', `changeCatStatus(${cat.id})`) 
+			status_btn.setAttribute('onclick', `toggleCatStatus(${cat.id})`) 
 			status_btn.dataset.id = cat.id;
 			status_btn.dataset.enabled = cat.enabled 
 
