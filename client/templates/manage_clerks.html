@@ -72,13 +72,8 @@
 		// update name on front end
 		let local_clerks = document.getElementById('clerkList').children;
 
-		console.log(local_clerks)
 
 		for(let clerk of local_clerks) {
-
-			console.log(clerk)
-			console.log(clerk.dataset)
-			console.log(clerk.dataset.id)
 
 			if(clerk.dataset.id == id) {
 				clerk.children[0].innerText = name;
