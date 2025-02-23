@@ -82,30 +82,30 @@
 
 	}
 
-	function toggleCatStatus(id) {
-		// TODO - call preload func to change status
-		let response = true;
+	async function toggleCatStatus(id, current_status) {
 
-		if(response == true) {
-			let buttons = document.getElementsByClassName('category-status');
-			
-			for(let button of buttons) {	
+		await changeCatStatus(id, !current_status)
 
-				if(button.dataset["id"] == id) {
+		let buttons = document.getElementsByClassName('category-status');
 
-					if(button.dataset["enabled"] == "true") {
-						// toggle button colour, text and data value if changing from enabled to disabled
-						button.classList.add('btn-green')
-						button.classList.remove('btn-red')
-						button.innerText = 'Enable'
-						button.dataset["enabled"] = false
-					} else {
-						// do the opposite
-						button.classList.remove('btn-green')
-						button.classList.add('btn-red')
-						button.innerText = 'Disable'
-						button.dataset["enabled"] = true
-					}
+		for(let button of buttons) {	
+
+			if(button.dataset["id"] == id) {
+
+				if(button.dataset["enabled"] == "true") {
+					// toggle button colour, text and data value if changing from enabled to disabled
+					button.classList.add('btn-green')
+					button.classList.remove('btn-red')
+					button.setAttribute('onclick', `toggleCatStatus(${id}, false)`) 
+					button.innerText = 'Enable'
+					button.dataset["enabled"] = false
+				} else {
+					// do the opposite
+					button.classList.remove('btn-green')
+					button.classList.add('btn-red')
+					button.innerText = 'Disable'
+					button.setAttribute('onclick', `toggleCatStatus(${id}, true)`) 
+					button.dataset["enabled"] = true
 				}
 			}
 		}
@@ -150,7 +150,7 @@
 			// create status btn
 			let status_btn = document.createElement('button');
 			status_btn.classList.add('category-status')
-			status_btn.setAttribute('onclick', `toggleCatStatus(${cat.id})`) 
+			status_btn.setAttribute('onclick', `toggleCatStatus(${cat.id}, ${cat.enabled})`) 
 			status_btn.dataset.id = cat.id;
 			status_btn.dataset.enabled = cat.enabled 
 
