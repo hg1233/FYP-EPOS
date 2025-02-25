@@ -51,6 +51,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   /*** Tables Module ***/
 
+  tables_reload: async () => ipcRenderer.invoke('tables:reload'),
   tables_getAll: async () => ipcRenderer.invoke('tables:get-all'),
   tables_getByID: async (id) => ipcRenderer.invoke('tables:get-by-id', id),
   tables_create: async (display_name, seats) => ipcRenderer.invoke('tables:create', display_name, seats),

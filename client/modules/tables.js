@@ -45,6 +45,11 @@ class TablesModule {
         return this.tables;
     }
 
+    async reloadTables() {
+        this.tables = {};
+        this.cacheTableData();
+    }
+
     async getTableByID(id) {
         return this.tables[id];
     }
@@ -158,6 +163,10 @@ class TablesModule {
 
         ipcMain.handle('tables:get-all', async () => {
             return this.getAllTables();
+        });
+
+        ipcMain.handle('tables:reload', async () => {
+            return this.reloadTables();
         });
 
         ipcMain.handle('tables:get-by-id', async (event, id) => {
