@@ -76,7 +76,7 @@ class ClerksModule {
                 clerk.id = remoteUpdate.clerk_id;
 
                 this.clerks[remoteUpdate.clerk_id] = clerk;
-                return true;
+                return clerk.id;
             } else {
                 return {error: "Error occurred carrying out remote update", details: remoteUpdate["error"]}
             }
@@ -97,7 +97,7 @@ class ClerksModule {
 
         // check clerk exists
         if(!this.clerks[id]) {
-            console.error(`Cannot update clerk with ID ${id} - clerk not found.`);
+            console.error(`Cannot update status of clerk with ID ${id} - clerk not found.`);
             return;
         }
 
@@ -131,7 +131,10 @@ class ClerksModule {
 
     async updateClerk(new_data) {
 
-        var clerk_id = new_data["id"];
+        // parse to number
+        new_data["id"] = Number(new_data["id"]);
+
+        var clerk_id = new_data["id"]
 
         if(!this.clerks[clerk_id]) {
             console.error(`Cannot update clerk with ID ${clerk_id} - clerk not found.`);
@@ -160,10 +163,10 @@ class ClerksModule {
 
     async changeRole(id, new_role) {
 
-        var clerk_id = id;
+        var clerk_id = Number(id);
 
         if(!this.clerks[clerk_id]) {
-            console.error(`Cannot update clerk with ID ${clerk_id} - clerk not found.`);
+            console.error(`Cannot update role of clerk with ID ${clerk_id} - clerk not found.`);
             return;
         }
 

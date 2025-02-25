@@ -60,9 +60,11 @@ class CategoriesModule {
             if(remoteUpdate["message"] != undefined) {
 
                 let cat = remoteUpdate["category_data"];
+
+                cat.enabled = Boolean(cat.enabled)
                 
                 this.categories[cat["id"]] = cat;
-                return true;
+                return cat["id"];
             } else {
                 return {error: "Error occurred carrying out remote update"}
             }
