@@ -3,6 +3,9 @@ const knex = require('../../database.js')
 const Orders = {
 
     create: (clerk_id, table_id, order_name) => {
+
+        // TODO - implement null check for `table_id` & `order_name` if undefined, as the below may cause issues, testing required
+
         return knex('orders')
         .insert({clerk_id, table_id, order_name})
         .returning('id', 'order_name', 'table_id', 'created_at', 'created_by', 'is_open', 'is_paid', 'payment_method')
