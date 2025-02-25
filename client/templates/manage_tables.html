@@ -1,0 +1,236 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for admin pages specific styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+	<button class="btn-back" onclick="showPage('Manager Settings')">⮨ Go Back</button>
+    <div class="container">
+		<div class="admin-container">
+			<h1>Manage Tables</h1>
+		
+			<form id="create-table-form" onsubmit="event.preventDefault(); return createNewTable()">
+				<input type="text" id="create-table-input-name" placeholder="Enter table name" required>
+				<input type="number" id="create-table-input-seats" placeholder="Enter number of seats" min=1 max=100 required style="width:30%">
+				<button type="submit">Create New Table</button>
+			</form>
+
+			<div class="spacer"></div>
+
+			<div class="category-list" id="tableList">
+				<!-- auto generated from js -->
+			</div>
+		</div>
+		<div class="modal-overlay">
+			<div class="modal" id="edit-table-form">
+				<form onsubmit="event.preventDefault(); return updateTableFromModal()">
+					<h3 id="edit-table-modal-header" style="color:#222">Editing Table 'Default Table'</h3>
+
+					<input hidden type="number" name="id" id="edit-table-input-id">
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Table Name: </label>
+						<input id="edit-table-input-name" type="text" name="name" placeholder="e.g. Main Meals" style="width: 60%;" required>
+					</div>
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Number of seats: </label>
+						<input id="edit-table-input-seats" type="number" min="1" max="100" name="seats" style="width: 60%;">
+					</div>
+
+					<button class="btn-green" type="submit" style="margin-right:10%;">Save Changes</button>
+					<button class="btn-red" type="reset" onclick="document.getElementsByClassName('modal-overlay')[0].style.display = 'none';">Cancel</button>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+  </body>
+
+  <script>
+
+	//done
+	async function updateTableFromModal() {
+
+		let modal_container = document.getElementById('edit-table-form');
+		let form = modal_container.children[0];
+
+		let name = document.getElementById("edit-table-input-name").value
+		let seats = document.getElementById("edit-table-input-seats").value
+		let id = document.getElementById("edit-table-input-id").value
+
+		updateTable(id, name, seats)
+		
+
+		// update name on front end
+		let local_tables = document.getElementById('tableList').children;
+
+
+		for(let table of local_tables) {
+
+			console.log(table)
+
+			if(table.dataset.id == id) {
+				table.children[0].innerText = name + `   (Seats ${seats} people)`;
+			}
+
+		}
+
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
+
+
+	}
+
+	// done
+	async function editTableFromModal(id) {
+
+		let modal_container = document.getElementById('edit-table-form');
+
+		let table_data = await getTableByID(id);
+
+		// populate form values with current data
+		document.getElementById("edit-table-input-id").value = id;
+		document.getElementById("edit-table-input-name").value = table_data.display_name;
+		document.getElementById("edit-table-input-seats").value = table_data.seats;
+		document.getElementById("edit-table-modal-header").innerText = `Editing Table '${table_data.display_name}'`
+
+		// show modal box and overlay
+		document.getElementById('edit-table-form').style.display = 'block';
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
+		
+
+	}
+
+	// done
+	async function setTableStatusFromButton(id, current_status) {
+
+		await setTableStatus(id, !current_status)
+
+		let buttons = document.getElementsByClassName('table-status');
+
+		for(let button of buttons) {	
+
+			if(button.dataset["id"] == id) {
+
+				if(button.dataset["enabled"] == "true") {
+					// toggle button colour, text and data value if changing from enabled to disabled
+					button.classList.add('btn-green')
+					button.classList.remove('btn-red')
+					button.setAttribute('onclick', `setTableStatusFromButton(${id}, false)`) 
+					button.innerText = 'Enable'
+					button.dataset["enabled"] = false
+				} else {
+					// do the opposite
+					button.classList.remove('btn-green')
+					button.classList.add('btn-red')
+					button.innerText = 'Disable'
+					button.setAttribute('onclick', `setTableStatusFromButton(${id}, true)`) 
+					button.dataset["enabled"] = true
+				}
+			}
+		}
+	}
+
+	async function createNewTable() {
+		let name = document.getElementById('create-table-input-name').value;
+
+		if(name.trim().length == 0) {
+			document.getElementById('create-table-input-name').value = '';
+			document.getElementById("create-table-input-name").reportValidity();
+			return;
+		}
+
+		let seats = document.getElementById('create-table-input-seats').value
+
+		let new_id = await createClerk(name, pin);
+		let clerk_data = await getClerkByID(new_id);
+		let list_container = document.getElementById('tableList');
+		list_container.appendChild(generateTableEntry(clerk_data));
+
+		// clear input after creating clerk
+		document.getElementById('create-table-input-pin').value = '';
+		document.getElementById('create-table-input-name').value = '';
+
+
+	}
+
+	// done
+	function generateTableList(tables) {
+		let list_container = document.getElementById('tableList');
+
+		for(index = 1; index <= Object.keys(tables).length; index++) {
+			table = tables[index]
+
+			let entry = generateTableEntry(table)
+
+			list_container.appendChild(entry)
+
+		}
+	}
+
+	// done
+	function generateTableEntry(table) {
+		// build clerk entry element
+		let entry = document.createElement('div');
+			entry.classList.add('category-item')
+			entry.dataset.id = table.id
+
+			// build and add clerk name to entry
+			let name_header = document.createElement('span');
+			name_header.innerText = table.display_name + `   (Seats ${table.seats} people)`
+			name_header.style.whiteSpace = "pre"
+			entry.appendChild(name_header);
+
+			// create edit btn
+			let edit_btn = document.createElement('button');
+			edit_btn.classList.add('btn-blue');
+			edit_btn.setAttribute('onclick', `editTableFromModal(${table.id})`) 
+			edit_btn.innerText = "Edit"
+			entry.appendChild(edit_btn)
+
+			// create status btn
+			let status_btn = document.createElement('button');
+			status_btn.classList.add('table-status')
+			status_btn.setAttribute('onclick', `setTableStatusFromButton(${table.id}, ${table.enabled})`) 
+			status_btn.dataset.id = table.id;
+			status_btn.dataset.enabled = table.enabled 
+
+			// set colour and text of status btn based on cat status
+			if(table.enabled == true) {
+				status_btn.classList.add('btn-red')
+				status_btn.innerText = 'Disable'
+			} else {
+				status_btn.classList.add('btn-green')
+				status_btn.innerText = 'Enable'
+			}
+
+			entry.appendChild(status_btn)
+
+			return entry;
+	}
+
+  </script>
+
+  <script src="../frontend/tables_link.js"></script>
+  <script src="../frontend/window_manager_link.js"></script>
+
+  <script>
+	// load data
+	document.addEventListener("DOMContentLoaded", async (event) => {
+		tables = await getAllTables();
+
+		if(tables == undefined) {
+			setTimeout(() => {
+				generateTableList(tables);
+			}, 5);
+		} else {
+			generateTableList(tables);
+		}
+		
+	});
+	
+  </script>
+
+
+</html>
