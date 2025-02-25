@@ -50,7 +50,6 @@
 
   <script>
 
-	//done
 	async function updateTableFromModal() {
 
 		let modal_container = document.getElementById('edit-table-form');
@@ -82,7 +81,6 @@
 
 	}
 
-	// done
 	async function editTableFromModal(id) {
 
 		let modal_container = document.getElementById('edit-table-form');
@@ -102,7 +100,6 @@
 
 	}
 
-	// done
 	async function setTableStatusFromButton(id, current_status) {
 
 		await setTableStatus(id, !current_status)
@@ -143,19 +140,18 @@
 
 		let seats = document.getElementById('create-table-input-seats').value
 
-		let new_id = await createClerk(name, pin);
-		let clerk_data = await getClerkByID(new_id);
+		let new_id = await createTable(name, seats);
+		let table_data = await getTableByID(new_id);
 		let list_container = document.getElementById('tableList');
-		list_container.appendChild(generateTableEntry(clerk_data));
+		list_container.appendChild(generateTableEntry(table_data));
 
 		// clear input after creating clerk
-		document.getElementById('create-table-input-pin').value = '';
+		document.getElementById('create-table-input-seats').value = '';
 		document.getElementById('create-table-input-name').value = '';
 
 
 	}
 
-	// done
 	function generateTableList(tables) {
 		let list_container = document.getElementById('tableList');
 
@@ -169,7 +165,6 @@
 		}
 	}
 
-	// done
 	function generateTableEntry(table) {
 		// build clerk entry element
 		let entry = document.createElement('div');

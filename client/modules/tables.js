@@ -76,7 +76,7 @@ class TablesModule {
             var table = {id: response.table_id, display_name: display_name, seats: seats, enabled: true}
 
             this.tables[response.table_id] = table;
-            return true;
+            return table.id;
         } else {
             return {error: "Error occurred creating table", details: response["error"]}
         }
