@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for admin pages specific styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+	<button class="btn-back" onclick="showPage('Test')">⮨ Go Back</button>
+    <div class="container">
+		<div class="admin-container">
+            <h1>Manager Settings</h1>
+            <div class="spacer"></div>
+            <div class="category-list">
+                <div class="category-item" onclick="showPage('Manage Clerks')" style="height: 4em;">
+                    <span>Manage Clerks</span>
+                </div>
+                <div class="category-item" onclick="showPage('Manage Categories')" style="height: 4em;">
+                    <span>Manage Categories</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../frontend/window_manager_link.js"></script>
+</html>
+        
