@@ -7,10 +7,11 @@ const db = require('../database.js');
 // setup route handler
 const router = express.Router();
 
-// import Orders, PaymentMethods & Clerks db model
+// import Orders, PaymentMethods, Tables & Clerks db model
 const Orders = require('../database/models/OrdersModel.js');
 const PaymentMethods = require('../database/models/PaymentMethodsModel.js');
 const Clerks = require('../database/models/ClerksModel.js');
+const Tables = require('../database/models/TablesModel.js');
 
 router.get('/get/all', async (request, response) => {
     try {
@@ -19,6 +20,18 @@ router.get('/get/all', async (request, response) => {
     } catch(error) {
         console.error(error)
         response.status(500).json({error: "Failed to retrieve orders"})
+    }
+})
+
+router.get('/get/open', async (request, response) => {
+    try{
+
+        var orders = await Orders.getOrdersByOrderStatus(true);
+        response.json(orders);
+
+    } catch(err) {
+        console.error(err);
+        response.status(500).json({error: "Failed to get all open orders"})
     }
 })
 
@@ -62,8 +75,9 @@ router.get('/get/is_open/:status', async (request, response) => {
     try {
 
         var status = request.params.status;
-        if(status.toLowerCase() === 'true') status = true;
-        if(status.toLowerCase() === 'false') status = false;
+
+        if(status.toString().toLowerCase() === 'true') { status = true; }
+        if(status.toString().toLowerCase() === 'false') { status = false; }
 
         if(typeof status != "boolean") {
             // input validation failed
@@ -79,11 +93,11 @@ router.get('/get/is_open/:status', async (request, response) => {
             return;
         }
 
-        return orders;
+        response.json(orders);
 
 
     } catch(err) {
-        console.log(error);
+        console.log(err);
         response.status(500).json({error: "Failed to retrieve orders from status provided"})
     }
 })
@@ -122,6 +136,42 @@ router.post('/create', async (request, response) => {
         response.status(500).json({error: "Failed to create order"});
     }
 
+
+})
+
+router.post('/set_table', async (request, response) => {
+
+    try {
+
+        var table_id = request.body["table_id"];
+        var order_id = request.body["order_id"];
+
+        var table = await Tables.getByID(table_id);
+        var order = await Orders.getOrderByID(order_id);
+
+        // check table & order exist
+        if(table == null || order == null) {
+            console.log(`[Orders > Assign to Table] Unable to assign order ${order_id} to table ${table_id} - table or order not found`)
+            response.status(400).json({error: "Table or order not found"})
+            return;
+        }
+
+        // check if order already closed
+        if(order.is_open != true) {
+            console.log(`[Orders > Assign to Table] Order ${order_id} cannot be assigned to table ${table_id} - order already closed`)
+            response.status(400).json({error: "Cannot assign order to table - order already closed"})
+            return;
+        }
+
+        var update = await Orders.setTable(order_id, table_id);
+        response.status(200).json({message: "Successfully assigned order to table", order_details: update});
+
+
+
+    } catch(err) {
+        console.log(err);
+        response.status(500).json({error: "Error assigning order to table"})
+    }
 
 })
 

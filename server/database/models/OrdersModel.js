@@ -34,7 +34,11 @@ const Orders = {
                 payment_method: payment_method,
                 is_open: false,
             }
-        );
+        ).returning('*');
+    },
+
+    setTable: (id, table_id) => {
+        return knex('orders').where({id}).update({table_id: table_id}).returning('*');
     }
 
 }
