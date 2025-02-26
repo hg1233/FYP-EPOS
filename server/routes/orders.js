@@ -7,8 +7,9 @@ const db = require('../database.js');
 // setup route handler
 const router = express.Router();
 
-// import Orders & Clerks db model
+// import Orders, PaymentMethods & Clerks db model
 const Orders = require('../database/models/OrdersModel.js');
+const PaymentMethods = require('../database/models/PaymentMethodsModel.js');
 const Clerks = require('../database/models/ClerksModel.js');
 
 router.get('/get/all', async (request, response) => {
@@ -121,6 +122,46 @@ router.post('/create', async (request, response) => {
         response.status(500).json({error: "Failed to create order"});
     }
 
+
+})
+
+router.post('/pay/:id', async (request, response) => {
+
+    try { 
+        
+        var order_id = request.params.id;
+        var order = await Orders.getOrderByID(order_id);
+
+        // check order id valid
+        if(order == null || order == undefined) {
+            console.log(`[Orders > Pay] Failed to mark order # ${order_id} as paid - order not found`)
+            response.status(400).json({error: "Failed to mark order as paid - order not found"});
+            return;
+        }
+
+        // check if payment method defined
+        var method_id = request.body["payment_method"];
+        var method = await PaymentMethods.getByID(method_id);
+        if(method == null || method == undefined) {
+            console.log(`[Orders > Pay] Failed to mark order as paid - payment method not found`);
+            response.status(400).json({error: "Failed to mark order as paid - payment method not found"});
+            return
+        }
+
+        // check if order is already paid
+        if(order.is_paid == 1 || order.is_paid == true) {
+            console.log(`[Orders > Pay] Failed to mark order # ${order_id} as paid - order is already paid`)
+            response.status(400).json({error: "Failed to mark order as paid - order is already marked as paid"});
+            return;
+        }
+
+        var update = await Orders.markAsPaidAndCloseOrder(order_id, true);
+        response.status(200).json({message: "Marked order as paid", order_details: update});
+
+    } catch(err) {
+        console.log(err);
+        response.status(500).json({error: "Failed to mark order as paid"})
+    }
 
 })
 
