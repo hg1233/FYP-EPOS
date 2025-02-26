@@ -15,6 +15,10 @@ const Orders = {
         return knex('orders').select('*');
     },
 
+    getOrdersByOrderStatus: (is_open) => {
+        return knex('orders').select('*').where({is_open});
+    },
+
     getOrderByID: (id) => {
         return knex('orders').select('*').where({id}).first();
     },

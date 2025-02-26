@@ -51,9 +51,39 @@ router.get('/get/table/:id', async (request, response) => {
         response.status(200).json(order);
     } catch(error) {
         console.log(error);
-        response.status(500).json({error: "Failed to retrieve order from table ID provided"})
+        response.status(500).json({error: "Failed to retrieve orders from table ID provided"})
     }
 
+})
+
+router.get('/get/is_open/:status', async (request, response) => {
+    try {
+
+        var status = request.params.status;
+        if(status.toLowerCase() === 'true') status = true;
+        if(status.toLowerCase() === 'false') status = false;
+
+        if(typeof status != "boolean") {
+            // input validation failed
+            response.status(400).json({error: "Failed to retrieve orders by status - invalid input"});
+            return;
+        }
+
+        var orders = await Orders.getOrdersByOrderStatus(status);
+
+        // if orders not found
+        if(orders == undefined || orders.length == 0) {
+            response.json({error: "No orders found"});
+            return;
+        }
+
+        return orders;
+
+
+    } catch(err) {
+        console.log(error);
+        response.status(500).json({error: "Failed to retrieve orders from status provided"})
+    }
 })
 
 
