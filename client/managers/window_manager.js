@@ -98,6 +98,9 @@ function init() {
     manage_clerks_page = new Page("Manage Tables", "templates/manage_tables.html");
     instance.addPage(manage_clerks_page);
 
+    manage_venue_page = new Page("Manage Venue", "templates/manage_venue.html");
+    instance.addPage(manage_venue_page);
+
     // setup clerk login page
     clerk_login_page = new Page("Clerk Login", "templates/clerk_login.html");
     instance.addPage(clerk_login_page);
