@@ -7,8 +7,9 @@ const db = require('../database.js');
 // setup route handler
 const router = express.Router();
 
-// import Orders db model
+// import Orders & Clerks db model
 const Orders = require('../database/models/OrdersModel.js');
+const Clerks = require('../database/models/ClerksModel.js');
 
 router.get('/get/all', async (request, response) => {
     try {
@@ -86,5 +87,40 @@ router.get('/get/is_open/:status', async (request, response) => {
     }
 })
 
+router.post('/create', async (request, response) => {
+
+    try {
+
+        var clerk_id = request.body["clerk_id"];
+        var table_id = request.body["table_id"];
+        var order_name = request.body["order_name"];
+
+        // parse table id - set to null if undefined
+        if(table_id.strip() == '' || table_id == undefined) {
+            table_id = null;
+        }
+
+        // parse order name - set to null if undefined
+        if(order_name.strip() == '' || order_name == undefined) {
+            order_name = null;
+        }
+
+        // check clerk ID exists
+        var clerk = await Clerks.getByID(clerk_id);
+        if(clerk == null || clerk == undefined) {
+            console.log("[Orders > Create] Failed to create order - clerk ID not found")
+            response.status(400).json({error: "Failed to create order - clerk not found"});
+            return;
+        }
+
+        // TODO
+
+    } catch(err) {
+        console.log(error);
+        response.status(500).json({error: "Failed to create order"});
+    }
+
+
+})
 
 module.exports = router;
