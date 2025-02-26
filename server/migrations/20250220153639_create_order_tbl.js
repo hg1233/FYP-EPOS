@@ -10,7 +10,7 @@ exports.up = function(knex) {
         table.integer('created_by').notNullable().references('clerks').inTable('id');
         table.boolean('is_open').notNullable().defaultTo(true);
         table.boolean('is_paid').notNullable().defaultTo(false);
-        table.integer('payment_method').notNullable().references('payment_methods').inTable('id');
+        table.integer('payment_method').references('payment_methods').inTable('id');
         table.integer('table_id').references('tables').inTable('id'); // nullable - null = quick sale
     });
 };

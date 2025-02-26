@@ -42,3 +42,7 @@ app.use("/api/venue", venueRoutes)
 // import table routes
 const tableRoutes = require('./routes/tables')
 app.use("/api/tables", tableRoutes)
+
+// import order routes
+const orderRoutes = require('./routes/orders')
+app.use("/api/orders", orderRoutes)

@@ -96,12 +96,12 @@ router.post('/create', async (request, response) => {
         var order_name = request.body["order_name"];
 
         // parse table id - set to null if undefined
-        if(table_id.strip() == '' || table_id == undefined) {
+        if(table_id == undefined || table_id.trim() == '') {
             table_id = null;
         }
 
         // parse order name - set to null if undefined
-        if(order_name.strip() == '' || order_name == undefined) {
+        if(order_name == undefined || order_name.trim() == '') {
             order_name = null;
         }
 
@@ -113,10 +113,11 @@ router.post('/create', async (request, response) => {
             return;
         }
 
-        // TODO
+        var order = (await Orders.create(clerk_id, table_id, order_name))[0];
+        response.status(200).json({message: "Successfully created order", order_data: order})
 
     } catch(err) {
-        console.log(error);
+        console.log(err);
         response.status(500).json({error: "Failed to create order"});
     }
 
