@@ -30,9 +30,9 @@ class OrdersModule {
 
     async cacheClosedOrders() {
         // have to use pre-ready request as electron net not enabled until app.onReady is done
-        const open_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/false');
+        const closed_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/false');
 
-        open_orders.forEach(order => {
+        closed_orders.forEach(order => {
             // parse 0 & 1 as true & false
             order["is_open"] = Boolean(order["is_open"])
             order["is_paid"] = Boolean(order["is_paid"])
@@ -126,7 +126,13 @@ class OrdersModule {
         ipcMain.handle('orders:reload-open', async () => { 
             this.open_orders = {}; // clear
             this.cacheOpenOrders(); // load
-            return this.getOpenOrders(); // output
+            return this.open_orders // output
+        })
+
+        ipcMain.handle('orders:reload-closed', async () => { 
+            this.closed_orders = {}; // clear
+            this.cacheClosedOrders(); // load
+            return this.closed_orders; // output
         })
 
         ipcMain.handle('orders:get-by-id', async (event, id) => {
