@@ -20,57 +20,71 @@
 
     <script>
 
-        function generateCategoryAndProductsEntry(category, products) {
-            
-            let cat_container = document.createElement('div');
-            cat_container.classList.add('category');
-
-            let cat_header = document.createElement('h2');
-            cat_header.innerText = category.name;
-            cat_container.appendChild(cat_header);
-
-            let prod_list = document.createElement('div');
-            prod_list.classList.add('product-list');
-
-            products.forEach(product => {
-                product_elem = document.createElement('div');
-                product_elem.classList.add('product');
+        async function generateCategoryAndProductsEntry(category, products) {
+            // check if a category has products associated with it before generating
+            if(category.products != null || category.products != undefined) {
                 
-                product_nametag = document.createElement('span');
-                product_nametag.innerText = product.name;
-                product_elem.appendChild(product_nametag);
+                let cat_container = document.createElement('div');
+                cat_container.classList.add('category');
 
-                product_pricetag = document.createElement('p');
-                product_pricetag.dataset['price'] = product.price;
-                product_pricetag.innerText = '£' + (product.price / 100).toFixed(2).toString();
-                product_elem.appendChild(product_pricetag);
+                let cat_header = document.createElement('h2');
+                cat_header.innerText = category.name;
+                cat_container.appendChild(cat_header);
 
-                // TODO - add on click event for product elem (div) to add to ticket
-                prod_list.appendChild(product_elem);
+                let prod_list = document.createElement('div');
+                prod_list.classList.add('product-list');
+            
+                for(index = 1; index <= Object.keys(products).length; index++) {
 
-            });
+                    product = products[index];
+                    
+                    if(category.products.includes(index.toString())) {
+                        
+                        product_elem = document.createElement('div');
+                        product_elem.classList.add('product');
+                        
+                        product_nametag = document.createElement('span');
+                        product_nametag.innerText = product.name;
+                        product_elem.appendChild(product_nametag);
 
-            cat_container.appendChild(prod_list);
+                        product_pricetag = document.createElement('p');
+                        product_pricetag.dataset['price'] = product.price;
+                        product_pricetag.innerText = '£' + (product.price / 100).toFixed(2).toString();
+                        product_elem.appendChild(product_pricetag);
 
-            document.getElementById('products-container').appendChild(cat_container);            
+                        // TODO - add on click event for product elem (div) to add to ticket
+                        prod_list.appendChild(product_elem);
+                    }
+                }
+
+                cat_container.appendChild(prod_list);
+
+                document.getElementById('products-container').appendChild(cat_container);       
+            } else {
+                console.warn(`Not displaying category # ${category.id} - no products associated`);
+            } 
 
         }
 
-        function refreshProducts() {
+        async function refreshProductsContainer() {
+
+            await getAllCategories();
+            await getAllProducts();
 
             // TODO - got to be a better way to iterate through all categories & associate with products for this
             // time complexity on the below would be awful
             categories.forEach(cat => {
 
-                let products = [];
-
-                
-
-
+                generateCategoryAndProductsEntry(cat, products);
                 
             });
         }
 
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                refreshProductsContainer();
+            }, 5);
+        });
 
     </script>
 

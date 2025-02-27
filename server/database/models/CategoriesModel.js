@@ -13,6 +13,26 @@ const Categories = {
         return knex('categories').select('*').orderBy('priority', 'asc') // lower the priority = higher up the list
     },
 
+    getAllWithProductData: () => {
+        return knex('categories').select('categories.*', knex.raw('GROUP_CONCAT(products.id) as products'))
+        .leftJoin('cats_products_link', 'categories.id', 'cats_products_link.category_id')
+        .leftJoin('products', 'cats_products_link.product_id', 'products.id')
+        .groupBy('categories.id')
+        .then((response) => {
+
+            response.forEach(entry => {
+                // sql outputs just as a concatenated string, parse/convert to list
+                if(typeof entry.products == "string") {
+                    Object.assign(entry, {products: entry.products.split(',')})
+                }
+            });
+
+            return response;
+
+            
+        })
+    },
+
     getByID: (id) => {
         return knex('categories').where({id}).first()
     },

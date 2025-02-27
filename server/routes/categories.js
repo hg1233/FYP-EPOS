@@ -12,7 +12,7 @@ const Categories = require('../database/models/CategoriesModel.js');
 
 router.get("/get/all", async (request, response) => {
     try {
-        var cats = await Categories.getAll();
+        var cats = await Categories.getAllWithProductData();
         response.json(cats);
     } catch(error) {
         console.error(error)
