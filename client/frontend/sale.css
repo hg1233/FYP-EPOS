@@ -29,4 +29,20 @@
 .sidebar {
     display: grid;
     grid-template-rows: 60% 40%;
+    background-color: var(--mid-grey);
+}
+
+.ticket {
+    padding: 15px;
+}
+
+.ticket > h2, .ticket > h3 {
+    margin: 2px 0;
+}
+
+.spacer {
+    padding: 1px;
+    margin: 5px 0;
+    background-color: var(--lime-green);
+    border-radius: 5px;
 }
