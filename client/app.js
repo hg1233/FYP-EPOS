@@ -21,6 +21,7 @@ let modules = [
     {name: 'categories', path: './modules/categories.js'},
     {name: 'clerks', path: './modules/clerks.js'},
     {name: 'venue', path: './modules/venue.js'},
+    {name: 'payment_methods', path: './modules/payment_methods.js'},
     {name: 'tables', path: './modules/tables.js'},
     {name: 'orders', path: './modules/orders.js'},
 ]
