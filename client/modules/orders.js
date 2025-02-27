@@ -43,15 +43,16 @@ class OrdersModule {
         storage_dest[order.id] = order;
     }
 
-    getOpenOrders() {
-        return this.open_orders;
-    }
 
     invokeIPCHandles(moduleManager, ipcMain) {
 
         ipcMain.handle('orders:get-open', async () => {
-            return this.getOpenOrders();
+            return this.open_orders;
         });
+
+        ipcMain.handle('orders:get-closed', async () => {
+            return this.closed_orders;
+        })
 
         ipcMain.handle('orders:reload-open', async () => { 
             this.open_orders = {}; // clear
