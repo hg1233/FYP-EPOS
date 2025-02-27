@@ -146,6 +146,41 @@ class OrdersModule {
 
     }
 
+    async payOrderAndClose(order_id, payment_method_id) {
+
+        try {
+
+            // check order exists
+            var order = this.open_orders[order_id];
+
+            if(order == null || order == undefined) {
+                console.warn("Unable to pay & close order - order not found");
+                return {error: "Unable to pay & close order - order not found"};
+            }
+
+            // check payment method exists
+            var payment_method = this.module_manager.getModuleByName('payment_methods').methods[payment_method_id];
+
+            if(payment_method == null || payment_method == undefined) {
+                console.warn(`Failed to pay & close order # ${order_id} - payment method not found`);
+                return {error: `Failed to pay & close order # ${order_id} - payment method not found`}
+            }
+
+            // input validation passed - carry out remote update then update locally
+
+            
+
+            // LOCAL UPDATE:
+            // delete this.open_orders[order_id];
+            // this.closed_orders[order_id] = order;
+
+
+        } catch(err) {
+            return {error: "Error marking order as paid & closing order", details: err}
+        }
+
+    }
+
     // TODO - be able to lock orders
 
 
