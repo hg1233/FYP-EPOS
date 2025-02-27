@@ -91,7 +91,10 @@
 
       // pin matches an enabled clerk - login success
 
-      showPage('Test'); // TODO - change to dashboard, set local storage of current user
+      // set local storage of currently logged in clerk
+      await setCurrentClerk(clerk.id);
+
+      showPage('Test'); // TODO - change to dashboard
       return;
 
     }

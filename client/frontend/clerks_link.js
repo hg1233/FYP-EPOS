@@ -40,6 +40,21 @@ async function setClerkStatus(id, new_status) {
     return result;
 }
 
+// login
+async function setCurrentClerk(id) {
+    return await window.electronAPI.clerks_setCurrent(id);
+}
+
+// logout
+async function removeCurrentClerk() {
+    return await window.electronAPI.clerks_removeCurrent();
+}
+
+// get current clerk details
+async function getCurrentClerk() {
+    return await window.electronAPI.clerks_getCurrent();
+}
+
 reloadClerks();
 
 setTimeout(() => {

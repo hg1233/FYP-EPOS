@@ -183,6 +183,25 @@ class ClerksModule {
         }
     }
 
+    // used as login func
+    async setCurrentClerk(id) {
+
+        var clerk_id = Number(id);
+
+        if(!this.clerks[clerk_id]) {
+            console.error(`Cannot set current clerk to ID ${clerk_id} - clerk not found.`);
+            return false;
+        }
+
+        this.current_clerk = this.clerks[clerk_id];
+        return true;
+
+    }
+
+    // used as logout func
+    async removeCurrentClerk() {
+        this.current_clerk = null;
+    }
 
     invokeIPCHandles(moduleManager, ipcMain) {
         
@@ -224,6 +243,21 @@ class ClerksModule {
         // change role
         ipcMain.handle('clerks:change-role', async (event, id, new_role) => {
             return this.changeRole(id, new_role)
+        })
+
+        // login (set current clerk)
+        ipcMain.handle('clerks:login', async (event, clerk_id) => {
+            return this.setCurrentClerk(clerk_id);
+        });
+        
+        // logout (clear current clerk)
+        ipcMain.handle('clerks:logout', async (event) => {
+            return this.removeCurrentClerk();
+        });
+
+        // get current clerk
+        ipcMain.handle('clerks:get-current', async (event) => {
+            return this.current_clerk;
         })
     }
     

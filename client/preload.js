@@ -29,6 +29,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clerks_changeClerkStatus: async (id, new_status) => ipcRenderer.invoke('clerks:change-clerk-status', id, new_status),
   clerks_updateClerk: async (clerk_data) => ipcRenderer.invoke('clerks:update-clerk', clerk_data),
   clerks_changeRole: async (id, new_status) => ipcRenderer.invoke('clerks:change-role', id, new_status),
+  clerks_setCurrent: async (id) => ipcRenderer.invoke('clerks:login', id),
+  clerks_removeCurrent: async () => ipcRenderer.invoke('clerks:logout'),
+  clerks_getCurrent: async () => ipcRenderer.invoke('clerks:get-current'),
 
   /*** Venue Module ***/
 
