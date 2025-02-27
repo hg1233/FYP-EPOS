@@ -86,6 +86,9 @@ function init() {
     test_page = new Page("Test", "templates/test.html");
     instance.addPage(test_page);
 
+    test_page2 = new Page("Test2", "templates/test2.html");
+    instance.addPage(test_page2);
+
     manager_settings_page = new Page("Manager Settings", "templates/manager_settings.html")
     instance.addPage(manager_settings_page);
 

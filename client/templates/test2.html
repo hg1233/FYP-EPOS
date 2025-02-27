@@ -1,7 +1,66 @@
 <html>
-    <body style="background-color: lightblue;">
-        <h1>Hello world 2</h1>
+    <head>
+        <link rel="stylesheet" href="../frontend/master-style.css" />
+        <link rel="stylesheet" href="../frontend/sale.css" />
+    </head>
+    <body>    
+        <div class="sale-container">
+            <div class="products-container" id="products-container">
+            </div>
+            <div class="sidebar">
+                <div class="ticket"></div>
+                <div class="functions"></div>
+            </div>
+        </div>
+
     </body>
     <script src="../frontend/products_link.js"></script>
+    <script src="../frontend/categories_link.js"></script>
     <script src="../frontend/window_manager_link.js"></script>
+
+    <script>
+
+        function generateCategoryAndProductsEntry(category, products) {
+            
+            let cat_container = document.createElement('div');
+            cat_container.classList.add('category');
+
+            let cat_header = document.createElement('h2');
+            cat_header.innerText = category.name;
+            cat_container.appendChild(cat_header);
+
+            let prod_list = document.createElement('div');
+            prod_list.classList.add('product-list');
+
+            products.forEach(product => {
+                product_elem = document.createElement('div');
+                product_elem.classList.add('product');
+                
+                product_nametag = document.createElement('span');
+                product_nametag.innerText = product.name;
+                product_elem.appendChild(product_nametag);
+
+                product_pricetag = document.createElement('p');
+                product_pricetag.dataset['price'] = product.price;
+                product_pricetag.innerText = '£' + (product.price / 100).toFixed(2).toString();
+                product_elem.appendChild(product_pricetag);
+
+                // TODO - add on click event for product elem (div) to add to ticket
+                prod_list.appendChild(product_elem);
+
+            });
+
+            cat_container.appendChild(prod_list);
+
+            document.getElementById('products-container').appendChild(cat_container);            
+
+        }
+
+        function refreshProducts() {
+            // TODO 
+        }
+
+
+    </script>
+
 </html>

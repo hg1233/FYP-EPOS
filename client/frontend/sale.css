@@ -1,0 +1,21 @@
+.product {
+    background-color: var(--lime-green-alpha);
+    padding: 20px;
+    min-width: 20%;
+    margin: 5px;
+}
+
+.product > p {
+    margin: 0px;
+}
+
+.product-list {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+}
+
+.products-container {
+    width: 70%;
+    overflow: auto;
+    max-height: 100vh;
+}
