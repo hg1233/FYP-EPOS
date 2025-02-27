@@ -46,3 +46,19 @@
     background-color: var(--lime-green);
     border-radius: 5px;
 }
+
+.order-table {
+    width: 100%;
+}
+
+.order-table td:nth-child(2) {
+    width:70%;
+}
+
+.order-table td:nth-child(3) {
+    text-align: right;
+}
+
+.total-label {
+    text-align: center;
+}
