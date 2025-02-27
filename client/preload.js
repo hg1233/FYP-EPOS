@@ -64,6 +64,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   /*** Orders Module ***/
 
   orders_getOpen: async () => ipcRenderer.invoke('orders:get-open'),
+  orders_create: async (clerk_id, order_name, table_id) => ipcRenderer.invoke('orders:create', clerk_id, order_name, table_id),
   orders_getClosed: async () => ipcRenderer.invoke('orders:get-closed'),
   orders_getByID: async (id) => ipcRenderer.invoke('orders:get-by-id', id),
   orders_reloadOpen: async () => ipcRenderer.invoke('orders:reload-open'),

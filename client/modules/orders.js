@@ -83,10 +83,10 @@ class OrdersModule {
             }
 
             // check table exists
-            var table = this.module_manager.instance.getModuleByName('tables').getTableByID(table_id);
+            var table = this.module_manager.getModuleByName('tables').getTableByID(table_id);
             if(table == null || table == undefined) {
                 console.warn(`Error setting table for order ${order_id} - table not found.`)
-                return null;
+                return {error: "Table not found"};
             }
 
             // input validation passed - create table
@@ -99,21 +99,60 @@ class OrdersModule {
 
                 return true;
             } else {
-                return {error: "Error occurred creating table", details: response["error"]}
+                return {error: "Error occurred setting table for order", details: response["error"]}
             }
 
         } catch(err) {
             console.error(`Error setting table for order ${order_id}: `, err);
-            return null;
+            return {error: "An error occurred assigning table to order"};
         }
 
     }
+
+    async createNewOrder(clerk_id, order_name, table_id) {
+
+        // check clerk exists
+        var clerk = this.module_manager.getModuleByName('clerks').clerks[clerk_id];
+
+        if(clerk == null || clerk == undefined) {
+            console.warn(`Unable to create order - clerk # ${clerk_id} does not exist`)
+            return null;
+        }
+
+        // order name & table id can be null, build request body
+
+        let data = {clerk_id: clerk_id};
+        if(table_id != null) {
+            data.table_id = table_id;
+        }
+
+        if(order_name != null) {
+            data.order_name = order_name;
+        }
+    
+        // input validation passed - create table
+        var response = await this.net_manager.async_post('/api/orders/create', data);
+            
+        if(response["message"] != undefined) {
+            
+            // success - create local object
+            var order = response.order_data;
+
+            this.open_orders[order.id] = order;
+            return order.id;
+        } else {
+            return {error: "Error occurred creating order", details: response["error"]}
+        }
+
+    }
+
+    // TODO - be able to lock orders
 
 
     invokeIPCHandles(moduleManager, ipcMain) {
 
         // initalise module manager
-        this.module_manager = moduleManager;
+        this.module_manager = moduleManager.instance;
 
         ipcMain.handle('orders:get-open', async () => {
             return this.open_orders;
@@ -121,6 +160,10 @@ class OrdersModule {
 
         ipcMain.handle('orders:get-closed', async () => {
             return this.closed_orders;
+        })
+
+        ipcMain.handle('orders:create', async (event, clerk_id, order_name, table_id) => {
+            return this.createNewOrder(clerk_id, order_name, table_id);
         })
 
         ipcMain.handle('orders:reload-open', async () => { 

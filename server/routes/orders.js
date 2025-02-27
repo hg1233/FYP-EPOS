@@ -107,11 +107,11 @@ router.post('/create', async (request, response) => {
     try {
 
         var clerk_id = request.body["clerk_id"];
-        var table_id = request.body["table_id"];
+        var table_id = request.body["table_id"].toString();
         var order_name = request.body["order_name"];
 
         // parse table id - set to null if undefined
-        if(table_id == undefined || table_id.trim() == '') {
+        if(table_id == undefined || (typeof table_id == "string" && table_id.trim() == '')) {
             table_id = null;
         }
 
