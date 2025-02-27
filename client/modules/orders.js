@@ -1,6 +1,7 @@
 class OrdersModule {
 
     net_manager;
+    module_manager;
     open_orders;
     closed_orders;
 
@@ -43,8 +44,76 @@ class OrdersModule {
         storage_dest[order.id] = order;
     }
 
+    async getOrderByID(id) {
+        try {
+
+            var order = this.open_orders[id];
+
+            if(order != undefined && order != null) {
+                // order is open & exists
+                return order;
+            }
+
+            order = this.closed_orders[id];
+
+            if(order != undefined && order != null) {
+                // order is closed & exists
+                return order;
+            }
+
+            throw new Error(`Order not found`);
+
+        } catch(err) {
+            console.warn(`Cannot retrieve order # ${id} - order not found`)
+            return null;
+        }
+    }
+
+    async setTable(order_id, table_id) {
+
+        try {
+
+            // check for only open orders, cannot assign table to order if order already closed
+            var order = this.open_orders[order_id];
+
+            // check if order exists
+            if(order == null || order == undefined) {
+                console.warn(`Error setting table for order - order not found.`)
+                return null;
+            }
+
+            // check table exists
+            var table = this.module_manager.instance.getModuleByName('tables').getTableByID(table_id);
+            if(table == null || table == undefined) {
+                console.warn(`Error setting table for order ${order_id} - table not found.`)
+                return null;
+            }
+
+            // input validation passed - create table
+            var response = await this.net_manager.async_post('/api/orders/set_table', {table_id: table_id, order_id: order_id});
+                
+            if(response["message"] != undefined) {
+                
+                // success - update local object
+                this.open_orders[order_id].table_id = table_id;
+
+                return true;
+            } else {
+                return {error: "Error occurred creating table", details: response["error"]}
+            }
+
+        } catch(err) {
+            console.error(`Error setting table for order ${order_id}: `, err);
+            return null;
+        }
+
+    }
+
 
     invokeIPCHandles(moduleManager, ipcMain) {
+
+        // initalise module manager
+        this.module_manager = moduleManager;
 
         ipcMain.handle('orders:get-open', async () => {
             return this.open_orders;
@@ -58,6 +127,14 @@ class OrdersModule {
             this.open_orders = {}; // clear
             this.cacheOpenOrders(); // load
             return this.getOpenOrders(); // output
+        })
+
+        ipcMain.handle('orders:get-by-id', async (event, id) => {
+            return this.getOrderByID(id);
+        })
+
+        ipcMain.handle('orders:set-table', async (event, order_id, table_id) => {
+            return await this.setTable(order_id, table_id);
         })
 
 
