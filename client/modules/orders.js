@@ -130,7 +130,7 @@ class OrdersModule {
             data.order_name = order_name;
         }
     
-        // input validation passed - create table
+        // input validation passed - create order
         var response = await this.net_manager.async_post('/api/orders/create', data);
             
         if(response["message"] != undefined) {
@@ -168,12 +168,19 @@ class OrdersModule {
 
             // input validation passed - carry out remote update then update locally
 
+            var response = await this.net_manager.async_post(`/api/orders/pay/${order_id}`, {payment_method: payment_method_id});
             
+            if(response["message"] != undefined) {
 
-            // LOCAL UPDATE:
-            // delete this.open_orders[order_id];
-            // this.closed_orders[order_id] = order;
+                // LOCAL UPDATE:
+                delete this.open_orders[order_id];
+                this.closed_orders[order_id] = order;
 
+                return response["order_details"];
+
+            } else {
+                return {error: "An error occurred", details: response["error"]}
+            }
 
         } catch(err) {
             return {error: "Error marking order as paid & closing order", details: err}
@@ -219,6 +226,10 @@ class OrdersModule {
 
         ipcMain.handle('orders:set-table', async (event, order_id, table_id) => {
             return await this.setTable(order_id, table_id);
+        })
+
+        ipcMain.handle('orders:pay-and-close', async (event, order_id, payment_method_id) => {
+            return this.payOrderAndClose(order_id, payment_method_id);
         })
 
 

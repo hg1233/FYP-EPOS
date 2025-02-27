@@ -205,7 +205,7 @@ router.post('/pay/:id', async (request, response) => {
             return;
         }
 
-        var update = await Orders.markAsPaidAndCloseOrder(order_id, true);
+        var update = await Orders.markAsPaidAndCloseOrder(order_id, true, method_id);
         response.status(200).json({message: "Marked order as paid", order_details: update});
 
     } catch(err) {
