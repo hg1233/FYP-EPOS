@@ -4,7 +4,10 @@
     </head>
     <body>
         <h1>Developer Debug Screen</h1>
+        <h2 id="current-user"></h2>
+        <button onclick="removeCurrentClerk();showPage('Clerk Login');">Logout</button>
         <button onclick="refreshData()">Refresh</button>
+        
         <div>
             <h2>Clerks</h2>
             <ul class="clerk_data"></ul>
@@ -41,6 +44,11 @@
             let clerk_data = document.getElementsByClassName('clerk_data')[0];
             let products_data = document.getElementsByClassName('products_data')[0];
             let cats_data = document.getElementsByClassName('categories_data')[0];
+
+            let current_user_field = document.getElementById('current-user');
+            let current_user = await getCurrentClerk();
+
+            current_user_field.innerText = `Welcome ${current_user.name}!`
 
             //console.log(clerks)
 
