@@ -23,12 +23,8 @@
                             <td>Carling</td>
                             <td>£2.50</td>
                         </tr>
-                        <tr>
-                            <td></td>
-                            <td class="total-label"><h2>TOTAL:</h2></td>
-                            <td class="total-value"><h2>£2.50</h2></td>
-                        </tr>
                     </table>
+                    <h2 id="order-total">Total: £2.50</h2>
 
                 </div>
                 <div class="functions"></div>
@@ -65,7 +61,8 @@
                         product_elem = document.createElement('div');
                         product_elem.classList.add('product');
                         
-                        product_nametag = document.createElement('span');
+                        product_nametag = document.createElement('h3');
+                        product_nametag.style.margin = 0; // TODO - move to css
                         product_nametag.innerText = product.name;
                         product_elem.appendChild(product_nametag);
 
@@ -83,7 +80,7 @@
 
                 document.getElementById('products-container').appendChild(cat_container);       
             } else {
-                console.warn(`Not displaying category # ${category.id} - no products associated`);
+                console.info(`Not displaying category # ${category.id} - no products associated`);
             } 
 
         }
@@ -97,7 +94,11 @@
             // time complexity on the below would be awful
             categories.forEach(cat => {
 
-                generateCategoryAndProductsEntry(cat, products);
+                if(cat.enabled) {
+                    generateCategoryAndProductsEntry(cat, products);
+                } else {
+                    console.info(`Not displaying category # ${cat.id} - category is disabled`);
+                }
                 
             });
         }
