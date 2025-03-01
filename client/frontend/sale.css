@@ -50,8 +50,8 @@
 
 .order-table {
     width: 100%;
-    max-height: 50vh;
-    min-height: 50vh;
+    max-height: 45vh;
+    min-height: 45vh;
 }
 
 .order-table tr {
@@ -70,6 +70,7 @@
 
 #order-total {
     text-align: right;
+    margin-top: 10px;
 }
 
 body {
