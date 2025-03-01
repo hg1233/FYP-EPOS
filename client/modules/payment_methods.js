@@ -13,7 +13,7 @@ class PaymentMethodsModule {
     async cachePaymentMethods() {
 
         // have to use pre-ready request as electron net not enabled until app.onReady is done
-        const methods = await this.net_manager.pre_ready_request('/api/orders/get/is_open/false');
+        const methods = await this.net_manager.pre_ready_request('/api/payment_methods/get/all');
 
         // no pre-processing required, basic db structure
         this.methods = methods;
