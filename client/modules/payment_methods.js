@@ -22,7 +22,7 @@ class PaymentMethodsModule {
 
     }
 
-    handleIPCInvokes(moduleManager, ipcMain) {}
+    invokeIPCHandles(moduleManager, ipcMain) {}
 
 }
 
