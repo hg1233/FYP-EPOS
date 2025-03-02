@@ -108,3 +108,12 @@ input, button {
     height: 25px;
     width: 25px;
 }
+
+#edit-product-modal-categories > input, #edit-product-modal-categories > label {
+    vertical-align: middle;
+    padding: 5px;
+}
+
+#edit-product-modal-categories {
+    padding-bottom: 15px;
+}

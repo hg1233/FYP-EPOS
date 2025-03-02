@@ -20,8 +20,9 @@ async function changeProductStatus(id, new_status) {
 }
 
 async function createProduct(name, price) {
-    await window.electronAPI.products_createProduct({name: name, price: price})
+    let result = await window.electronAPI.products_createProduct({name: name, price: price})
     await updateProducts();
+    return result;
 }
 
 async function updateProductData(id, name, price) {

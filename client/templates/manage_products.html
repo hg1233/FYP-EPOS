@@ -1,0 +1,279 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for admin pages specific styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+	<button class="btn-back" onclick="showPage('Manager Settings')">⮨ Go Back</button>
+    <div class="container">
+		<div class="admin-container">
+			<h1>Manage Products</h1>
+		
+			<form id="create-category-form" onsubmit="event.preventDefault(); return createProd()">
+				<input type="text" id="create-product-input-name" placeholder="Enter product name" required>
+				<input type="number" id="create-product-input-price" min="0" step="0.01" placeholder="Enter price (e.g. 2.50)" required>
+				<button type="submit">Create New Product</button>
+			</form>
+
+			<div class="spacer"></div>
+
+			<div class="category-list" id="productList">
+				<!-- auto generated from js -->
+			</div>
+		</div>
+		<div class="modal-overlay">
+			<div class="modal" id="edit-product-form">
+				<form onsubmit="event.preventDefault(); return updateProduct()">
+					<h3 id="edit-product-modal-header" style="color:#222">Editing Product 'Draught'</h3>
+
+					<input hidden type="number" name="id" id="edit-product-input-id">
+					<div>
+						<label style="color:#222;padding-right:15px;"for="name">Product Name: </label>
+						<input id="edit-product-input-name" type="text" name="name" placeholder="e.g. Main Meals" style="width: 60%;" required>
+					</div>
+					<div>
+						<label style="color:#222;padding-right:15px;"for="price">Price (£): </label>
+						<input id="edit-product-input-price" type="number" name="price" min="0" step="0.01" style="width: 60%;">
+					</div>
+
+					<div>
+						<h4 style="color:#222">Categories:</h4>
+						<div id="edit-product-modal-categories">
+
+						</div>
+					</div>
+
+					<button class="btn-green" type="submit" style="margin-right:10%;">Save Changes</button>
+					<button class="btn-red" type="reset" onclick="document.getElementsByClassName('modal-overlay')[0].style.display = 'none';">Cancel</button>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+  </body>
+
+  <script>
+
+	async function updateProduct() {
+
+		// TODO - this doesn't work - still setup for categories, change over to products
+
+		let modal_container = document.getElementById('edit-product-form');
+		let form = modal_container.children[0];
+
+		let id = document.getElementById("edit-product-input-id").value
+		let name = document.getElementById("edit-product-input-name").value
+		let priority = document.getElementById("edit-product-input-priority").value
+
+		await changeCatName(id, name)
+
+		// only update priority if changed
+		if(priority !== '') {
+			await changeCatPriority(id, priority);
+		}
+
+		// update name on front end
+		let local_categories = document.getElementById('productList').children;
+
+		for(let cat of local_categories) {
+
+			if(cat.dataset.id == id) {
+				cat.children[0].innerText = name;
+			}
+
+		}
+
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
+
+
+	}
+
+	async function openEditProductModal(id) {
+
+		let modal_container = document.getElementById('edit-product-form');
+		
+		await getAllCategories();
+
+		let product = await getProductByID(id);
+
+		// populate form values with current data
+		document.getElementById("edit-product-input-id").value = id;
+		document.getElementById("edit-product-input-name").value = product.name;
+		document.getElementById("edit-product-input-price").value = product.price / 100;
+		document.getElementById("edit-product-modal-header").innerText = `Editing Product '${product.name}'`
+
+		let cat_container = document.getElementById("edit-product-modal-categories");
+
+		// clear current checkboxes
+		cat_container.innerHTML = '';
+
+		// generate category tickboxes
+		// <input id="edit-clerk-input-manager" class="styled-checkbox" type="checkbox" name="is_manager">
+
+		for(let cat of categories) {
+
+			if(!cat.enabled) continue;
+
+			var cat_elem = document.createElement('input')
+			cat_elem.classList.add('edit-product-category-checkbox', 'styled-checkbox');
+			cat_elem.name = `category_${cat.id}`
+			cat_elem.type = "checkbox";
+			cat_elem.dataset.category_id = cat.id;
+
+
+			if(product.categories != null) {
+				if(product.categories.includes(cat.id.toString())) {
+					cat_elem.checked = true;
+				}
+			}
+
+			cat_container.appendChild(cat_elem)
+
+			var cat_label = document.createElement('label');
+			cat_label.style.color = "#222"; // TODO - move to css
+			cat_label.style.padding_right = "15px"; // TODO - move to css
+			cat_label.innerText = cat.name;
+
+			cat_container.appendChild(cat_label)
+			
+			cat_container.appendChild(document.createElement('br'));
+
+		}
+
+		// show modal box and overlay
+		document.getElementById('edit-product-form').style.display = 'block';
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
+		
+
+	}
+
+	async function setProductStatus(id, current_status) {
+
+		await changeProductStatus(id, !current_status)
+
+		let buttons = document.getElementsByClassName('category-status');
+
+		for(let button of buttons) {	
+
+			if(button.dataset["id"] == id) {
+
+				if(button.dataset["enabled"] == "true") {
+					// toggle button colour, text and data value if changing from enabled to disabled
+					button.classList.add('btn-green')
+					button.classList.remove('btn-red')
+					button.setAttribute('onclick', `setProductStatus(${id}, false)`) 
+					button.innerText = 'Enable'
+					button.dataset["enabled"] = false
+				} else {
+					// do the opposite
+					button.classList.remove('btn-green')
+					button.classList.add('btn-red')
+					button.innerText = 'Disable'
+					button.setAttribute('onclick', `setProductStatus(${id}, true)`) 
+					button.dataset["enabled"] = true
+				}
+			}
+		}
+	}
+
+	async function createProd() {
+		let name = document.getElementById('create-product-input-name').value;
+
+		if(name.trim().length == 0) {
+			document.getElementById('create-product-input-name').value = '';
+			document.getElementById("create-product-input-name").reportValidity();
+			return;
+		}
+
+		let price = document.getElementById('create-product-input-price').value * 100
+		console.log(price)
+		console.log(name)
+
+		let new_id = await createProduct(name, price);
+
+		console.log(new_id)
+
+		if(new_id == null || new_id == undefined || new_id["error"] != null || new_id["error"] != undefined) {
+			console.error("Error occurred creating new product.");
+			return;
+		}
+
+		let product_data = await getProductByID(new_id);
+		let list_container = document.getElementById('productList');
+		list_container.appendChild(generateProductEntry(product_data));
+
+
+	}
+
+	function generateProductList(products) {
+		let list_container = document.getElementById('productList');
+
+		for(index = 1; index <= Object.keys(products).length; index++) {
+			product = products[index]
+
+			let entry = generateProductEntry(product)
+
+			list_container.appendChild(entry)
+
+		}
+	}
+
+	function generateProductEntry(product) {
+		// build category entry element
+		let entry = document.createElement('div');
+			entry.classList.add('category-item')
+			entry.dataset.id = product.id
+
+			// build and add category name to entry
+			let name_header = document.createElement('span');
+			name_header.innerText = `${product.name} - £${(product.price / 100).toFixed(2)}`
+			entry.appendChild(name_header);
+
+			// create edit btn
+			let edit_btn = document.createElement('button');
+			edit_btn.classList.add('btn-blue');
+			edit_btn.setAttribute('onclick', `openEditProductModal(${product.id})`) 
+			edit_btn.innerText = "Edit"
+			entry.appendChild(edit_btn)
+
+			// create status btn
+			let status_btn = document.createElement('button');
+			status_btn.classList.add('category-status')
+			status_btn.setAttribute('onclick', `setProductStatus(${product.id}, ${product.enabled})`) 
+			status_btn.dataset.id = product.id;
+			status_btn.dataset.enabled = product.enabled 
+
+			// set colour and text of status btn based on cat status
+			if(product.enabled == true) {
+				status_btn.classList.add('btn-red')
+				status_btn.innerText = 'Disable'
+			} else {
+				status_btn.classList.add('btn-green')
+				status_btn.innerText = 'Enable'
+			}
+
+			entry.appendChild(status_btn)
+
+			return entry;
+	}
+
+  </script>
+
+	<script src="../frontend/categories_link.js"></script>
+	<script src="../frontend/products_link.js"></script>
+  <script src="../frontend/window_manager_link.js"></script>
+
+  <script>
+	// load data
+	document.addEventListener("DOMContentLoaded", async (event) => {
+		await updateProducts();
+		generateProductList(products);
+	});
+	
+  </script>
+
+
+</html>

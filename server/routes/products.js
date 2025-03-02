@@ -148,7 +148,7 @@ function isProductNameValid(name) {
 }
 
 function isProductPriceValid(price) {
-    return price != undefined && !isNaN(price) && isFinite(price) && price.trim() != "";
+    return price != undefined && !isNaN(price) && isFinite(price) && price !== 0;
 }
 
 module.exports = router

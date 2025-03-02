@@ -60,13 +60,13 @@ class ProductsModule {
             if(remoteUpdate["message"] != undefined) {
                 
                 this.products[remoteUpdate.product_id] = product;
-                return true;
+                return remoteUpdate.product_id;
             } else {
                 return {error: "Error occurred carrying out remote update"}
             }
         } catch(err) {
             // dont add product if it fails validation
-            console.debug(`Validation failed for product ID ${product.id}`)
+            console.debug(`Validation failed for product ID ${product.id}`, err)
             return;
         }
     }
