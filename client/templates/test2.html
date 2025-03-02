@@ -28,7 +28,44 @@
                     <h2 id="order-total" data-total=0>Total: £0.00</h2>
 
                 </div>
-                <div class="functions"></div>
+                <div class="functions">
+                    <div class="btn" onclick="showSetQtyModal()">
+                        <h3>Set Quantity</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-overlay">
+            <div class="modal" id="set-qty-modal">
+                <h1>Set Quantity</h1>
+                <p>Enter the desired quantity for the next product for the order:</p>
+                <input class="modal-input" type="number" id="qty-entry" placeholder="Enter Quantity" readonly>
+                <div class="sale-keypad">
+                    <div class="sale-keypad">
+                        <div class="sale-keypad-row">
+                          <button class="sale-keypad-key" onclick="addToQty('1')">1</button>
+                          <button class="sale-keypad-key" onclick="addToQty('2')">2</button>
+                          <button class="sale-keypad-key" onclick="addToQty('3')">3</button>
+                        </div>
+                        <div class="sale-keypad-row">
+                          <button class="sale-keypad-key" onclick="addToQty('4')">4</button>
+                          <button class="sale-keypad-key" onclick="addToQty('5')">5</button>
+                          <button class="sale-keypad-key" onclick="addToQty('6')">6</button>
+                        </div>
+                        <div class="sale-keypad-row">
+                          <button class="sale-keypad-key" onclick="addToQty('7')">7</button>
+                          <button class="sale-keypad-key" onclick="addToQty('8')">8</button>
+                          <button class="sale-keypad-key" onclick="addToQty('9')">9</button>
+                        </div>
+                        <div class="sale-keypad-row">
+                          <button class="sale-keypad-key" onclick="clearQtyEntry()">Clear</button>
+                          <button class="sale-keypad-key" onclick="addToQty('0')">0</button>
+                          <button class="sale-keypad-key primary-btn" onclick="updateQty()">Confirm</button>
+                          <!-- // TODO add cancel operation btn -->
+                        </div>
+                      </div>
+
+                </div>
             </div>
         </div>
 
@@ -38,6 +75,16 @@
     <script src="../frontend/window_manager_link.js"></script>
 
     <script>
+
+        qty_modifier_active = false;
+
+        async function handleProductClick(product_id) {
+            if(qty_modifier_active == true) {
+                addProductToOrder(product_id, qty_modifier)
+            } else {
+                addProductToOrder(product_id, 1)
+            }
+        }
 
         async function generateCategoryAndProductsEntry(category, products) {
             // check if a category has products associated with it before generating
@@ -74,7 +121,7 @@
                         product_elem.appendChild(product_pricetag);
 
                         // TODO - add on click event for product elem (div) to add to ticket
-                        product_elem.setAttribute('onclick', `addProductToOrder(${product.id}, 1)`) 
+                        product_elem.setAttribute('onclick', `handleProductClick(${product.id})`) 
 
 
                         prod_list.appendChild(product_elem);
@@ -146,6 +193,51 @@
                 }
                 
             });
+        }
+
+        async function showSetQtyModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('set-qty-modal');
+
+            overlay.style.display = "flex";
+            qty_modal.style.display = "block";
+        }
+
+        async function hideSetQtyModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('set-qty-modal');
+
+            overlay.style.display = "none";
+            qty_modal.style.display = "none";
+        }
+
+        async function addToQty(number) {
+            document.getElementById('qty-entry').value += number;
+        }
+
+        async function clearQtyEntry() {
+            document.getElementById('qty-entry').value = '';
+        }
+
+        async function updateQty() {
+
+            let qty_entry = document.getElementById('qty-entry');
+            let desired_qty = Number(qty_entry.value);
+
+            // check qty input is greater than 0
+            if(desired_qty > 0) {
+                qty_modifier_active = true;
+                qty_modifier = desired_qty;
+            } else {
+                // number is less than or equal to 0, cancel operation
+                qty_modifier_active = false;
+                qty_modifier = 1;
+            }
+
+            clearQtyEntry();            
+            hideSetQtyModal();
+
+
         }
 
         document.addEventListener("DOMContentLoaded", function() {

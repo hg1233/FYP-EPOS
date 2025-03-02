@@ -25,3 +25,25 @@ body {
 .error-text {
   color: var(--error) !important;
 }
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #111111DD;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  display: none;
+  background-color: #fff;
+  z-index:10;
+  height: auto;
+  width: 40rem;
+  border: none;
+  border-radius: 5px;
+}
