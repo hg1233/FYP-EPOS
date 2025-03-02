@@ -9,6 +9,10 @@
     margin: 0px;
 }
 
+.product > h3 {
+    margin: 0;
+}
+
 .product-list {
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
