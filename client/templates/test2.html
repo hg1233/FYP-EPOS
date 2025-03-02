@@ -52,6 +52,8 @@
                 let prod_list = document.createElement('div');
                 prod_list.classList.add('product-list');
             
+                // TODO - got to be a better way to iterate through all categories & associate with products for this
+                // time complexity on the below would be awful
                 for(index = 1; index <= Object.keys(products).length; index++) {
 
                     product = products[index];
@@ -98,8 +100,6 @@
             await getAllCategories();
             await getAllProducts();
 
-            // TODO - got to be a better way to iterate through all categories & associate with products for this
-            // time complexity on the below would be awful
             categories.forEach(cat => {
 
                 if(cat.enabled) {
