@@ -39,6 +39,9 @@ input, button {
 
 .category-list {
     text-align: left;
+    max-height: 60%;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .category-item {
