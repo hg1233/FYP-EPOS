@@ -17,14 +17,15 @@
 
 
                     <!-- order table -->
-                    <table class="order-table">
-                        <tr>
+                    <table id="order-table">
+                        <tr></tr>
+                        <!-- <tr>
                             <td>1x</td>
                             <td>Carling</td>
                             <td>£2.50</td>
-                        </tr>
+                        </tr> -->
                     </table>
-                    <h2 id="order-total">Total: £2.50</h2>
+                    <h2 id="order-total" data-total=0>Total: £0.00</h2>
 
                 </div>
                 <div class="functions"></div>
@@ -73,7 +74,7 @@
                         product_elem.appendChild(product_pricetag);
 
                         // TODO - add on click event for product elem (div) to add to ticket
-                        product_elem.setAttribute('onclick', `addProductToOrder('${product.id}')`) 
+                        product_elem.setAttribute('onclick', `addProductToOrder(${product.id}, 1)`) 
 
 
                         prod_list.appendChild(product_elem);
@@ -89,9 +90,46 @@
 
         }
 
-        async function addProductToOrder(product_id) {
-            // TODO
-            alert(product_id)
+        async function addProductToOrder(product_id, qty) {
+            // TODO - add to a local storage (dont just update the frontend, need to push a new suborder line)
+
+            let table_body = document.getElementById("order-table").children[0];
+            let price = products[product_id].price * qty
+
+            let tr = document.createElement('tr');
+            tr.dataset.product_id = product_id;
+            tr.dataset.qty = qty;
+            tr.dataset.price = price;
+            // TODO - add suborder line ID to dataset of line also
+            
+            let qty_col = document.createElement('td');
+            qty_col.innerText = `${qty}x`;
+            tr.appendChild(qty_col);
+
+            let name_col = document.createElement('td');
+            name_col.innerText = products[product_id].name;
+            tr.appendChild(name_col);
+        
+            let price_col = document.createElement('td');
+            price_col.innerText = `£${(price / 100).toFixed(2)}`    
+            tr.appendChild(price_col);
+
+            // add row to table
+            table_body.appendChild(tr);
+
+            // update total value displayed at bottom of order "ticket"
+            addToOrderTotal(price);
+
+        }
+
+        // adds given price value to current order total
+        async function addToOrderTotal(price) {
+
+            let total_elem = document.getElementById("order-total");
+            total_elem.dataset.total = Number(total_elem.dataset.total) + Number(price);
+            
+            total_elem.innerText = `Total: £${(total_elem.dataset.total / 100).toFixed(2)}`
+
         }
 
         async function refreshProductsContainer() {
