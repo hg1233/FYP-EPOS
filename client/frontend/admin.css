@@ -112,6 +112,7 @@ input, button {
 #edit-product-modal-categories {
     display: grid;
     grid-template-columns: 45% 55%;
+    align-items: center;
 }
 
 #edit-product-modal-categories > input {
