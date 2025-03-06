@@ -109,8 +109,18 @@ input, button {
     width: 25px;
 }
 
-#edit-product-modal-categories > input, #edit-product-modal-categories > label {
-    vertical-align: middle;
+#edit-product-modal-categories {
+    display: grid;
+    grid-template-columns: 45% 55%;
+}
+
+#edit-product-modal-categories > input {
+    justify-self: right;
+    margin-right: 5px;
+}
+
+#edit-product-modal-categories > label {
+    text-align: left;
     padding: 5px;
 }
 
