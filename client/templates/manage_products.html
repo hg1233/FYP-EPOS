@@ -102,7 +102,7 @@
 		// populate form values with current data
 		document.getElementById("edit-product-input-id").value = id;
 		document.getElementById("edit-product-input-name").value = product.name;
-		document.getElementById("edit-product-input-price").value = product.price / 100;
+		document.getElementById("edit-product-input-price").value = (product.price / 100).toFixed(2);
 		document.getElementById("edit-product-modal-header").innerText = `Editing Product '${product.name}'`
 
 		let cat_container = document.getElementById("edit-product-modal-categories");
