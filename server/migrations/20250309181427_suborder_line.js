@@ -11,7 +11,7 @@ exports.up = function(knex) {
         table.integer('product_unit_price').notNullable(); // does not reference (data warehousing)
         table.integer('product_qty').notNullable(); // does not reference (data warehousing)
         table.integer('subtotal').notNullable(); // does not reference (data warehousing)
-        table.string('line_comments').notNullable();
+        table.string('line_comments'); // can be null
     })
 };
 
