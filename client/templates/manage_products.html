@@ -81,22 +81,29 @@
 
 		let cats_checkboxes = document.getElementById('edit-product-modal-categories').children
 		let product_obj = await getProductByID(id);
-
 		for(let cat of categories) {
 
 			// skip if category disabled
 			if(!cat.enabled) continue;
 
-			// if box is checked and if product not already member of that category
-			if(cats_checkboxes["category_"+cat.id].checked && !(product_obj.categories.includes(cat.id.toString()))) {
+			// treat as empty array if no categories linked to product
+			let product_categories = product_obj.categories;
+			if(product_categories == null) product_categories = [];
 
-				// create link
-				await createCategoryProductLink(product_obj.id, cat.id);
+			// if box is checked
+			if(cats_checkboxes["category_"+cat.id].checked) {
+
+				// if product not already member of that category
+				if(!(product_categories.includes(cat.id.toString()))) {
+					// create the link
+					await createCategoryProductLink(product_obj.id, cat.id);
+				}
 			
 			} else {
 				// box is unchecked & product is a member
-				if(product_obj.categories.includes(cat.id.toString())) {
+				if(product_categories.includes(cat.id.toString())) {
 					// backend cats prods link to remove product_obj.id and cat.id
+					await removeCategoryProductLink(product_obj.id, cat.id);
 				} else {
 					// no action required, no change to category
 				}

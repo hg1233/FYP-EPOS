@@ -31,7 +31,15 @@ async function updateProductData(id, name, price) {
 }
 
 async function createCategoryProductLink(product_id, category_id) {
-    return await window.electronAPI.products_createCategoryLink(product_id, category_id);
+    let result = await window.electronAPI.products_createCategoryLink(product_id, category_id);
+    await window.electronAPI.categories_reload();
+    return result;
+}
+
+async function removeCategoryProductLink(product_id, category_id) {
+    let result = await window.electronAPI.products_removeCategoryLink(product_id, category_id);
+    await window.electronAPI.categories_reload();
+    return result;
 }
 
 

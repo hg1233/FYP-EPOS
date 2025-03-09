@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   products_createProduct: async (product_data) => ipcRenderer.invoke('products:create-product', product_data),
   products_updateProduct: async (product_data) => ipcRenderer.invoke('products:update-product', product_data),
   products_createCategoryLink: async (product_id, category_id) => ipcRenderer.invoke('products:create-cat-link', product_id, category_id),
+  products_removeCategoryLink: async (product_id, category_id) => ipcRenderer.invoke('products:remove-cat-link', product_id, category_id),
 
   /*** Clerks Module ***/
 

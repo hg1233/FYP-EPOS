@@ -203,6 +203,10 @@ class ProductsModule {
             return this.createCategoryLink(product_id, category_id);
         })
 
+        ipcMain.handle('products:remove-cat-link', async (event, product_id, category_id) => {
+            return this.removeCategoryLink(product_id, category_id);
+        })
+
     }
 
     async createCategoryLink(product_id, category_id) {
@@ -219,7 +223,46 @@ class ProductsModule {
             return {error: "Category ID not found"};
         }
 
+        // check if link already exists
+        if(this.products[product_id].categories !== null) {
+            if(this.products[product_id].categories.includes(category_id.toString())) {
+                console.error(`Cannot remove category link for product # ${product_id} and category # ${category_id} - link already exists.`);
+                return {error: "Link already exists"};
+            }
+        }
+
         var remoteUpdate = await this.net_manager.async_post('/api/cat_link/create', {product_id: product_id, category_id: category_id});
+
+        if(remoteUpdate["message"] != undefined) {
+            this.products[product_id] = await this.getProductByIDFromServer(product_id);
+            return true;
+        } else {
+            return {error: "Error occurred carrying out remote category product link update", debug: remoteUpdate}
+        }
+
+    }
+
+    async removeCategoryLink(product_id, category_id) {
+        
+        // check product id valid
+        if(!this.products[product_id]) {
+            console.error(`Cannot remove category link for product ID # '${product_id}' - product not found.`);
+            return {error: "Product ID not found"};
+        }
+
+        // check category id valid
+        if(!this.module_manager.instance.modules.categories.getCategoryByID(category_id)) {
+            console.error(`Cannot remove category link for product ID # ${product_id} - category ID # '${category_id}' not found.`);
+            return {error: "Category ID not found"};
+        }
+
+        // check link exists    
+        if(this.products[product_id].categories == null || !this.products[product_id].categories.includes(category_id.toString())) {
+            console.error(`Cannot remove category link for product # ${product_id} and category # ${category_id} - link does not exist.`);
+            return {error: "Link does not exist"};
+        }
+        
+        var remoteUpdate = await this.net_manager.async_post('/api/cat_link/remove', {product_id: product_id, category_id: category_id});
 
         if(remoteUpdate["message"] != undefined) {
             this.products[product_id] = await this.getProductByIDFromServer(product_id);
