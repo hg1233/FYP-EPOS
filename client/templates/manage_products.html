@@ -69,12 +69,37 @@
 		await updateProductData(id, name, price)
 
 		// update name on front end
-		let local_categories = document.getElementById('productList').children;
+		let local_products_list = document.getElementById('productList').children;
 
-		for(let cat of local_categories) {
+		for(let product of local_products_list) {
 
-			if(cat.dataset.id == id) {
-				cat.children[0].innerText = `${name} - £${(price / 100).toFixed(2)}`
+			if(product.dataset.id == id) {
+				product.children[0].innerText = `${name} - £${(price / 100).toFixed(2)}`
+			}
+
+		}
+
+		let cats_checkboxes = document.getElementById('edit-product-modal-categories').children
+		let product_obj = await getProductByID(id);
+
+		for(let cat of categories) {
+
+			// skip if category disabled
+			if(!cat.enabled) continue;
+
+			// if box is checked and if product not already member of that category
+			if(cats_checkboxes["category_"+cat.id].checked && !(product_obj.categories.includes(cat.id.toString()))) {
+
+				// create link
+				await createCategoryProductLink(product_obj.id, cat.id);
+			
+			} else {
+				// box is unchecked & product is a member
+				if(product_obj.categories.includes(cat.id.toString())) {
+					// backend cats prods link to remove product_obj.id and cat.id
+				} else {
+					// no action required, no change to category
+				}
 			}
 
 		}

@@ -2,11 +2,13 @@ class ProductsModule {
     
     net_manager;
     products;
+    module_manager;
     
     constructor() {
         // current structure - { id: 1, name: 'Beer', price: 519, enabled: 1 }
         this.products = {};
         this.net_manager = null;
+        this.module_manager = null;
     }
 
     init() {
@@ -103,6 +105,10 @@ class ProductsModule {
         return this.products[id];
     }
 
+    async getProductByIDFromServer(id) {
+        return await this.net_manager.async_get(`/api/products/get/${id}`);
+    }
+
     async changeProductStatus(id, status) {
 
         // check product exists
@@ -159,6 +165,9 @@ class ProductsModule {
     }
 
     invokeIPCHandles(moduleManager, ipcMain) {
+
+        this.module_manager = moduleManager;
+
         // handle get products func from browser
         ipcMain.handle('products:get-all-products', async () => {
             return this.getAllProducts();
@@ -189,6 +198,35 @@ class ProductsModule {
         ipcMain.handle('products:update-product', async (event, product_data) => {
             return this.updateProduct(product_data)
         })
+
+        ipcMain.handle('products:create-cat-link', async (event, product_id, category_id) => {
+            return this.createCategoryLink(product_id, category_id);
+        })
+
+    }
+
+    async createCategoryLink(product_id, category_id) {
+        
+        // check product id valid
+        if(!this.products[product_id]) {
+            console.error(`Cannot create category link for product ID # '${product_id}' - product not found.`);
+            return {error: "Product ID not found"};
+        }
+
+        // check category id valid
+        if(!this.module_manager.instance.modules.categories.getCategoryByID(category_id)) {
+            console.error(`Cannot create category link for product ID # ${product_id} - category ID # '${category_id}' not found.`);
+            return {error: "Category ID not found"};
+        }
+
+        var remoteUpdate = await this.net_manager.async_post('/api/cat_link/create', {product_id: product_id, category_id: category_id});
+
+        if(remoteUpdate["message"] != undefined) {
+            this.products[product_id] = await this.getProductByIDFromServer(product_id);
+            return true;
+        } else {
+            return {error: "Error occurred carrying out remote category product link update", debug: remoteUpdate}
+        }
 
     }
 

@@ -78,6 +78,18 @@ router.get("/get/:id/categories", async (request, response) => {
  * @returns {json} 
  */
 function generateLinksResponse(linked_data, key) {
+
+    // check if any links exist, if not, return empty list
+    if(linked_data.length == 0) {
+        return [];
+    }
+
+    // if just 1 link, return just 1st element
+    if(linked_data.length == 1) {
+        return linked_data[0][key]
+    }
+    
+    // if more than 1 link found
     if(linked_data.length > 1) {
         var output = [];
         linked_data.forEach(element => {
@@ -87,8 +99,8 @@ function generateLinksResponse(linked_data, key) {
         return output;
     } 
 
-    // return just 1st element
-    return linked_data[0][key]
+    // this should never trigger, but return an empty list in case of a weird scenario where links does not get defined
+    return [];
 }
 
 router.post("/create", async (request, response) => {
@@ -107,15 +119,16 @@ router.post("/create", async (request, response) => {
 
         // check link does not already exist
         let check_exists = generateLinksResponse(await CatsProductsLink.getByProductID(prod_id), "category_id");
-
+        
         // if only 1 category linked to product ID currently
         if(typeof check_exists == "number" && cat_id == check_exists) {
             response.status(400).json({error: "Link between category & product already exists"})
             return;
         }
 
-        // if more than 2 categories linked to product ID currently
-        if(typeof check_exists != "number") {
+        // check if result is not a number, and not null. if this is true, this means
+        // more than 2 categories linked to product ID currently
+        if(typeof check_exists != "number" && typeof check_exists !== null) {
             // check for duplicates
             if(check_exists.includes(Number(cat_id))) {
                 response.status(400).json({error: "Link between category & product already exists"})

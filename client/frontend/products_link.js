@@ -30,6 +30,11 @@ async function updateProductData(id, name, price) {
     await updateProducts();
 }
 
+async function createCategoryProductLink(product_id, category_id) {
+    return await window.electronAPI.products_createCategoryLink(product_id, category_id);
+}
+
+
 updateProducts();
 
 setTimeout(() => {
