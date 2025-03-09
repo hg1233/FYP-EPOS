@@ -59,21 +59,14 @@
 
 	async function updateProduct() {
 
-		// TODO - this doesn't work - still setup for categories, change over to products
-
 		let modal_container = document.getElementById('edit-product-form');
 		let form = modal_container.children[0];
 
 		let id = document.getElementById("edit-product-input-id").value
 		let name = document.getElementById("edit-product-input-name").value
-		let priority = document.getElementById("edit-product-input-priority").value
+		let price = document.getElementById("edit-product-input-price").value * 100
 
-		await changeCatName(id, name)
-
-		// only update priority if changed
-		if(priority !== '') {
-			await changeCatPriority(id, priority);
-		}
+		await updateProductData(id, name, price)
 
 		// update name on front end
 		let local_categories = document.getElementById('productList').children;
@@ -81,7 +74,7 @@
 		for(let cat of local_categories) {
 
 			if(cat.dataset.id == id) {
-				cat.children[0].innerText = name;
+				cat.children[0].innerText = `${name} - £${(price / 100).toFixed(2)}`
 			}
 
 		}
