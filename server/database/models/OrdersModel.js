@@ -4,8 +4,6 @@ const Orders = {
 
     create: (created_by, table_id, order_name) => {
 
-        // TODO - implement null check for `table_id` & `order_name` if undefined, as the below may cause issues, testing required
-
         return knex('orders')
         .insert({created_by, table_id, order_name})
         .returning('*')
