@@ -21,7 +21,7 @@ router.get('/get/all', async (request, response) => {
     }
 })
 
-router.get('/get_by_suborder_id/:id', async (request, response) => {
+router.get('/get/suborder/:id', async (request, response) => {
     try {
         var order = await Suborder.getSuborderBySuborderID(request.params.id);
 
@@ -39,7 +39,7 @@ router.get('/get_by_suborder_id/:id', async (request, response) => {
 
 })
 
-router.get('/get_by_order_id/:id', async (request, response) => {
+router.get('/get/order/:id', async (request, response) => {
     try {
         var orders = await Suborder.getSubordersByOrderID(request.params.id);
 
