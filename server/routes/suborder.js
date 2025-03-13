@@ -74,3 +74,24 @@ router.get('/get/clerk/:id', async (request, response) => {
     }
 
 })
+
+router.get('/get/confirmed/:status', async (request, response) => {
+    try {
+
+        var status = Boolean(request.params.status);
+
+        var orders = await Suborder.getSubordersByConfirmedStatus(status);
+
+        // if order not found
+        if(order == undefined) {
+            response.json({error: "Suborders not found"});
+            return;
+        }
+
+        response.json(order);
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Failed to retrieve suborder from status provided"})
+    }
+
+})
