@@ -5,16 +5,31 @@ class NetManager {
 
     server_host;
     api_key;
+    use_local_cache;
+    heartbeat;
+    heartbeat_interval;
+    heartbeat_last_res_time;
      
     constructor() {
         this.server_host = 'http://localhost:3000' // TODO - move to config file
         this.api_key = '123456' // TODO - move to config file
+        this.heartbeat_interval = 15000; // TODO - move to config file
+        
+        // send out heartbeat to server on defined interval
+        this.heartbeat = setInterval(async () => {
+            console.log("Beat")
+            this.check_heartbeat();
+        }, this.heartbeat_interval);
+
     }
 
     async pre_ready_request(endpoint) {
         // TODO - implement try/catch to prevent error if unable to reach server
         
         return new Promise( (resolve, reject) => {
+            
+            // TODO - send API key here (missing)
+
             https.get(this.server_host + endpoint, (response) => {
                 let data = '' 
 
@@ -28,7 +43,10 @@ class NetManager {
                         resolve(JSON.parse(data)); // return 
                     });
                     
-                });
+                }
+            ).on('error', function(error) {
+                reject(error);
+            });
         })
     }
 
@@ -93,6 +111,38 @@ class NetManager {
         });
     }
     
+    async check_heartbeat() {
+        try {
+            let response = await this.pre_ready_request("/heartbeat");
+
+            if(response["status"] == "ok") {
+                // heartbeat successful
+                this.heartbeat_last_res_time = Date.now();
+
+                // check if local caching (offline mode) on, if so disable it 
+                if(this.use_local_cache) {
+                    this.use_local_cache = false;
+                    console.info(`Connection restored to server at ${Date.now()}, switching to online mode`)
+                }
+
+                return;
+            }
+
+            // else, heartbeat unsuccessful, trigger caching system
+            if(!this.use_local_cache) {
+                console.warn(`Connection still down at ${Date.now()}`)
+            }
+            this.use_local_cache = true;
+            console.warn(`Lost connection to server at ${Date.now()}, switching to local cache mode`)
+            
+        } catch(err) {
+
+            // heartbeat unsuccessful, trigger caching system
+            this.use_local_cache = true;
+            console.warn(`Lost connection to server at ${Date.now()}, switching to local cache mode`)
+        }
+    }
+
 
 }
 
