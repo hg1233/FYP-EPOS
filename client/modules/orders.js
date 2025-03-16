@@ -17,27 +17,57 @@ class OrdersModule {
     }
 
     async cacheOpenOrders() {
-        // have to use pre-ready request as electron net not enabled until app.onReady is done
-        const open_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/true');
+        try {
+            // have to use pre-ready request as electron net not enabled until app.onReady is done
+            const open_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/true');
+            
+            open_orders.forEach(order => {
+                // parse 0 & 1 as true & false
+                order["is_open"] = Boolean(order["is_open"])
+                order["is_paid"] = Boolean(order["is_paid"])
+                this.addOrderToLocalStorage(order, this.open_orders)
+            })
+        } catch(err) {
+            // TODO - retrieve open orders from cache
 
-        open_orders.forEach(order => {
-            // parse 0 & 1 as true & false
-            order["is_open"] = Boolean(order["is_open"])
-            order["is_paid"] = Boolean(order["is_paid"])
-            this.addOrderToLocalStorage(order, this.open_orders)
-        })
+            // TODO - use a blank array for now, need to pull from local cache
+            const open_orders = this.open_orders;
+            
+            open_orders.forEach(order => {
+                // parse 0 & 1 as true & false
+                order["is_open"] = Boolean(order["is_open"])
+                order["is_paid"] = Boolean(order["is_paid"])
+                this.addOrderToLocalStorage(order, this.open_orders)
+            })
+        }
+        
     }
 
     async cacheClosedOrders() {
-        // have to use pre-ready request as electron net not enabled until app.onReady is done
-        const closed_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/false');
+        try {
+            // have to use pre-ready request as electron net not enabled until app.onReady is done
+            const closed_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/false');
+            
+            closed_orders.forEach(order => {
+                // parse 0 & 1 as true & false
+                order["is_open"] = Boolean(order["is_open"])
+                order["is_paid"] = Boolean(order["is_paid"])
+                this.addOrderToLocalStorage(order, this.closed_orders)
+            })
+        } catch(err) {
+            // TODO - retrieve open orders from cache
 
-        closed_orders.forEach(order => {
-            // parse 0 & 1 as true & false
-            order["is_open"] = Boolean(order["is_open"])
-            order["is_paid"] = Boolean(order["is_paid"])
-            this.addOrderToLocalStorage(order, this.closed_orders)
-        })
+            // TODO - use a blank array for now, need to pull from local cache
+            const closed_orders = this.closed_orders;
+            
+            closed_orders.forEach(order => {
+                // parse 0 & 1 as true & false
+                order["is_open"] = Boolean(order["is_open"])
+                order["is_paid"] = Boolean(order["is_paid"])
+                this.addOrderToLocalStorage(order, this.closed_orders)
+            })
+        }
+        
     }
 
     addOrderToLocalStorage(order, storage_dest) {
