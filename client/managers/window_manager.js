@@ -90,6 +90,7 @@ function init() {
         {name: 'Manage Tables', path: 'templates/manage_tables.html'},
         {name: 'Manage Venue', path: 'templates/manage_venue.html'},
         {name: 'Manage Products', path: 'templates/manage_products.html'},
+        {name: 'Manage Categories', path: 'templates/manage_categories.html'},
         {name: 'Clerk Login', path: 'templates/clerk_login.html', default: true},
     ]
     
