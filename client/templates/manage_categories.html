@@ -19,6 +19,7 @@
 			<div class="spacer"></div>
 
 			<div class="category-list" id="catList">
+				<h2>Loading, please wait...</h2>
 				<!-- auto generated from js -->
 			</div>
 		</div>
@@ -152,6 +153,9 @@
 	function generateCategoryList(categories) {
 		let list_container = document.getElementById('catList');
 
+		// clear current contents
+		list_container.innerHTML = '';
+
 		for(let cat of categories) {
 
 			let entry = generateCategoryEntry(cat)
@@ -208,8 +212,10 @@
   <script>
 	// load data
 	document.addEventListener("DOMContentLoaded", async (event) => {
-		await getAllCategories();
-		generateCategoryList(categories);
+		setTimeout(async () => {
+			let local_categories = await getAllCategories();
+			generateCategoryList(local_categories);	
+		}, 20);
 	});
 	
   </script>
