@@ -82,36 +82,38 @@ const instance = new PageManager()
 
 function init() {
 
-    // create test hello world page and add to page manager
-    test_page = new Page("Test", "templates/test.html");
-    instance.addPage(test_page);
+    let pages = [
+        {name: 'Test', path: 'templates/test.html'},
+        {name: 'Sale', path: 'templates/sale.html'},
+        {name: 'Manager Settings', path: 'templates/manager_settings.html'},
+        {name: 'Manage Clerks', path: 'templates/manage_clerks.html'},
+        {name: 'Manage Tables', path: 'templates/manage_tables.html'},
+        {name: 'Manage Venue', path: 'templates/manage_venue.html'},
+        {name: 'Manage Products', path: 'templates/manage_products.html'},
+        {name: 'Clerk Login', path: 'templates/clerk_login.html', default: true},
+    ]
+    
+    // register all pages
+    pages.forEach(page => {
+        try {
+            let page_obj = new Page(page.name, page.path)
+            instance.addPage(page_obj);
+            
+            // null & undefined check to prevent checking if non-existent var is true, throws err
+            if(page.default != undefined && page.default != null) {
 
-    test_page2 = new Page("Test2", "templates/test2.html");
-    instance.addPage(test_page2);
+                // page.default exists, but first check its true
+                if(page.default == true) instance.setDefaultPage(page_obj);
 
-    manager_settings_page = new Page("Manager Settings", "templates/manager_settings.html")
-    instance.addPage(manager_settings_page);
+            }
 
-    manage_categories_page = new Page("Manage Categories", "templates/manage_categories.html");
-    instance.addPage(manage_categories_page);
+        } catch(err) {
+            console.error(`Failed to register page '${page.name}':`)
+            console.error(err)
+        }
+    });
 
-    manage_clerks_page = new Page("Manage Clerks", "templates/manage_clerks.html");
-    instance.addPage(manage_clerks_page);
-
-    manage_clerks_page = new Page("Manage Tables", "templates/manage_tables.html");
-    instance.addPage(manage_clerks_page);
-
-    manage_venue_page = new Page("Manage Venue", "templates/manage_venue.html");
-    instance.addPage(manage_venue_page);
-
-    manage_products_page = new Page("Manage Products", "templates/manage_products.html");
-    instance.addPage(manage_products_page);
-
-    // setup clerk login page
-    clerk_login_page = new Page("Clerk Login", "templates/clerk_login.html");
-    instance.addPage(clerk_login_page);
-    instance.setDefaultPage(clerk_login_page);
-
+    console.log(`Registered ${instance.available_pages.length} pages successfully.`)
 
 }
 
