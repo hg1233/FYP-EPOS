@@ -84,6 +84,7 @@ function init() {
 
     let pages = [
         {name: 'Test', path: 'templates/test.html'},
+        {name: 'Nav', path: 'templates/nav.html'},
         {name: 'Sale', path: 'templates/sale.html'},
         {name: 'Manager Settings', path: 'templates/manager_settings.html'},
         {name: 'Manage Clerks', path: 'templates/manage_clerks.html'},

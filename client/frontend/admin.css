@@ -61,26 +61,6 @@ input, button {
     padding: 20px;
 }
 
-.btn-blue {
-    background-color: var(--info);
-}
-
-.btn-red {
-    background-color: var(--error);
-}
-
-.btn-green {
-    background-color: var(--success);
-}
-
-.btn-back {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 10px;
-    padding: 15px 20px;
-}
-
 .modal-overlay {
     display: none;
     position: fixed;

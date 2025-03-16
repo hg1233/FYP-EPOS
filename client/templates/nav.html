@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for button styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+    <button class="btn-red btn-back" onclick="removeCurrentClerk();showPage('Clerk Login');">⮨ Sign Off</button>
+    <div class="container" style="width: 85%">
+      <h1 id="welcome">Welcome!</h1>
+      <h2>What would you like to do today?</h2>
+      <div class="spacer"></div>
+
+    </div>
+  </body>
+
+  <script src="../frontend/window_manager_link.js"></script>
+  <script src="../frontend/clerks_link.js"></script>
+
+  <script>
+
+    let current_clerk;
+
+    // set welcome message on page load
+    document.addEventListener("DOMContentLoaded", async (event) => {
+      current_clerk = await getCurrentClerk();
+      document.getElementById("welcome").innerText = `Welcome, ${current_clerk.name}!`;
+    });
+
+  </script>
+
+
+
+</html>
