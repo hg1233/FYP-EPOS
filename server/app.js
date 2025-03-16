@@ -15,7 +15,8 @@ app.listen(port, () => {
     console.log("> Listening on port", port);
 });
 
-app.get("/status", (request, response) => {
+app.get("/heartbeat", (request, response) => {
+    // TODO - implement server-side logging of till ID (api key) and last heartbeat time
     response.send({"status": "ok"})
 });
 
