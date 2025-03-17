@@ -89,7 +89,7 @@ body {
 
 .nav-buttons {
   display: grid;
-  grid-template-columns: 25% 25% 25% 25%;
+  grid-auto-flow: column;
 }
 
 .nav-buttons > button {

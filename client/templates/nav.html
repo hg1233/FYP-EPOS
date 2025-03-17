@@ -14,8 +14,7 @@
       <div class="nav-buttons">
         <button class="btn-blue" onclick="showPage('Sale')">Quick Sale</button>
         <button class="btn-lime" onclick="showPage('Sale')">View Tables</button>
-        <button class="btn-coral" onclick="showPage('Manager Settings')">Manager Settings</button>
-        <button class="btn-teal"  onclick="alert('Work in progress!')">Reports</button>
+        
       </div>
     </div>
   </body>
@@ -31,7 +30,32 @@
     document.addEventListener("DOMContentLoaded", async (event) => {
       current_clerk = await getCurrentClerk();
       document.getElementById("welcome").innerText = `Welcome, ${current_clerk.name}!`;
+      generateManagerButtons();
     });
+
+    function generateManagerButtons() {
+
+      // do not render buttons if clerk is not a manager
+      if(!current_clerk.is_manager) return;
+
+      let buttons_container = document.getElementsByClassName("nav-buttons")[0];
+
+      // manager settings button
+      let manager_btn = document.createElement('button');
+      manager_btn.classList.add("btn-coral");
+      manager_btn.setAttribute('onclick', `showPage('Manager Settings')`) 
+      manager_btn.innerText = "Manager Settings";
+      buttons_container.appendChild(manager_btn);
+
+      // reports button
+      let reports_btn = document.createElement('button');
+      reports_btn.classList.add("btn-teal");
+      reports_btn.setAttribute('onclick', `alert('Work in progress!')`) 
+      reports_btn.innerText = "Reports";
+      buttons_container.appendChild(reports_btn);
+
+
+    }
 
   </script>
 
