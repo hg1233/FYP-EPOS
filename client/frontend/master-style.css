@@ -7,6 +7,9 @@
   --error: indianred;
   --info: lightskyblue;
   --success: darkseagreen;
+  --orange: rgb(255, 203, 107);
+  --coral: coral;
+  --teal: #44bfbf;
   --default-font: 'Lexend', sans-serif !important;
 }
 
@@ -52,6 +55,22 @@ body {
   background-color: var(--info);
 }
 
+.btn-orange {
+  background-color: var(--orange);
+}
+
+.btn-lime {
+  background-color: var(--lime-green);
+}
+
+.btn-teal {
+  background-color: var(--teal)
+}
+
+.btn-coral {
+  background-color: var(--coral);
+}
+
 .btn-red {
   background-color: var(--error);
 }
@@ -66,4 +85,15 @@ body {
   top: 0;
   margin: 10px;
   padding: 15px 20px;
+}
+
+.nav-buttons {
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+}
+
+.nav-buttons > button {
+  margin: 5px;
+  height: 20vh;
+  font-size: xx-large;
 }
