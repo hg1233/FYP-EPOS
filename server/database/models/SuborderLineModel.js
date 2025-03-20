@@ -30,6 +30,20 @@ const SuborderLine = {
         return knex('suborder_line').select('*').where({suborder_id});
     },
 
+    setSuborderLineComments: (line_id, line_comments) => {
+        return knex('suborder_line')
+        .where({line_id})
+        .update({line_comments})
+        .returning('*');
+    },
+
+    updateLineQuantity: (line_id, product_unit_price, product_qty, subtotal) => {
+        return knex('suborder_line')
+        .where({line_id})
+        .update({product_unit_price, product_qty, subtotal})
+        .returning('*');
+    },
+
 }
 
 module.exports = SuborderLine;
