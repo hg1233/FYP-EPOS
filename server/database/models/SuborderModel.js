@@ -3,8 +3,9 @@ const knex = require('../../database.js')
 const Suborder = {
 
     create: () => {
-        // TODO
-        return null;
+        return knex('suborder')
+        .insert({order_id, created_by})
+        .returning(['*'])
     },
 
     getAll: () => {
@@ -25,6 +26,13 @@ const Suborder = {
 
     getSubordersByClerk: (created_by) => {
         return knex('suborder').select('*').where({created_by});
+    },
+
+    confirmSuborder: (suborder_id) => {
+        return knex('suborder')
+        .where({suborder_id})
+        .update({suborder_confirmed: true})
+        .returning('*');
     },
 
 }
