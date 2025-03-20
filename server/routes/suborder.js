@@ -11,6 +11,10 @@ const router = express.Router();
 const Suborder = require('../database/models/SuborderModel.js');
 const SuborderLine = require('../database/models/SuborderLineModel.js');
 
+// import clerk & order db model
+const Clerks = require('../database/models/ClerksModel.js');
+const Orders = require('../database/models/OrdersModel.js');
+
 router.get('/get/all', async (request, response) => {
     try {
         var orders = await Suborder.getAll();
@@ -95,3 +99,41 @@ router.get('/get/confirmed/:status', async (request, response) => {
     }
 
 })
+
+router.post('/create', async (request, response) => {
+    try {
+
+        var clerk_id = request.body["clerk_id"];
+        var order_id = request.body["order_id"];
+
+        // check order exists
+        let order = await Orders.getOrderByID(order_id);
+
+        if(order == null || order == undefined) {
+            console.log(`[Suborder > Create] Input validation failed - order not found`);
+            response.status(400).json({error: "Failed to create suborder - order not found"});
+            return;
+        }
+
+        // check clerk exists
+        let clerk = await Clerks.getByID(clerk_id)
+
+        if(clerk == null || clerk == undefined) {
+            console.log(`[Suborder > Create] Input validation failed - clerk not found`);
+            response.status(400).json({error: "Failed to create suborder - clerk not found"});
+            return;
+        }
+
+        // order & clerk both exist, good to open suborder
+        let suborder = (await Suborder.create(order_id, clerk_id))[0];
+        response.status(200).json({message: "Successfully created new suborder", suborder_details: suborder})
+        console.log(`[Suborder > Create] Created new suborder with ID # ${suborder.suborder_id}`)
+
+    } catch(err) {
+        console.error(`[Suborder > Create] Error occurred creating suborder:`);
+        console.error(err);
+        response.status(500).json({error: "Error occurred creating suborder"});
+    }
+})
+
+module.exports = router;

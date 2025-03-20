@@ -48,6 +48,11 @@ app.use("/api/tables", tableRoutes)
 const orderRoutes = require('./routes/orders')
 app.use("/api/orders", orderRoutes)
 
+// import order routes
+const suborderRoutes = require('./routes/suborder')
+app.use("/api/suborder", suborderRoutes)
+
+
 // import payment method routes
 const paymentMethodsRoutes = require('./routes/payment_methods')
 app.use("/api/payment_methods", paymentMethodsRoutes)
