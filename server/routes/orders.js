@@ -15,7 +15,7 @@ const Tables = require('../database/models/TablesModel.js');
 
 router.get('/get/all', async (request, response) => {
     try {
-        var orders = await Orders.getAllOrders();
+        var orders = await Orders.getAllOrdersWithSuborders();
         response.json(orders);
     } catch(error) {
         console.error(error)
@@ -37,7 +37,7 @@ router.get('/get/open', async (request, response) => {
 
 router.get('/get/:id', async (request, response) => {
     try {
-        var order = await Orders.getOrderByID(request.params.id);
+        var order = await Orders.getOrderByIDWithSuborders(request.params.id);
 
         // if order not found
         if(order == undefined) {
