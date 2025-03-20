@@ -55,7 +55,7 @@ router.get('/get/:id', async (request, response) => {
 
 router.get('/get/table/:id', async (request, response) => {
     try {
-        var orders = await Orders.getOrdersByTableID(request.params.id);
+        var orders = await Orders.getOrdersByTableIDWithSuborders(request.params.id);
 
         // if order not found
         if(orders == undefined || orders.length == 0) {
@@ -85,7 +85,7 @@ router.get('/get/is_open/:status', async (request, response) => {
             return;
         }
 
-        var orders = await Orders.getOrdersByOrderStatus(status);
+        var orders = await Orders.getOrdersByOrderStatusWithSuborders(status);
 
         // if orders not found
         if(orders == undefined || orders.length == 0) {
