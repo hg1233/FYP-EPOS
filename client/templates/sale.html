@@ -102,6 +102,7 @@
             
                 // TODO - got to be a better way to iterate through all categories & associate with products for this
                 // time complexity on the below would be awful
+                // TODO - could use await window.electronAPI.categories_getAll() and just lookup the indexes?
                 for(index = 1; index <= Object.keys(products).length; index++) {
 
                     product = products[index];
