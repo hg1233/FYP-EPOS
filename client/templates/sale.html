@@ -262,16 +262,36 @@
         }
 
         async function addComments() {
+
+            // hide modal on confirm btn press
+            hideSetQtyModal();
+
             let table_body = document.getElementById("order-table").children[0];
+            let comments = document.getElementById('comments-entry').value;
 
             for(let index = 0; index < table_body.children.length; index++) {
                 if(table_body.children[index].dataset["orderLineSelected"] == "true") {
                     // item selected
                     let line_row = table_body.children[index];
-                    let item = line_row.children[1];
+                    let item = line_row.children[1];                    
 
-                    // get comment to add
-                    let comments = document.getElementById('comments-entry').value;
+                    // check if item already has comments
+                    if(line_row.dataset["hasComments"] == "true") {
+                        // line item has comments, overwrite them
+
+                        // an item should only ever have 2 children - 1 <br> elem for visuals and 1 <i> for the comment content
+                        // removing both this way is better than for looping for 2 elements
+
+                        // note - need to use await as if not it removes the spacer being created below
+
+                        // both indexes are zero because when we remove index 0, index 1 then becomes index 0 
+                        
+                        await item.children[0].remove();
+                        await item.children[0].remove();
+                    }
+
+                    // leave blank if no comments entered
+                    if(comments == "") return;
 
                     // build elements
                     let spacer = document.createElement('br');
@@ -288,7 +308,7 @@
                 }
             }
 
-            // TODO - add order comments to line item backend
+            // TODO - add/set order comments to line item backend
 
             hideAddCommentsModal();
         }
@@ -296,18 +316,26 @@
         async function showAddCommentsModal() {
 
             let table_body = document.getElementById("order-table").children[0];
-            let item = null;
+            let line_product_name = null;
 
             for(let index = 0; index < table_body.children.length; index++) {
                 if(table_body.children[index].dataset["orderLineSelected"] == "true") {
-                    item = table_body.children[index].children[1];
+                    line_product_name = table_body.children[index].children[1];
                 }
             }
-
-            if(item == null) { 
+        
+            // null not blank string - used for when no order line is selected, not when a product with a blank name is selected (weird edge case but still works)
+            if(line_product_name == null) { 
                 // TODO - show error message for no order line selected
                 console.warn("Cannot open comments modal - no order line selected.")
                 return;
+            }
+
+            if(line_product_name.parentElement.dataset["hasComments"] == "true") {
+                // order line has comments, import them for editing
+                console.info("Line item already has comments, retrieving them...")
+                let comments = line_product_name.parentElement.dataset["comments"];
+                document.getElementById('comments-entry').value = comments;
             }
 
             let overlay = document.getElementsByClassName("modal-overlay")[0];
@@ -323,6 +351,10 @@
 
             overlay.style.display = "none";
             qty_modal.style.display = "none";
+
+            // clear comments input when form closed to prevent persistent commetns
+            document.getElementById('comments-entry').value = "";
+
         }
 
         async function addToQty(number) {
