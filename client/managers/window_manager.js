@@ -86,7 +86,7 @@ function init() {
         {name: 'Test', path: 'templates/test.html'},
         {name: 'Nav', path: 'templates/nav.html'},
         {name: 'Sale', path: 'templates/sale.html'},
-        {name: 'View Orders', path: 'templates/view_orders.html'},
+        {name: 'View Tables', path: 'templates/view_tables.html'},
         {name: 'Manager Settings', path: 'templates/manager_settings.html'},
         {name: 'Manage Clerks', path: 'templates/manage_clerks.html'},
         {name: 'Manage Tables', path: 'templates/manage_tables.html'},
