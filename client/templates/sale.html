@@ -18,7 +18,7 @@
 
                     <!-- order table -->
                     <table id="order-table">
-                        <tr data-order_line_selected="false"></tr>
+                        <tr></tr>
                         <!-- <tr>
                             <td>1x</td>
                             <td>Carling</td>
@@ -38,7 +38,7 @@
                     <div class="btn" onclick="alert('TODO')">
                         <h3>Cancel Order</h3>
                     </div>
-                    <div class="btn" onclick="alert('TODO')">
+                    <div class="btn" onclick="showAddCommentsModal()">
                         <h3>Add Comments</h3>
                     </div>
                     <div class="btn" onclick="alert('TODO')">
@@ -87,7 +87,7 @@
             </div>
             <div class="modal" id="add-comments-modal">
                 <h1>Add Comments</h1>
-                <p>Please enter the desired comments for the kitchen for the selected order line:</p>
+                <p>Enter comments below to add them to the selected order line:</p>
                 <input class="modal-input" type="text" id="comments-entry" placeholder="e.g. Salad instead of Chips">
                 <div class="sale-keypad">
                     <button class="sale-keypad-key primary-btn" onclick="addComments()">Confirm</button>
@@ -254,10 +254,54 @@
         }
 
         async function addComments() {
-            // TODO
+            let table_body = document.getElementById("order-table").children[0];
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                if(table_body.children[index].dataset["orderLineSelected"] == "true") {
+                    // item selected
+                    let line_row = table_body.children[index];
+                    let item = line_row.children[1];
+
+                    // get comment to add
+                    let comments = document.getElementById('comments-entry').value;
+
+                    // build elements
+                    let spacer = document.createElement('br');
+                    spacer.classList.add('order-line-comment');
+                    item.appendChild(spacer);
+
+                    let comment_elem = document.createElement('i');
+                    comment_elem.classList.add('order-line-comment');
+                    comment_elem.innerText = `↪ ${comments}`;
+                    item.appendChild(comment_elem);
+
+                    line_row.dataset["hasComments"] = true;
+                    line_row.dataset["comments"] = comments;
+                }
+            }
+
+            // TODO - add order comments to line item backend
+
+            hideAddCommentsModal();
         }
         
         async function showAddCommentsModal() {
+
+            let table_body = document.getElementById("order-table").children[0];
+            let item = null;
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                if(table_body.children[index].dataset["orderLineSelected"] == "true") {
+                    item = table_body.children[index].children[1];
+                }
+            }
+
+            if(item == null) { 
+                // TODO - show error message for no order line selected
+                console.warn("Cannot open comments modal - no order line selected.")
+                return;
+            }
+
             let overlay = document.getElementsByClassName("modal-overlay")[0];
             let qty_modal = document.getElementById('add-comments-modal');
 
