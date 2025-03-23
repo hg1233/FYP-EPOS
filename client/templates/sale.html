@@ -18,7 +18,7 @@
 
                     <!-- order table -->
                     <table id="order-table">
-                        <tr></tr>
+                        <tr data-order_line_selected="false"></tr>
                         <!-- <tr>
                             <td>1x</td>
                             <td>Carling</td>
@@ -116,6 +116,16 @@
             }
         }
 
+        async function selectOrderLine(elem) {
+            let table_body = document.getElementById("order-table").children[0];
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                table_body.children[index].dataset["orderLineSelected"] = false;
+            }
+
+            elem.dataset["orderLineSelected"] = true;
+        }
+
         async function generateCategoryAndProductsEntry(category, products) {
             // check if a category has products associated with it before generating
             if(category.products != null || category.products != undefined) {
@@ -178,6 +188,7 @@
             tr.dataset.product_id = product_id;
             tr.dataset.qty = qty;
             tr.dataset.price = price;
+            tr.setAttribute('onclick', `selectOrderLine(this)`) // TODO - maybe add line ID here from suborder_line table? 
             // TODO - add suborder line ID to dataset of line also
             
             let qty_col = document.createElement('td');

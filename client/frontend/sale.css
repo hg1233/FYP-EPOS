@@ -123,6 +123,10 @@ body {
     box-shadow: 0 0.25rem 0.6rem rgba(0, 0, 0, 0.5);
 }
 
+[data-order-line-selected="true"] {
+    background-color: var(--lime-green-alpha);
+}
+
 .primary-btn {
     background: var(--lime-green);
     color: var(--grey);
