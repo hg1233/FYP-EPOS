@@ -180,4 +180,31 @@ router.get("/line/get/suborder/:id", async (request, response) => {
     }
 })
 
+router.post("/line/comments", async (request, response) => {
+    try {
+
+        let line_id = request.body["line_id"];
+        let comments = request.body["comments"];
+
+        // check suborder line exists
+        let line = SuborderLine.getByID(line_id);
+
+        if(line == null || line == undefined) {
+            console.log(`[SuborderLine > SetComments] Input validation failed - line not found`);
+            response.status(400).json({error: "Failed to update comments for suborder line - line not found"});
+            return;
+        }
+
+        let db_line_obj = await SuborderLine.setSuborderLineComments(line_id, comments);
+        response.status(200).json({message: "Successfully updated line comments", suborder_line_details: db_line_obj})
+        console.log(`[SuborderLine > SetComments] Updated comments for line ID # ${line_id}`)
+
+    } catch(error) {
+        console.error("[SuborderLine > SetComments] Failed to set comments for suborder line:")
+        console.log(error);
+        response.status(500).json({error: "Failed to set suborder line comments"})
+    
+    }
+})
+
 module.exports = router;
