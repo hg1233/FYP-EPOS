@@ -136,4 +136,48 @@ router.post('/create', async (request, response) => {
     }
 })
 
+router.get("/line/get/all", async (request, response) => {
+    try {
+        var lines = await SuborderLine.getAll();
+        response.json(lines);
+    } catch(error) {
+        console.error(error)
+        response.status(500).json({error: "Failed to retrieve suborder lines"})
+    }
+})
+
+router.get("/line/get/line/:id", async (request, response) => {
+    try {
+        var line = await SuborderLine.getByLineID(request.params.id);
+
+        // if order not found
+        if(line == undefined) {
+            response.json({error: "No suborder line found"});
+            return;
+        }
+
+        response.json(line);
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Failed to retrieve suborder lines from line ID provided"})
+    }
+})
+
+router.get("/line/get/suborder/:id", async (request, response) => {
+    try {
+        var line = await SuborderLine.getSubordersByOrderID(request.params.id);
+
+        // if order not found
+        if(line == undefined) {
+            response.json({error: "No suborder lines found"});
+            return;
+        }
+
+        response.json(line);
+    } catch(error) {
+        console.log(error);
+        response.status(500).json({error: "Failed to retrieve suborder lines from suborder ID provided"})
+    }
+})
+
 module.exports = router;
