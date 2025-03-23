@@ -5,7 +5,9 @@
   --mid-grey: #3f3f3f;
   --light-grey: #777;
   --error: indianred;
+  --error-dark: rgb(161, 0, 0);
   --info: lightskyblue;
+  --info-dark: rgb(0, 144, 201);
   --success: darkseagreen;
   --orange: rgb(255, 203, 107);
   --coral: coral;
