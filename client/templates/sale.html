@@ -29,11 +29,11 @@
 
                 </div>
                 <div class="functions">
+                    <div class="btn btn-red" onclick="voidSelectedItem()">
+                        <h3>Void Item</h3>
+                    </div>
                     <div class="btn" onclick="showSetQtyModal()">
                         <h3>Set Quantity</h3>
-                    </div>
-                    <div class="btn btn-red" onclick="alert('TODO')">
-                        <h3>Void Item</h3>
                     </div>
                     <div class="btn btn-red" onclick="alert('TODO')">
                         <h3>Cancel Order</h3>
@@ -221,6 +221,14 @@
 
         }
 
+        // removes given price value from current order total
+        async function removeFromOrderTotal(price) {
+            let total_elem = document.getElementById("order-total");
+            total_elem.dataset.total = Number(total_elem.dataset.total) - Number(price);
+            
+            total_elem.innerText = `Total: £${(total_elem.dataset.total / 100).toFixed(2)}`
+        }
+
         async function refreshProductsContainer() {
 
             await getAllCategories();
@@ -344,6 +352,25 @@
             hideSetQtyModal();
 
 
+        }
+
+        async function voidSelectedItem() {
+            let table_body = document.getElementById("order-table").children[0];
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                if(table_body.children[index].dataset["orderLineSelected"] == "true") {
+
+                    let item_row = table_body.children[index];
+                    // TODO - update on backend to remove suborder line 
+
+                    // remove from order total
+                    removeFromOrderTotal(item_row.dataset["price"])
+                    
+                    // delete from front end
+                    table_body.deleteRow(index);
+
+                }
+            }
         }
 
         document.addEventListener("DOMContentLoaded", async function() {
