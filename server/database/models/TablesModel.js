@@ -12,6 +12,15 @@ const Tables = {
         return knex('tables').select('*');
     },
 
+    getAllWithOrders(open) {
+        return knex('tables').select('tables.*', knex.raw('GROUP_CONCAT(orders.id) as orders'))
+        .leftJoin('orders', function() {
+            this.on('tables.id', 'orders.table_id')
+            .andOnVal('orders.is_open', open)
+        })
+        .groupBy('tables.id');
+    },
+
     getByID: (id) => {
         return knex('tables').where({id}).first()
     },

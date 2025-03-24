@@ -4,6 +4,10 @@ async function getAllTables() {
     return await window.electronAPI.tables_getAll();
 }
 
+async function getAllTablesWithOrderData(is_order_open) {
+    return await window.electronAPI.tables_getAllWithOrderData(is_order_open);
+}
+
 async function getTableByID(id) {
     return await window.electronAPI.tables_getByID(id)
 }

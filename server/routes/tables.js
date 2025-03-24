@@ -24,6 +24,29 @@ router.get("/get/all", async (request, response) => {
 
 })
 
+router.get("/get/all/:order_status", async (request, response) => {
+
+    try { 
+
+        let order_status = request.params.order_status;
+        if(order_status == null || order_status == undefined) {
+            console.log(`[Tables > Get All] Order status not defined`);
+            response.json({error: "Order status not defined"});
+            return;
+        }
+
+        order_status = Boolean(order_status);
+
+       var tables = await Tables.getAllWithOrders(order_status);
+        response.status(200).json(tables);
+
+    } catch(err) {
+        console.error("Error occurred retrieving all tables with orders:", err)
+        response.status(500).json({error: "Error occurred retrieving all tables with orders"})
+    }
+
+})
+
 router.get("/get/:id", async (request, response) => {
 
     try {

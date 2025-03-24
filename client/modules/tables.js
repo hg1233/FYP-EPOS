@@ -45,6 +45,17 @@ class TablesModule {
         return this.tables;
     }
 
+    async getAllTablesWithOrderData(order_status) {
+        var advanced_table_data = await this.net_manager.pre_ready_request(`/api/tables/get/all/${order_status}`);
+
+        advanced_table_data.forEach(table => {
+            // parse 0 & 1 as true & false
+            table["enabled"] = Boolean(table["enabled"])
+        })
+
+        return advanced_table_data;
+    }
+
     async reloadTables() {
         this.tables = {};
         this.cacheTableData();
@@ -163,6 +174,10 @@ class TablesModule {
 
         ipcMain.handle('tables:get-all', async () => {
             return this.getAllTables();
+        });
+
+        ipcMain.handle('tables:get-with-order-data', async (order_status) => {
+            return this.getAllTablesWithOrderData();
         });
 
         ipcMain.handle('tables:reload', async () => {
