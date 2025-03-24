@@ -38,6 +38,9 @@
 
   <script>
 
+    let available_container = document.getElementById('available-tables').children[2];
+    let occupied_container = document.getElementById('occupied-tables').children[2];
+
     async function loadTables() {
       tables = await getAllTablesWithOrderData(true);
       
@@ -47,6 +50,9 @@
 
         // hide disabled tables from view
         if(!table.enabled) return;
+
+        generateTableEntry(table);
+
         if(table.orders == null) {
           console.log(`Table ${table.id} has no (null) orders (i.e. available)`)
         } else {
@@ -55,6 +61,25 @@
       }
     }
 
+    async function generateTableEntry(table) {
+
+      let elem = document.createElement('div');
+      elem.classList.add('table-entry');
+      elem.dataset["table_id"] = table.id;
+      
+      let table_name = document.createElement('h3');
+      table_name.innerText = table.display_name;
+      elem.appendChild(table_name);
+
+      // choose where to put entry based on table availability
+      let target_container = (table.orders == null ? available_container : occupied_container);
+
+      target_container.appendChild(elem);
+
+    }
+
+
+    // start
     loadTables();
 
 
