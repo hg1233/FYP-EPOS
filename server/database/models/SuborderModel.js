@@ -2,9 +2,10 @@ const knex = require('../../database.js')
 
 const Suborder = {
 
-    create: () => {
-        // TODO
-        return null;
+    create: (order_id, created_by) => {
+        return knex('suborder')
+        .insert({order_id, created_by})
+        .returning('*')
     },
 
     getAll: () => {
