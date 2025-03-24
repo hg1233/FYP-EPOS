@@ -207,4 +207,37 @@ router.post("/line/comments", async (request, response) => {
     }
 })
 
+router.post("/line/create", async (request, response) => {
+    try {
+
+        let suborder_id = request.body["suborder_id"];
+        let product_id = request.body["product_id"];
+        let product_name = request.body["product_name"];
+        let product_unit_price = request.body["product_unit_price"];
+        let product_qty = request.body["product_qty"];
+        let subtotal = request.body["subtotal"];
+        let comments = request.body["comments"];
+
+        // check suborder exists
+        let suborder = Suborder.getSuborderBySuborderID(suborder_id);
+
+        if(suborder == null || suborder == undefined) {
+            console.log(`[SuborderLine > Create] Input validation failed - suborder not found`);
+            response.status(400).json({error: "Failed to create suborder line - suborder not found"});
+            return;
+        }
+
+        // TODO rewrite below 3 lines
+        //let db_line_obj = await SuborderLine.setSuborderLineComments(line_id, comments);
+        response.status(200).json({message: "Successfully updated line comments", suborder_line_details: db_line_obj})
+        console.log(`[SuborderLine > Create] Updated comments for line ID # ${line_id}`)
+
+    } catch(error) {
+        console.error("[SuborderLine > Create] Failed to set comments for suborder line:")
+        console.log(error);
+        response.status(500).json({error: "Failed to set suborder line comments"})
+    
+    }
+})
+
 module.exports = router;
