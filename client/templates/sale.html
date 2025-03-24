@@ -29,8 +29,29 @@
 
                 </div>
                 <div class="functions">
+                    <div class="btn btn-red" onclick="voidSelectedItem()">
+                        <h3>Void Item</h3>
+                    </div>
                     <div class="btn" onclick="showSetQtyModal()">
                         <h3>Set Quantity</h3>
+                    </div>
+                    <div class="btn btn-red" onclick="alert('TODO')">
+                        <h3>Cancel Order</h3>
+                    </div>
+                    <div class="btn btn-blue" onclick="showAddCommentsModal()">
+                        <h3>Add Comments</h3>
+                    </div>
+                    <div class="btn btn-blue" onclick="alert('TODO')">
+                        <h3>Print Bill</h3>
+                    </div>
+                    <div class="btn" onclick="alert('TODO')">
+                        <h3>Pay Now</h3>
+                    </div>
+                    <div class="btn" onclick="alert('TODO')">
+                        <h3>Save to Table</h3>
+                    </div>
+                    <div class="btn" onclick="alert('TODO')">
+                        <h3>Set Order Name</h3>
                     </div>
                 </div>
             </div>
@@ -41,36 +62,48 @@
                 <p>Enter the desired quantity for the next product for the order:</p>
                 <input class="modal-input" type="number" id="qty-entry" placeholder="Enter Quantity" readonly>
                 <div class="sale-keypad">
-                    <div class="sale-keypad">
-                        <div class="sale-keypad-row">
-                          <button class="sale-keypad-key" onclick="addToQty('1')">1</button>
-                          <button class="sale-keypad-key" onclick="addToQty('2')">2</button>
-                          <button class="sale-keypad-key" onclick="addToQty('3')">3</button>
-                        </div>
-                        <div class="sale-keypad-row">
-                          <button class="sale-keypad-key" onclick="addToQty('4')">4</button>
-                          <button class="sale-keypad-key" onclick="addToQty('5')">5</button>
-                          <button class="sale-keypad-key" onclick="addToQty('6')">6</button>
-                        </div>
-                        <div class="sale-keypad-row">
-                          <button class="sale-keypad-key" onclick="addToQty('7')">7</button>
-                          <button class="sale-keypad-key" onclick="addToQty('8')">8</button>
-                          <button class="sale-keypad-key" onclick="addToQty('9')">9</button>
-                        </div>
-                        <div class="sale-keypad-row">
-                          <button class="sale-keypad-key" onclick="clearQtyEntry()">Clear</button>
-                          <button class="sale-keypad-key" onclick="addToQty('0')">0</button>
-                          <button class="sale-keypad-key primary-btn" onclick="updateQty()">Confirm</button>
-                          <!-- // TODO add cancel operation btn -->
-                        </div>
-                      </div>
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key" onclick="addToQty('1')">1</button>
+                        <button class="sale-keypad-key" onclick="addToQty('2')">2</button>
+                        <button class="sale-keypad-key" onclick="addToQty('3')">3</button>
+                    </div>
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key" onclick="addToQty('4')">4</button>
+                        <button class="sale-keypad-key" onclick="addToQty('5')">5</button>
+                        <button class="sale-keypad-key" onclick="addToQty('6')">6</button>
+                    </div>
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key" onclick="addToQty('7')">7</button>
+                        <button class="sale-keypad-key" onclick="addToQty('8')">8</button>
+                        <button class="sale-keypad-key" onclick="addToQty('9')">9</button>
+                    </div>
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key" onclick="clearQtyEntry()">Clear</button>
+                        <button class="sale-keypad-key" onclick="addToQty('0')">0</button>
+                        <button class="sale-keypad-key primary-btn" onclick="updateQty()">Confirm</button>
+                        <!-- // TODO add cancel operation btn -->
+                    </div>
 
                 </div>
+            </div>
+            <div class="modal" id="add-comments-modal">
+                <h1>Add Comments</h1>
+                <p>Enter comments below to add them to the selected order line:</p>
+                <input class="modal-input" type="text" id="comments-entry" placeholder="e.g. Salad instead of Chips">
+                <div class="sale-keypad">
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key primary-btn" onclick="addComments()">Confirm</button>
+                        <button class="sale-keypad-key" onclick="hideAddCommentsModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
 
     </body>
     <script src="../frontend/products_link.js"></script>
+    <script src="../frontend/orders_link.js"></script>
+    <script src="../frontend/tables_link.js"></script>
     <script src="../frontend/categories_link.js"></script>
     <script src="../frontend/window_manager_link.js"></script>
 
@@ -84,6 +117,16 @@
             } else {
                 addProductToOrder(product_id, 1)
             }
+        }
+
+        async function selectOrderLine(elem) {
+            let table_body = document.getElementById("order-table").children[0];
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                table_body.children[index].dataset["orderLineSelected"] = false;
+            }
+
+            elem.dataset["orderLineSelected"] = true;
         }
 
         async function generateCategoryAndProductsEntry(category, products) {
@@ -102,6 +145,7 @@
             
                 // TODO - got to be a better way to iterate through all categories & associate with products for this
                 // time complexity on the below would be awful
+                // TODO - could use await window.electronAPI.categories_getAll() and just lookup the indexes?
                 for(index = 1; index <= Object.keys(products).length; index++) {
 
                     product = products[index];
@@ -147,6 +191,7 @@
             tr.dataset.product_id = product_id;
             tr.dataset.qty = qty;
             tr.dataset.price = price;
+            tr.setAttribute('onclick', `selectOrderLine(this)`) // TODO - maybe add line ID here from suborder_line table? 
             // TODO - add suborder line ID to dataset of line also
             
             let qty_col = document.createElement('td');
@@ -177,6 +222,14 @@
             
             total_elem.innerText = `Total: £${(total_elem.dataset.total / 100).toFixed(2)}`
 
+        }
+
+        // removes given price value from current order total
+        async function removeFromOrderTotal(price) {
+            let total_elem = document.getElementById("order-total");
+            total_elem.dataset.total = Number(total_elem.dataset.total) - Number(price);
+            
+            total_elem.innerText = `Total: £${(total_elem.dataset.total / 100).toFixed(2)}`
         }
 
         async function refreshProductsContainer() {
@@ -211,6 +264,102 @@
             qty_modal.style.display = "none";
         }
 
+        async function addComments() {
+
+            // hide modal on confirm btn press
+            hideSetQtyModal();
+
+            let table_body = document.getElementById("order-table").children[0];
+            let comments = document.getElementById('comments-entry').value;
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                if(table_body.children[index].dataset["orderLineSelected"] == "true") {
+                    // item selected
+                    let line_row = table_body.children[index];
+                    let item = line_row.children[1];                    
+
+                    // check if item already has comments
+                    if(line_row.dataset["hasComments"] == "true") {
+                        // line item has comments, overwrite them
+
+                        // an item should only ever have 2 children - 1 <br> elem for visuals and 1 <i> for the comment content
+                        // removing both this way is better than for looping for 2 elements
+
+                        // note - need to use await as if not it removes the spacer being created below
+
+                        // both indexes are zero because when we remove index 0, index 1 then becomes index 0 
+                        
+                        await item.children[0].remove();
+                        await item.children[0].remove();
+                    }
+
+                    // leave blank if no comments entered
+                    if(comments == "") return;
+
+                    // build elements
+                    let spacer = document.createElement('br');
+                    spacer.classList.add('order-line-comment');
+                    item.appendChild(spacer);
+
+                    let comment_elem = document.createElement('i');
+                    comment_elem.classList.add('order-line-comment');
+                    comment_elem.innerText = `↪ ${comments}`;
+                    item.appendChild(comment_elem);
+
+                    line_row.dataset["hasComments"] = true;
+                    line_row.dataset["comments"] = comments;
+                }
+            }
+
+            // TODO - add/set order comments to line item backend
+
+            hideAddCommentsModal();
+        }
+        
+        async function showAddCommentsModal() {
+
+            let table_body = document.getElementById("order-table").children[0];
+            let line_product_name = null;
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                if(table_body.children[index].dataset["orderLineSelected"] == "true") {
+                    line_product_name = table_body.children[index].children[1];
+                }
+            }
+        
+            // null not blank string - used for when no order line is selected, not when a product with a blank name is selected (weird edge case but still works)
+            if(line_product_name == null) { 
+                // TODO - show error message for no order line selected
+                console.warn("Cannot open comments modal - no order line selected.")
+                return;
+            }
+
+            if(line_product_name.parentElement.dataset["hasComments"] == "true") {
+                // order line has comments, import them for editing
+                console.info("Line item already has comments, retrieving them...")
+                let comments = line_product_name.parentElement.dataset["comments"];
+                document.getElementById('comments-entry').value = comments;
+            }
+
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('add-comments-modal');
+
+            overlay.style.display = "flex";
+            qty_modal.style.display = "block";
+        }
+
+        async function hideAddCommentsModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('add-comments-modal');
+
+            overlay.style.display = "none";
+            qty_modal.style.display = "none";
+
+            // clear comments input when form closed to prevent persistent commetns
+            document.getElementById('comments-entry').value = "";
+
+        }
+
         async function addToQty(number) {
             document.getElementById('qty-entry').value += number;
         }
@@ -238,6 +387,25 @@
             hideSetQtyModal();
 
 
+        }
+
+        async function voidSelectedItem() {
+            let table_body = document.getElementById("order-table").children[0];
+
+            for(let index = 0; index < table_body.children.length; index++) {
+                if(table_body.children[index].dataset["orderLineSelected"] == "true") {
+
+                    let item_row = table_body.children[index];
+                    // TODO - update on backend to remove suborder line 
+
+                    // remove from order total
+                    removeFromOrderTotal(item_row.dataset["price"])
+                    
+                    // delete from front end
+                    table_body.deleteRow(index);
+
+                }
+            }
         }
 
         document.addEventListener("DOMContentLoaded", async function() {

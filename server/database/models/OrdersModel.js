@@ -13,16 +13,94 @@ const Orders = {
         return knex('orders').select('*');
     },
 
-    getOrdersByOrderStatus: (is_open) => {
-        return knex('orders').select('*').where({is_open});
+    getAllOrdersWithSuborders: () => {
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .groupBy('orders.id')
+        .then((response) => {
+
+            response.forEach(entry => {
+                // sql outputs just as a concatenated string, parse/convert to list
+                if(typeof entry.suborders == "string") {
+                    Object.assign(entry, {suborders: entry.suborders.split(',')})
+
+                }
+            })
+
+            return response;
+
+        })
     },
 
     getOrderByID: (id) => {
         return knex('orders').select('*').where({id}).first();
     },
 
+    getOrderByIDWithSuborders: (id) => {
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .where({id})
+        .groupBy('orders.id')
+        .first()
+        .then((response) => {
+
+            // sql outputs just as a concatenated string, parse/convert to list
+            if(typeof response.suborders == "string") {
+                Object.assign(response, {suborders: response.suborders.split(',')})
+
+            }
+
+        return response;
+
+        })
+    },
+
+    getOrdersByOrderStatus: (is_open) => {
+        return knex('orders').select('*').where({is_open});
+    },
+
+    getOrdersByOrderStatusWithSuborders: (is_open) => {
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .groupBy('orders.id')
+        .where({is_open})
+        .then((response) => {
+
+            response.forEach(entry => {
+                // sql outputs just as a concatenated string, parse/convert to list
+                if(typeof entry.suborders == "string") {
+                    Object.assign(entry, {suborders: entry.suborders.split(',')})
+
+                }
+            })
+
+            return response;
+
+        })
+    },
+
     getOrdersByTableID: (table_id) => {
         return knex('orders').where({table_id});
+    },
+
+    getOrdersByTableIDWithSuborders: (table_id) => {
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .groupBy('orders.id')
+        .where({table_id})
+        .then((response) => {
+
+            response.forEach(entry => {
+                // sql outputs just as a concatenated string, parse/convert to list
+                if(typeof entry.suborders == "string") {
+                    Object.assign(entry, {suborders: entry.suborders.split(',')})
+
+                }
+            })
+
+            return response;
+
+        })
     },
 
     markAsPaidAndCloseOrder: (id, is_paid, payment_method) => {

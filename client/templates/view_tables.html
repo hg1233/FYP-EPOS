@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <!-- include master-style.css for global styling -->
+    <link href="../frontend/master-style.css" rel="stylesheet"> 
+    <!-- include admin.css for button styling -->
+    <link href="../frontend/admin.css" rel="stylesheet"> 
+  </head>
+  <body>
+    <button class="btn btn-back" onclick="showPage('Nav');">⮨ Back</button>
+    <div class="container" style="width: 85%">
+        <h1 id="welcome">View Tables</h1>
+        <div class="spacer"></div>
+        <p><b>Occupied Tables</b></p>
+        <!-- tables with open orders -->
+        <div class="spacer"></div>
+        <p><b>Available Tables</b></p>
+        <!-- tables with no open orders -->
+
+        <!-- TODO - wrap this in either a scrollable container or 2 cols? -->
+    
+  </body>
+  <script src="../frontend/orders_link.js"></script>
+  <script src="../frontend/tables_link.js"></script>
+  <script src="../frontend/window_manager_link.js"></script>
+
+</html>

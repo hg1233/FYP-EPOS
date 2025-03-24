@@ -5,7 +5,7 @@ const Suborder = {
     create: (order_id, created_by) => {
         return knex('suborder')
         .insert({order_id, created_by})
-        .returning('*')
+        .returning(['*']);
     },
 
     getAll: () => {
@@ -26,6 +26,13 @@ const Suborder = {
 
     getSubordersByClerk: (created_by) => {
         return knex('suborder').select('*').where({created_by});
+    },
+
+    confirmSuborder: (suborder_id) => {
+        return knex('suborder')
+        .where({suborder_id})
+        .update({suborder_confirmed: true})
+        .returning('*');
     },
 
 }
