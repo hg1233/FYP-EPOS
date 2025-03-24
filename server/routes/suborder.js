@@ -227,15 +227,24 @@ router.post("/line/create", async (request, response) => {
             return;
         }
 
-        // TODO rewrite below 3 lines
-        //let db_line_obj = await SuborderLine.setSuborderLineComments(line_id, comments);
-        response.status(200).json({message: "Successfully updated line comments", suborder_line_details: db_line_obj})
-        console.log(`[SuborderLine > Create] Updated comments for line ID # ${line_id}`)
+        let line = await SuborderLine.create(
+            suborder_id,
+            product_id,
+            product_name, 
+            product_unit_price, 
+            product_qty, 
+            subtotal,
+            comments
+        )
+
+        
+        response.status(200).json({message: "Successfully created new line", suborder_line: line})
+        console.log(`[SuborderLine > Create] Created new line with ID # ${line.line_id}`)
 
     } catch(error) {
-        console.error("[SuborderLine > Create] Failed to set comments for suborder line:")
+        console.error("[SuborderLine > Create] Failed to create suborder line")
         console.log(error);
-        response.status(500).json({error: "Failed to set suborder line comments"})
+        response.status(500).json({error: "Failed to create suborder line"})
     
     }
 })
