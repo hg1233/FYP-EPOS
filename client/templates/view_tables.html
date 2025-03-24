@@ -45,6 +45,8 @@
 
         let table = tables[index];
 
+        // hide disabled tables from view
+        if(!table.enabled) return;
         if(table.orders == null) {
           console.log(`Table ${table.id} has no (null) orders (i.e. available)`)
         } else {
