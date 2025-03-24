@@ -4,23 +4,58 @@
     <link href="../frontend/master-style.css" rel="stylesheet"> 
     <!-- include admin.css for button styling -->
     <link href="../frontend/admin.css" rel="stylesheet"> 
+    <!-- include tables page specific styling -->
+    <link href="../frontend/tables.css" rel="stylesheet"> 
   </head>
   <body>
     <button class="btn btn-back" onclick="showPage('Nav');">⮨ Back</button>
     <div class="container" style="width: 85%">
-        <h1 id="welcome">View Tables</h1>
-        <div class="spacer"></div>
-        <p><b>Occupied Tables</b></p>
-        <!-- tables with open orders -->
-        <div class="spacer"></div>
-        <p><b>Available Tables</b></p>
-        <!-- tables with no open orders -->
+      <h1 id="welcome">View Tables</h1>
+      <div class="spacer"></div>
+      <div class="two-col">
+
+        <div class="tables-container" id="available-tables">
+          <p><b>Available Tables</b></p>
+          <!-- tables with no open orders -->
+          <div class="spacer"></div>
+          <div class="tables-entries"></div>
+        </div>
+
+        <div class="tables-container" id="occupied-tables">
+          <p><b>Occupied Tables</b></p>
+          <!-- tables with open orders -->
+          <div class="spacer"></div>
+          <div class="tables-entries"></div>
+        </div>
 
         <!-- TODO - wrap this in either a scrollable container or 2 cols? -->
-    
+      </div>
+    </div>
   </body>
   <script src="../frontend/orders_link.js"></script>
   <script src="../frontend/tables_link.js"></script>
   <script src="../frontend/window_manager_link.js"></script>
+
+  <script>
+
+    async function loadTables() {
+      tables = await getAllTablesWithOrderData(true);
+      
+      for(let index = 0; index < tables.length; index++) {
+
+        let table = tables[index];
+
+        if(table.orders == null) {
+          console.log(`Table ${table.id} has no (null) orders (i.e. available)`)
+        } else {
+          console.log(`Table ${table.id} has more than 1 order (i.e. occupied)`)
+        }
+      }
+    }
+
+    loadTables();
+
+
+  </script>
 
 </html>

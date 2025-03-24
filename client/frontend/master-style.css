@@ -101,3 +101,8 @@ body {
   height: 20vh;
   font-size: xx-large;
 }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
