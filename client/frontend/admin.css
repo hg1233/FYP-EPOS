@@ -117,3 +117,8 @@ input, button {
     color: var(--grey);
     margin: 0 20px;
 }
+
+#error {
+    color: var(--grey);
+    padding: 15px;
+}

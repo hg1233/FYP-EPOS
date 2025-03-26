@@ -47,6 +47,41 @@ router.get("/get/all/:order_status", async (request, response) => {
 
 })
 
+router.get("/get/:id/:order_status", async (request, response) => {
+
+    try {
+
+        var table = await Tables.getByID(request.params.id);
+
+        let order_status = request.params.order_status;
+        if(order_status == null || order_status == undefined) {
+            console.log(`[Tables > Get All] Order status not defined`);
+            response.json({error: "Order status not defined"});
+            return;
+        }
+
+        order_status = Boolean(order_status);
+
+        var table = await Tables.getByIDWithOrders(table.id, order_status);
+
+        // if table not found
+        if(table == undefined) {
+            console.log(`[Tables > Get By ID] No table matching requested ID '${request.params.id}' found`);
+            response.json({error: "Table not found"});
+            return;
+        }
+
+        response.status(200).json(table);
+
+    } catch(err) {
+        console.error(`Error occurred retrieving table from ID ${request.params.id}:`, err)
+        response.status(500).json({error: "Error occurred retrieving table from ID"})
+    }
+
+
+})
+
+
 router.get("/get/:id", async (request, response) => {
 
     try {

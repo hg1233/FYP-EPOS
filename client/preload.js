@@ -60,6 +60,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   tables_getAll: async () => ipcRenderer.invoke('tables:get-all'),
   tables_getAllWithOrderData: async (order_status) => ipcRenderer.invoke('tables:get-with-order-data', order_status),
   tables_getByID: async (id) => ipcRenderer.invoke('tables:get-by-id', id),
+  tables_getByIDWithOrderData: async (id, is_order_open) => ipcRenderer.invoke('tables:get-by-id-with-order-data', id, is_order_open),
   tables_create: async (display_name, seats) => ipcRenderer.invoke('tables:create', display_name, seats),
   tables_changeStatus: async (id, new_status) => ipcRenderer.invoke('tables:change-status', id, new_status),
   tables_update: async (id, display_name, seats) => ipcRenderer.invoke('tables:update', id, display_name, seats),

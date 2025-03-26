@@ -12,6 +12,10 @@ async function getTableByID(id) {
     return await window.electronAPI.tables_getByID(id)
 }
 
+async function getTableByIDWithOrderData(id, order_status) {
+    return await window.electronAPI.tables_getByIDWithOrderData(id, order_status)
+}
+
 async function createTable(name, seats) {
   return await window.electronAPI.tables_create(name, seats)
 }

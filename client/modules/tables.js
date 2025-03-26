@@ -56,6 +56,14 @@ class TablesModule {
         return advanced_table_data;
     }
 
+    async getTableByIDWithOrderData(id, order_status) {
+        var table = await this.net_manager.pre_ready_request(`/api/tables/get/${id}/${order_status}`);
+        
+        table["enabled"] = Boolean(table["enabled"])
+
+        return table;
+    }
+
     async reloadTables() {
         this.tables = {};
         this.cacheTableData();
@@ -186,6 +194,10 @@ class TablesModule {
 
         ipcMain.handle('tables:get-by-id', async (event, id) => {
             return this.getTableByID(id);
+        })
+
+        ipcMain.handle('tables:get-by-id-with-order-data', async (event, id, is_order_open) => {
+            return this.getTableByIDWithOrderData(id, is_order_open);
         })
 
         ipcMain.handle('tables:create', async (event, display_name, seats) => {

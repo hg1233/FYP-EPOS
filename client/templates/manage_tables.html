@@ -44,6 +44,12 @@
 
 				</form>
 			</div>
+
+			<div class="modal" id="error">
+				<h2 id="error-title"></h2>
+				<p id="error-text"></p>
+			</div>
+
 		</div>
 	</div>
 
@@ -72,7 +78,7 @@
 			console.log(table)
 
 			if(table.dataset.id == id) {
-				table.children[0].innerText = name + `   (Seats ${seats} people)`;
+				table.children[0].innerText = `${name}   (Seats ${seats} people)`;
 			}
 
 		}
@@ -80,6 +86,20 @@
 		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
 
 
+	}
+
+	async function showErrorPopup(title, body) {
+		document.getElementById('error-title').innerText = title;
+		document.getElementById('error-text').innerText = body;
+		
+		document.getElementById('error').style.display = 'block';
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
+
+	}
+
+	async function hideErrorPopup() {
+		document.getElementById('error').style.display = 'none';
+		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
 	}
 
 	async function editTableFromModal(id) {
@@ -103,6 +123,20 @@
 
 	// TODO - prevent disabling a table with open orders (will need popup msg denying action)
 	async function setTableStatusFromButton(id, current_status) {
+
+		let table = await getTableByIDWithOrderData(id, true);
+
+		if(table.orders !== null) {
+			// cancel operation - table has open orders
+
+			showErrorPopup("Cannot toggle table status", "This table currently has open orders. Please close any open orders assigned to this table before changing its visibility.")
+
+			setTimeout(() => {
+				hideErrorPopup();
+				// TODO - show popup here
+			}, 5000);
+			return;
+		}
 
 		await setTableStatus(id, !current_status)
 
@@ -157,7 +191,7 @@
 	function generateTableList(tables) {
 		let list_container = document.getElementById('tableList');
 
-		for(index = 1; index <= Object.keys(tables).length; index++) {
+		for(index = 0; index < Object.keys(tables).length; index++) {
 			table = tables[index]
 
 			let entry = generateTableEntry(table)
@@ -215,7 +249,8 @@
   <script>
 	// load data
 	document.addEventListener("DOMContentLoaded", async (event) => {
-		tables = await getAllTables();
+		// get table data with open orders
+		tables = await getAllTablesWithOrderData(true);
 
 		if(tables == undefined) {
 			setTimeout(() => {
