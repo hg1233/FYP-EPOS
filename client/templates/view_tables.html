@@ -43,14 +43,15 @@
     let occupied_container = document.getElementById('occupied-tables').children[2];
 
     async function loadTables() {
-      tables = await getAllTablesWithOrderData(true);
+
+      let tables = await getAllTablesWithOrderData(true);
       
       for(let index = 0; index < tables.length; index++) {
 
         let table = tables[index];
 
         // hide disabled tables from view
-        if(!table.enabled) return;
+        if(!table.enabled) continue;
 
         generateTableEntry(table);
 
