@@ -35,6 +35,7 @@
   <script src="../frontend/orders_link.js"></script>
   <script src="../frontend/tables_link.js"></script>
   <script src="../frontend/window_manager_link.js"></script>
+  <script src="../frontend/clerks_link.js"></script>
 
   <script>
 
@@ -68,14 +69,37 @@
       elem.dataset["table_id"] = table.id;
       
       let table_name = document.createElement('h3');
+      table_name.classList.add('table-header')
       table_name.innerText = table.display_name;
       elem.appendChild(table_name);
+
+      // check if table is occupied
+      if(table.orders !== null) {
+
+        let order_id = table.orders[0];
+        
+        let clerk = await getClerkFromOrderID(order_id)
+        let order = await getOrderByID(order_id)
+        let running_total = order.total == null ? 0 : order.total / 100
+
+        let subtitle = document.createElement('p');
+        subtitle.classList.add('table-details')
+        subtitle.innerText = `Opened by ${clerk.name}. Total: £${running_total.toFixed(2)}`;
+        elem.appendChild(subtitle)
+
+      }
 
       // choose where to put entry based on table availability
       let target_container = (table.orders == null ? available_container : occupied_container);
 
       target_container.appendChild(elem);
 
+    }
+
+    async function getClerkFromOrderID(order_id) {
+      let orders = await getOpenOrders();
+      let clerk_id = orders[order_id].created_by;
+      return await getClerkByID(clerk_id);
     }
 
 

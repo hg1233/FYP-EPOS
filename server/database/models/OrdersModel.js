@@ -14,8 +14,9 @@ const Orders = {
     },
 
     getAllOrdersWithSuborders: () => {
-        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'), knex.raw('SUM(suborder_line.subtotal) as total'))
         .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .leftJoin('suborder_line', 'suborder.suborder_id', 'suborder_line.suborder_id')
         .groupBy('orders.id')
         .then((response) => {
 
@@ -37,8 +38,9 @@ const Orders = {
     },
 
     getOrderByIDWithSuborders: (id) => {
-        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'), knex.raw('SUM(suborder_line.subtotal) as total'))
         .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .leftJoin('suborder_line', 'suborder.suborder_id', 'suborder_line.suborder_id')
         .where({id})
         .groupBy('orders.id')
         .first()
@@ -60,8 +62,9 @@ const Orders = {
     },
 
     getOrdersByOrderStatusWithSuborders: (is_open) => {
-        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'))
+        return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'), knex.raw('SUM(suborder_line.subtotal) as total'))
         .leftJoin('suborder', 'orders.id', 'suborder.order_id')
+        .leftJoin('suborder_line', 'suborder.suborder_id', 'suborder_line.suborder_id')
         .groupBy('orders.id')
         .where({is_open})
         .then((response) => {

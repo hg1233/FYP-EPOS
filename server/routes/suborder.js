@@ -216,7 +216,9 @@ router.post("/line/create", async (request, response) => {
         let product_unit_price = request.body["product_unit_price"];
         let product_qty = request.body["product_qty"];
         let subtotal = request.body["subtotal"];
-        let comments = request.body["comments"];
+        let comments = request.body["comments"] == undefined ? null : request.body["comments"];
+
+        console.log(`Received - SUID ${suborder_id}, PID ${product_id}, PN ${product_name}, PQ ${product_qty}, PUP ${product_unit_price}, S ${subtotal}, LC ${comments}`)
 
         // check suborder exists
         let suborder = Suborder.getSuborderBySuborderID(suborder_id);

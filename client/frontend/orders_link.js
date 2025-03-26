@@ -14,7 +14,7 @@ async function getClosedOrders() {
 }
 
 async function getOrderByID(order_id) {
-    return await window.electronAPI.orders_getByID();
+    return await window.electronAPI.orders_getByID(order_id);
 }
 
 

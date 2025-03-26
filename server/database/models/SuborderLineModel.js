@@ -15,7 +15,7 @@ const SuborderLine = {
                 line_comments,
             }
         )
-        .returning(['*'])
+        .returning('*');
     },
 
     getAll: () => {
