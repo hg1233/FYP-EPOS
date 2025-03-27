@@ -18,6 +18,22 @@ const Suborder = require('../database/models/SuborderModel.js');
 router.get('/get/all', async (request, response) => {
     try {
         var orders = await Orders.getAllOrdersWithSuborders();
+
+        // add in suborder line details for each order
+        for(let o_index = 0; o_index < orders.length; o_index++) {
+
+            let order = orders[o_index];
+
+            order.suborders = await Suborder.getSubordersByOrderID(order.id);
+
+            for(let s_index = 0; s_index < order.suborders.length; s_index++) {
+                let suborder = order.suborders[s_index];
+
+                suborder.lines = await SuborderLine.getLinesBySuborderID(suborder.suborder_id);
+
+            }
+        }
+
         response.json(orders);
     } catch(error) {
         console.error(error)
