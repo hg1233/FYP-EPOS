@@ -40,7 +40,6 @@ const Orders = {
     getOrderByIDWithSuborders: (id) => {
 
         let result = null;
-        let suborder_data = null;
 
         return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'), knex.raw('SUM(suborder_line.subtotal) as total'))
         .leftJoin('suborder', 'orders.id', 'suborder.order_id')

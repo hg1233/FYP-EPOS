@@ -13,6 +13,7 @@ const SuborderLine = require('../database/models/SuborderLineModel.js');
 const PaymentMethods = require('../database/models/PaymentMethodsModel.js');
 const Clerks = require('../database/models/ClerksModel.js');
 const Tables = require('../database/models/TablesModel.js');
+const Suborder = require('../database/models/SuborderModel.js');
 
 router.get('/get/all', async (request, response) => {
     try {
@@ -27,12 +28,27 @@ router.get('/get/all', async (request, response) => {
 router.get('/get/open', async (request, response) => {
     try{
 
-        var orders = await Orders.getOrdersByOrderStatus(true);
+        var orders = await Orders.getOrdersByOrderStatusWithSuborders(true);
+
+        // add in suborder line details for each order
+        for(let o_index = 0; o_index < orders.length; o_index++) {
+
+            let order = orders[o_index];
+
+            order.suborders = await Suborder.getSubordersByOrderID(order.id);
+
+            for(let s_index = 0; s_index < order.suborders.length; s_index++) {
+                let suborder = order.suborders[s_index];
+
+                suborder.lines = await SuborderLine.getLinesBySuborderID(suborder.suborder_id);
+
+            }
+        }
         response.json(orders);
 
     } catch(err) {
         console.error(err);
-        response.status(500).json({error: "Failed to get all open orders"})
+        response.status(500).json({error: "Failed to get all orders by status"})
     }
 })
 
@@ -49,7 +65,7 @@ router.get('/get/:id', async (request, response) => {
         // add in suborder line details
 
         for(let index = 0; index < order.suborders.length; index++) {
-            
+
             let suborder = order.suborders[index];
             suborder.lines = await SuborderLine.getLinesBySuborderID(suborder.suborder_id);
         }
