@@ -7,8 +7,9 @@ const db = require('../database.js');
 // setup route handler
 const router = express.Router();
 
-// import Orders, PaymentMethods, Tables & Clerks db model
+// import Orders, SuborderLine, PaymentMethods, Tables & Clerks db model
 const Orders = require('../database/models/OrdersModel.js');
+const SuborderLine = require('../database/models/SuborderLineModel.js');
 const PaymentMethods = require('../database/models/PaymentMethodsModel.js');
 const Clerks = require('../database/models/ClerksModel.js');
 const Tables = require('../database/models/TablesModel.js');
@@ -43,6 +44,14 @@ router.get('/get/:id', async (request, response) => {
         if(order == undefined) {
             response.json({error: "Order not found"});
             return;
+        }
+
+        // add in suborder line details
+
+        for(let index = 0; index < order.suborders.length; index++) {
+            
+            let suborder = order.suborders[index];
+            suborder.lines = await SuborderLine.getLinesBySuborderID(suborder.suborder_id);
         }
 
         response.json(order);

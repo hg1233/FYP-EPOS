@@ -64,7 +64,6 @@ const Orders = {
 
         }).then((response) => {
             
-            // TODO - include suborder lines here
             result.suborders = response;
             return result;
             
