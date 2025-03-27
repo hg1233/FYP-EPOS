@@ -139,6 +139,46 @@ class OrdersModule {
 
     }
 
+    async createNewSuborder(order_id, clerk_id) {
+
+        // check clerk exists
+        var clerk = this.module_manager.getModuleByName('clerks').clerks[clerk_id];
+
+        if(clerk == null || clerk == undefined) {
+            console.warn(`Unable to create suborder - clerk # ${clerk_id} does not exist`)
+            return null;
+        }
+
+        // check order exists
+        let order = this.getOrderByID(order_id);
+        
+        if(order == null) {
+            console.warn(`Unable to create suborder - order # ${order_id} does not exist`)
+            return null;
+        }
+
+        // input validation passed - create suborder
+        var response = await this.net_manager.async_post('/api/suborder/create', 
+            {
+                order_id: order_id,
+                clerk_id: clerk_id,
+            }
+        );
+            
+        if(response["message"] != undefined) {
+            
+            // success - create local object - TODO
+            //var suborder = response.order_data;
+
+            // store local object - TODO
+            //this.open_orders[order.id] = order;
+            return response.suborder_details.suborder_id;
+        } else {
+            return {error: "Error occurred creating suborder", details: response["error"]}
+        }
+
+    }
+
     async createNewOrder(clerk_id, order_name, table_id) {
 
         // check clerk exists
@@ -236,6 +276,10 @@ class OrdersModule {
 
         ipcMain.handle('orders:create', async (event, clerk_id, order_name, table_id) => {
             return this.createNewOrder(clerk_id, order_name, table_id);
+        })
+
+        ipcMain.handle('orders:create-suborder', async (event, order_id, clerk_id) => {
+            return this.createNewSuborder(order_id, clerk_id);
         })
 
         ipcMain.handle('orders:reload-open', async () => { 

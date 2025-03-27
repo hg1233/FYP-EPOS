@@ -106,8 +106,14 @@ router.post('/create', async (request, response) => {
         var clerk_id = request.body["clerk_id"];
         var order_id = request.body["order_id"];
 
+        if(order_id == null || order_id == undefined) {
+            console.log(`[Suborder > Create] Input validation failed - order undefined`);
+            response.status(400).json({error: "Failed to create suborder - order undefined"});
+            return;
+        }
+
         // check order exists
-        let order = await Orders.getOrderByID(order_id);
+        let order = await Orders.getOrderByIDWithSuborders(order_id);
 
         if(order == null || order == undefined) {
             console.log(`[Suborder > Create] Input validation failed - order not found`);

@@ -34,7 +34,7 @@ const Orders = {
     },
 
     getOrderByID: (id) => {
-        return knex('orders').select('*').where({id}).first();
+        return knex('orders').select('*').where('orders.id', id).first();
     },
 
     getOrderByIDWithSuborders: (id) => {
