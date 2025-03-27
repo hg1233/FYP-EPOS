@@ -38,6 +38,10 @@ const Orders = {
     },
 
     getOrderByIDWithSuborders: (id) => {
+
+        let result = null;
+        let suborder_data = null;
+
         return knex('orders').select('orders.*', knex.raw('GROUP_CONCAT(suborder.suborder_id) as suborders'), knex.raw('SUM(suborder_line.subtotal) as total'))
         .leftJoin('suborder', 'orders.id', 'suborder.order_id')
         .leftJoin('suborder_line', 'suborder.suborder_id', 'suborder_line.suborder_id')
@@ -52,8 +56,18 @@ const Orders = {
 
             }
 
-        return response;
+            // save query output
+            result = response;
 
+            // get all suborder data
+            return knex('suborder').select('*').where('order_id', response.id)
+
+        }).then((response) => {
+            
+            // TODO - include suborder lines here
+            result.suborders = response;
+            return result;
+            
         })
     },
 
