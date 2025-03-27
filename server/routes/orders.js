@@ -25,33 +25,6 @@ router.get('/get/all', async (request, response) => {
     }
 })
 
-router.get('/get/open', async (request, response) => {
-    try{
-
-        var orders = await Orders.getOrdersByOrderStatusWithSuborders(true);
-
-        // add in suborder line details for each order
-        for(let o_index = 0; o_index < orders.length; o_index++) {
-
-            let order = orders[o_index];
-
-            order.suborders = await Suborder.getSubordersByOrderID(order.id);
-
-            for(let s_index = 0; s_index < order.suborders.length; s_index++) {
-                let suborder = order.suborders[s_index];
-
-                suborder.lines = await SuborderLine.getLinesBySuborderID(suborder.suborder_id);
-
-            }
-        }
-        response.json(orders);
-
-    } catch(err) {
-        console.error(err);
-        response.status(500).json({error: "Failed to get all orders by status"})
-    }
-})
-
 router.get('/get/:id', async (request, response) => {
     try {
         var order = await Orders.getOrderByIDWithSuborders(request.params.id);
@@ -116,6 +89,21 @@ router.get('/get/is_open/:status', async (request, response) => {
         if(orders == undefined || orders.length == 0) {
             response.json({error: "No orders found"});
             return;
+        }
+
+        // add in suborder line details for each order
+        for(let o_index = 0; o_index < orders.length; o_index++) {
+
+            let order = orders[o_index];
+
+            order.suborders = await Suborder.getSubordersByOrderID(order.id);
+
+            for(let s_index = 0; s_index < order.suborders.length; s_index++) {
+                let suborder = order.suborders[s_index];
+
+                suborder.lines = await SuborderLine.getLinesBySuborderID(suborder.suborder_id);
+
+            }
         }
 
         response.json(orders);
