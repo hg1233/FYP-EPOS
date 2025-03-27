@@ -167,12 +167,12 @@ class OrdersModule {
             
         if(response["message"] != undefined) {
             
-            // success - create local object - TODO
-            //var suborder = response.order_data;
+            // create lines as blank as suborder has just been made, so lines cannot yet exist
+            response.suborder_details.lines = [];
 
-            // store local object - TODO
-            //this.open_orders[order.id] = order;
-            return response.suborder_details.suborder_id;
+            // success - create local object - TODO
+            this.open_orders[order_id].suborders.push(response.suborder_details);
+            return response.suborder_details;
         } else {
             return {error: "Error occurred creating suborder", details: response["error"]}
         }
