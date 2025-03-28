@@ -34,3 +34,11 @@ async function setTableForOrder(order_id, table_id) {
 async function payOrderAndClose(order_id, payment_method_id) {
     return await window.electronAPI.orders_payAndClose(order_id, payment_method_id);
 }
+
+async function getActiveOrder() {
+    return await window.electronAPI.orders_getActive();
+}
+
+async function setActiveOrder(order_id) {
+    return await window.electronAPI.orders_setActive(order_id);
+}

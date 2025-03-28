@@ -18,3 +18,8 @@
 .table-details {
     margin-top: 0;
 }
+
+#confirm-open-modal {
+    color: var(--grey);
+    padding: 15px;
+}

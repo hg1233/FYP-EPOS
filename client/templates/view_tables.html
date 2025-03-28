@@ -30,6 +30,15 @@
 
       </div>
     </div>
+    <div class="modal-overlay">
+      <div class="modal" id="confirm-open-modal">
+        <h2 id="confirm-title"></h2>
+        <p id="confirm-text"></p>
+        <!-- // TODO - style these buttons better -->
+        <button onclick="confirmOpen()">Open</button>
+        <button onclick="closeConfirmModal()">Cancel</button>
+      </div>
+    </div>
   </body>
   <script src="../frontend/orders_link.js"></script>
   <script src="../frontend/tables_link.js"></script>
@@ -40,6 +49,8 @@
 
     let available_container = document.getElementById('available-tables').children[2];
     let occupied_container = document.getElementById('occupied-tables').children[2];
+
+    let clicked_table = null;
 
     async function loadTables() {
 
@@ -67,6 +78,7 @@
       let elem = document.createElement('div');
       elem.classList.add('table-entry');
       elem.dataset["table_id"] = table.id;
+      elem.setAttribute('onclick', `openConfirmModal(${table.id})`) 
       
       let table_name = document.createElement('h3');
       table_name.classList.add('table-header')
@@ -102,6 +114,59 @@
       return await getClerkByID(clerk_id);
     }
 
+    async function openConfirmModal(table_id) {
+      clicked_table = await getTableByIDWithOrderData(table_id, true);
+      let modal_title = document.getElementById('confirm-title');
+      let modal_text = document.getElementById('confirm-text')
+
+      modal_title.innerText = `Are you sure you want to open table '${clicked_table.display_name}'?`
+      
+      // show order data if table has open order
+      if(clicked_table.orders !== null) {
+
+        let order_id = clicked_table.orders[0];
+
+        let clerk = await getClerkFromOrderID(order_id)
+        let order = await getOrderByID(order_id)
+        let running_total = order.total == null ? 0 : order.total / 100
+
+        modal_text.innerText = `Opened by ${clerk.name}. Total: £${running_total.toFixed(2)}`;
+
+      } else {
+        modal_text.innerText = "This will open a new order against this table."
+      }
+
+      let modal_container = document.getElementsByClassName('modal-overlay')[0];
+      let modal = document.getElementById('confirm-open-modal');
+
+      modal_container.style.display = 'flex';
+      modal.style.display = 'block';
+            
+    }
+
+    async function closeConfirmModal() {
+      clicked_table = null;
+      let modal_container = document.getElementsByClassName('modal-overlay')[0];
+      let modal = document.getElementById('confirm-open-modal');
+
+      modal_container.style.display = 'none';
+      modal.style.display = 'none';
+    }
+
+    async function confirmOpen() {
+
+      // is the clerk opening a new table & order?
+      if(clicked_table.orders == null) {
+        // create & open new order
+        
+        // TODO - create order
+      } else {
+        // open existing order
+        await setActiveOrder(clicked_table.orders)
+      }
+
+      showPage("Sale");
+    }
 
     // start
     loadTables();
