@@ -4,10 +4,12 @@ class OrdersModule {
     module_manager;
     open_orders;
     closed_orders;
+    active_order_id;
 
     constructor() {
         this.open_orders = {};
         this.closed_orders = {};
+        this.active_order_id = null;
     }
 
     async init() {
@@ -258,6 +260,14 @@ class OrdersModule {
 
     }
 
+    async getActiveOrder() {
+        return await this.getOrderByID(this.active_order_id);
+    }
+
+    async setActiveOrder(order_id) {
+        this.active_order_id = order_id;
+    }
+
     // TODO - be able to lock orders
 
 
@@ -306,6 +316,13 @@ class OrdersModule {
             return this.payOrderAndClose(order_id, payment_method_id);
         })
 
+        ipcMain.handle('orders:get-active', async () => {
+            return this.getActiveOrder();
+        });
+
+        ipcMain.handle('orders:set-active', async (event, order_id) => {
+            return this.setActiveOrder(order_id);
+        });
 
 
     }
