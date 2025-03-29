@@ -10,9 +10,9 @@
             <div class="sidebar">
                 <div class="ticket">
                     <!-- ticket/order header-->
-                    <h2>Order # 203-1</h2> <!-- order_id + '-' + suborder_id -->
-                    <h3>Table 12 ~ Covers 2</h3> <!-- table display_name & seats-->
-                    <h3>Mr Smith</h3> <!-- order_name -->
+                    <h2 id="ticket-order-id">Order # 203-1</h2> <!-- order_id + '-' + suborder_id -->
+                    <h3 id="ticket-table-seats">Quick Sale</h3> <!-- table display_name & seats-->
+                    <h3 id="ticket-order-name"></h3> <!-- order_name -->
                     <div class="spacer"></div>
 
 
@@ -413,6 +413,22 @@
             setTimeout(() => {
                 refreshProductsContainer();
             }, 5);
+
+            let order = await getActiveOrder();
+
+            if(order !== null) {
+                // order exists, populate data if it exists
+                
+                // TODO - populate order ID with suborder ID - no exists check req
+
+                // leave order name blank if null
+                document.getElementById('ticket-order-name').innerText = (order.order_name !== null ? order.order_name : "");
+                
+                // set table name to quick sale if not assigned to a table
+                let table = await getTableByID(order.table_id);
+
+                document.getElementById('ticket-table-seats').innerText = (table !== null && table !== undefined ? `${table.display_name} ~ Seats ${table.seats}` : "Quick Sale")
+            }
         });
 
     </script>
