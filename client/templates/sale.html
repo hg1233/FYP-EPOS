@@ -50,7 +50,7 @@
                     <div class="btn" onclick="alert('TODO')">
                         <h3>Save to Table</h3>
                     </div>
-                    <div class="btn" onclick="alert('TODO')">
+                    <div class="btn" onclick="showSetOrderNameModal()">
                         <h3>Set Order Name</h3>
                     </div>
                 </div>
@@ -84,6 +84,17 @@
                         <!-- // TODO add cancel operation btn -->
                     </div>
 
+                </div>
+            </div>
+            <div class="modal" id="set-order-name-modal">
+                <h1>Set Order Name</h1>
+                <p>Enter your desired order name below (leave blank for no name):</p>
+                <input class="modal-input" type="text" id="order-name-entry" placeholder="e.g. Mr Smith, Delivery, Collection">
+                <div class="sale-keypad">
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key primary-btn" onclick="confirmOrderName()">Confirm</button>
+                        <button class="sale-keypad-key" onclick="hideSetOrderNameModal()">Cancel</button>
+                    </div>
                 </div>
             </div>
             <div class="modal" id="add-comments-modal">
@@ -407,6 +418,46 @@
                 }
             }
         }
+
+        async function showSetOrderNameModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('set-order-name-modal');
+
+            overlay.style.display = "flex";
+            qty_modal.style.display = "block";
+        }
+
+        async function hideSetOrderNameModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('set-order-name-modal');
+            
+            // clear input on cancel
+            document.getElementById('comments-entry').value = '';
+
+            overlay.style.display = "none";
+            qty_modal.style.display = "none";
+        }
+
+        async function confirmOrderName() {
+
+            // get active order
+            let order = await getActiveOrder();
+
+            // get name from user input
+            let name = document.getElementById('order-name-entry').value;
+
+            // update on backend
+            let response = await setOrderName(order.id, name)
+
+            if(response == true) {
+                // success, update at top of ticket
+                document.getElementById('ticket-order-name').innerText = (name !== null ? name : "");
+            }
+
+            // hide modal
+            hideSetOrderNameModal();
+        }
+
 
         document.addEventListener("DOMContentLoaded", async function() {
             await reloadCategories();

@@ -78,5 +78,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   orders_payAndClose: async (order_id, payment_method_id) => ipcRenderer.invoke('orders:pay-and-close', order_id, payment_method_id),
   orders_getActive: async () => ipcRenderer.invoke('orders:get-active'),
   orders_setActive: async (order_id) => ipcRenderer.invoke('orders:set-active', order_id),
-
+  orders_setName: async (order_id, name) => ipcRenderer.invoke('orders:set-name', order_id, name),
 })
