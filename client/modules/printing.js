@@ -25,11 +25,13 @@ class PrintingModule {
     }
 
     async setKitchenPrinter(printer) {
-        // TODO
+        this.kitchen_printer = printer;
+        updateLocalStorage();
     }
 
     async setReceiptPrinter(printer) {
-        // TODO
+        this.receipt_printer = printer;
+        updateLocalStorage();
     }
 
     async getPrintingType() {
@@ -40,9 +42,11 @@ class PrintingModule {
         switch (type) {
             case "PDF":
                 this.printing_type = type;
+                updateLocalStorage();
                 break;
             case "THERMAL":
                 this.printing_type = type;
+                updateLocalStorage();
                 break;
             default:
                 console.warn(`Cannot set printing type to '${type} - invalid type provided.'`)
@@ -98,6 +102,18 @@ class PrintingModule {
             return this.receipt_printer;
         })
 
+        ipcMain.handle('print:set-kitchen-printer', async (event, printer) => {
+            return this.setKitchenPrinter(printer);
+        })
+        
+        ipcMain.handle('print:set-receipt-printer', async (event, printer) => {
+            return this.setReceiptPrinter(printer);
+        })
+
+    }
+
+    updateLocalStorage() {
+        // TODO
     }
 
 }

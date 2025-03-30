@@ -27,3 +27,18 @@ async function setKitchenPrinter(printer) {
 async function setReceiptPrinter(printer) {
     return await window.electronAPI.print_setReceiptPrinter(printer);
 }
+
+async function getPrintingType() {
+    return await window.electronAPI.print_getType();
+}
+
+async function setPrintingType(type) {
+    switch (type) {
+        case "PDF":
+            return await window.electronAPI.print_setType(type);
+        case "THERMAL":
+            return await window.electronAPI.print_setType(type);
+        default:
+            return {error: "Invalid type provided"}
+    }
+}
