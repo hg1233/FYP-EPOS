@@ -4,6 +4,21 @@
     <link href="../frontend/master-style.css" rel="stylesheet"> 
     <!-- include admin.css for admin pages specific styling -->
     <link href="../frontend/admin.css" rel="stylesheet"> 
+	<style>
+		.line-container {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding-bottom: 10px;
+		}
+		.line-container > label {
+			padding-right: 10px;
+		}
+
+		.line-container > select {
+			padding: 5px;
+		}
+	</style>
   </head>
   <body>
 	<button class="btn-back" onclick="showPage('Manager Settings')">⮨ Go Back</button>
@@ -17,10 +32,18 @@
 
 			<div class="category-list" id="printOptionsList">
 				
-				<label>Enable printing?</label>
-				<input type="checkbox"></input>
+				<div class="line-container printing-enabled">
+					<label>Is printing enabled?</label>
+					<input class="styled-checkbox" id="printing-enabled-checkbox" type="checkbox"></input>
+				</div>
 
-
+				<div class="line-container printing-type">
+					<label>Printing type: </label>
+					<select id="printing-type-dropdown" required>
+						<option value="PDF">PDF</option>
+						<option value="THERMAL">Thermal Printing</option>
+					</select>
+				</div>
 
 			</div>
 		</div>
