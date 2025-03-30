@@ -61,5 +61,19 @@ app.whenReady().then( () => {
         windowManager.instance.showPage(page);
     });
 
+    sendPrinterDataToPrinterModule();
+
 
 });
+
+async function sendPrinterDataToPrinterModule() {
+    try {
+        let print_mod = moduleManager.instance.getModuleByName('printing');
+        print_mod.loadPrinters(await windowManager.instance.window.webContents.getPrintersAsync())
+
+    } catch(err) {
+        console.error("Error passing printer data from window manager to print module:")
+        console.error(err);
+        return;
+    }
+}

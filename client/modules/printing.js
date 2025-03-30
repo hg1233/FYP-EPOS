@@ -5,21 +5,23 @@ class PrintingModule {
     available_printers;
     receipt_printer;
     kitchen_printer;
+    printing_type;
 
     constructor() {
         this.available_printers = [];
         this.receipt_printer = null;
         this.kitchen_printer = null;
+        this.net_manager = null;
+        this.printing_type = "PDF";
     }
 
     /**
-     * Printer data must be imported by the browser window.
-     * This function is used to load the data so that the app can use the active printer data.
+     * Printer data must be imported by the window manager.
      * 
      * @param {*} printer_data 
      */
     async loadPrinters(printer_data) {
-        // TODO
+        this.available_printers = printer_data;
     }
 
     async setKitchenPrinter(printer) {
@@ -28,6 +30,24 @@ class PrintingModule {
 
     async setReceiptPrinter(printer) {
         // TODO
+    }
+
+    async getPrintingType() {
+        return this.printing_type;
+    }
+
+    async setPrintingType(type) {
+        switch (type) {
+            case "PDF":
+                this.printing_type = type;
+                break;
+            case "THERMAL":
+                this.printing_type = type;
+                break;
+            default:
+                console.warn(`Cannot set printing type to '${type} - invalid type provided.'`)
+                return null;
+        }
     }
 
     async printToKitchen(data) {
@@ -60,10 +80,14 @@ class PrintingModule {
         // TODO
     }
 
-    async invokeIPCHandles(moduleManager, ipcMain) {
+    invokeIPCHandles(moduleManager, ipcMain) {
     
         ipcMain.handle('print:load-printers', async (event, printer_data) => {
             this.loadPrinters(printer_data);
+        })
+
+        ipcMain.handle('print:get-all', async () => {
+            return this.available_printers;
         })
 
         ipcMain.handle('print:get-kitchen-printer', async () => {
@@ -79,4 +103,4 @@ class PrintingModule {
 }
 
 let instance = new PrintingModule();
-module.exports = instance;
+module.exports = {instance};
