@@ -24,6 +24,7 @@ let modules = [
     {name: 'payment_methods', path: './modules/payment_methods.js'},
     {name: 'tables', path: './modules/tables.js'},
     {name: 'orders', path: './modules/orders.js'},
+    {name: 'printing', path: './modules/printing.js'},
 ]
 
 // register all modules
