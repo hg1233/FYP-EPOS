@@ -45,6 +45,19 @@
 					</select>
 				</div>
 
+				<div class="line-container receipt-printer">
+					<label>Select printer for receipts:</label>
+					<select id="receipt-printers" required>
+					</select>
+				</div>
+
+				<div class="line-container kitchen-printer">
+					<label>Select printer for kitchen orders:</label>
+					<select id="kitchen-printers" required>
+					</select>
+				</div>
+
+				
 			</div>
 		</div>
 	</div>
@@ -53,141 +66,36 @@
 
   <script>
 
-	async function updateVenueAttributeFromModal() {
-
-		let modal_container = document.getElementById('edit-venue-form');
-		let form = modal_container.children[0];
-
-		let attribute = document.getElementById("edit-venue-input-name").value
-		let value = document.getElementById("edit-venue-input-value").value
-		
-		changeAttribute(attribute, value);
-		
-		// update name on front end
-		let local_venue_data = document.getElementById('venueList').children;
-
-
-		for(let venue_entry of local_venue_data) {
-
-			if(venue_entry.dataset.attribute == attribute) {
-				venue_entry.children[0].innerText = attribute.replace("_", " ");
-			}
-
-		}
-
-		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
-
-
-	}
-
-	async function editAttributeFromModal(attribute) {
-
-		let modal_container = document.getElementById('edit-venue-form');
-
-		let value = await getValueByAttributeName(attribute);
-
-
-		// populate form values with current data
-		document.getElementById("edit-venue-input-name").value = attribute;
-		document.getElementById("edit-venue-input-value").value = value;
-		document.getElementById("edit-table-modal-header").innerText = `Editing Venue Attribute '${attribute}'`
-
-		// show modal box and overlay
-		document.getElementById('edit-venue-form').style.display = 'block';
-		document.getElementsByClassName('modal-overlay')[0].style.display = 'flex';
-		
-
-	}
-
-	async function createNewAttribute() {
-		let name = document.getElementById('create-venue-input-name').value.toLowerCase().replace(" ", "_");
-
-		if(name.trim().length == 0) {
-			document.getElementById('create-venue-input-name').value = '';
-			document.getElementById("create-venue-input-name").reportValidity();
-			return;
-		}
-
-		let value = document.getElementById('create-venue-input-value').value
-
-		await addAttribute(name, value);
-		let updated_value = await getValueByAttributeName(name);
-		let list_container = document.getElementById('venueList');
-		list_container.appendChild(generateVenueEntry({attribute: name, value: value}));
-
-		// clear input after creating clerk
-		document.getElementById('create-venue-input-name').value = '';
-		document.getElementById('create-venue-input-value').value = '';
-
-
-	}
-
-	function generateVenueList(tables) {
-		let list_container = document.getElementById('venueList');
-
-		for(index = 0; index < Object.keys(tables).length; index++) {
-
-			key = Object.keys(tables)[index]
-			value = tables[key]
-
-			let entry = generateVenueEntry({attribute: key, value: value})
-
-			list_container.appendChild(entry)
-
-		}
-	}
-
-	function generateVenueEntry(venue) {
-		// build clerk entry element
-		let entry = document.createElement('div');
-			entry.classList.add('category-item')
-			entry.dataset.attribute = venue.attribute
-
-			// build and add attribute name to entry
-			let name_header = document.createElement('span');
-
-			let output = venue.attribute.replace('_', ' ')
-			name_header.style.textTransform = 'capitalize';
-
-			name_header.innerText = output
-			entry.appendChild(name_header);
-
-			// spacer
-			let spacer = document.createElement('span');
-			entry.appendChild(spacer);
-
-			// create edit btn
-			let edit_btn = document.createElement('button');
-			edit_btn.classList.add('btn-blue');
-			edit_btn.setAttribute('onclick', `editAttributeFromModal('${venue.attribute}')`) 
-			edit_btn.innerText = "Edit"
-			entry.appendChild(edit_btn)
-
-			return entry;
-	}
 
   </script>
 
-  <script src="../frontend/venue_link.js"></script>
+  <script src="../frontend/print_link.js"></script>
   <script src="../frontend/window_manager_link.js"></script>
 
   <script>
-	// load data
-
-	let venue_data;
-
 	document.addEventListener("DOMContentLoaded", async (event) => {
-		venue_data = await getAllAttributes();
 
+		printers = await getAllPrinters();
+		let kitchen = getKitchenPrinter();
+		let receipt = getReceiptPrinter();
+		
+		// generate printer options
+		printers.forEach(printer => {
+			let option = document.createElement('option');
+			option.value = printer.name;
+			option.innerText = printer.displayName;
 
+			// create an element copy as HTML is weird with select options
+			let option2 = option.cloneNode(true);
 
-		if(venue_data == undefined) {
-			setTimeout(() => {
-				generateVenueList(venue_data);
-			}, 5);
-		} else {
-			generateVenueList(venue_data);
-		}
+			if(kitchen == printer.name) option.selected = true;
+			if(receipt == printer.name) option2.selected = true;
+
+			document.getElementById('receipt-printers').appendChild(option);
+			document.getElementById('kitchen-printers').appendChild(option2);
+
+		});
+		
 		
 	});
 	
