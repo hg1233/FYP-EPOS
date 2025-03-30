@@ -9,38 +9,19 @@
 	<button class="btn-back" onclick="showPage('Manager Settings')">⮨ Go Back</button>
     <div class="container">
 		<div class="admin-container">
-			<h1>Venue Settings</h1>
+			<h1>Manage Printing</h1>
+			<!-- // TODO - change the below -->
 			<p>Use this page to manage your venue attributes, including venue name, address and phone number displayed on your receipts and elsewhere.</p>
 		
-			<form id="create-table-form" onsubmit="event.preventDefault(); return createNewAttribute()">
-				<input type="text" id="create-venue-input-name" placeholder="Enter attribute name" required>
-				<input type="text" id="create-venue-input-value" placeholder="Enter attribute value" required style="width:30%">
-				<button type="submit">Create New Attribute</button>
-			</form>
-
 			<div class="spacer"></div>
 
-			<div class="category-list" id="venueList">
-				<!-- auto generated from js -->
-			</div>
-		</div>
-		<div class="modal-overlay">
-			<div class="modal" id="edit-venue-form">
-				<form onsubmit="event.preventDefault(); return updateVenueAttributeFromModal()">
-					<h3 id="edit-table-modal-header" style="color:#222">Editing Attribute 'Default Attribute'</h3>
+			<div class="category-list" id="printOptionsList">
+				
+				<label>Enable printing?</label>
+				<input type="checkbox"></input>
 
-					<div>
-						<input id="edit-venue-input-name" hidden type="text" name="name" placeholder="venue_name" style="width: 60%;" required>
-					</div>
-					<div>
-						<label style="color:#222;padding-right:15px;"for="name">Attribute Value: </label>
-						<input id="edit-venue-input-value" type="text" name="value" placeholder="5 Star Bar Ltd" style="width: 60%;">
-					</div>
 
-					<button class="btn-green" type="submit" style="margin-right:10%;">Save Changes</button>
-					<button class="btn-red" type="reset" onclick="document.getElementsByClassName('modal-overlay')[0].style.display = 'none';">Cancel</button>
 
-				</form>
 			</div>
 		</div>
 	</div>
