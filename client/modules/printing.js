@@ -62,8 +62,16 @@ class PrintingModule {
 
     async invokeIPCHandles(moduleManager, ipcMain) {
     
-        ipcMain.handle('printing:load-printers', async (event, printer_data) => {
+        ipcMain.handle('print:load-printers', async (event, printer_data) => {
             this.loadPrinters(printer_data);
+        })
+
+        ipcMain.handle('print:get-kitchen-printer', async () => {
+            return this.kitchen_printer;
+        })
+        
+        ipcMain.handle('print:get-receipt-printer', async () => {
+            return this.receipt_printer;
         })
 
     }

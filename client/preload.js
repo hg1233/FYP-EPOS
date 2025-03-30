@@ -83,4 +83,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   /*** Printing Module ***/
   
   print_loadPrinters: async (printer_data) => ipcRenderer.invoke('print:load-printers', printer_data),
+  print_getKitchenPrinter: async () => ipcRenderer.invoke('print:get-kitchen-printer'),
+  print_getReceiptPrinter: async () => ipcRenderer.invoke('print:get-receipt-printer'),
 })
