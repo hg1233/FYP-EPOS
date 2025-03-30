@@ -47,7 +47,7 @@
                     <div class="btn" onclick="alert('TODO')">
                         <h3>Pay Now</h3>
                     </div>
-                    <div class="btn" onclick="alert('TODO')">
+                    <div class="btn" onclick="saveToTable()">
                         <h3>Save to Table</h3>
                     </div>
                     <div class="btn" onclick="showSetOrderNameModal()">
@@ -484,6 +484,33 @@
                 document.getElementById('ticket-order-id').innerText = `Order # ${order.id}/${order.suborders[order.suborders.length-1].suborder_id}`
             }
         });
+
+        async function saveToTable() {
+            // check if table_id in active order is defined
+            let order = await getActiveOrder();
+
+            if(order == null) {
+                // this should never be the case
+                console.error("Error attempting to save order to table - no currently active order.")
+                // TODO - user facing error modal should this happen
+                return;
+            }
+            
+            let last_suborder = order.suborders[order.suborders.length -1];
+
+            if(last_suborder == null) {
+                // this should, again, never be the case
+                console.error("Error attempting to save order to table - no suborders found.")
+                // TODO - user facing error modal should this happen
+                return;
+            }
+
+            // store to table
+
+            // TODO - backend table store function needs to send data to printer module
+
+            alert("// TODO")
+        }
 
     </script>
 
