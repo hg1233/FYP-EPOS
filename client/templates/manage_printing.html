@@ -79,6 +79,10 @@
 		let kitchen = getKitchenPrinter();
 		let receipt = getReceiptPrinter();
 		
+		let is_printing_enabled = await isPrintingEnabled();
+
+		let printing_type = await getPrintingType();
+
 		// generate printer options
 		printers.forEach(printer => {
 			let option = document.createElement('option');
@@ -88,6 +92,7 @@
 			// create an element copy as HTML is weird with select options
 			let option2 = option.cloneNode(true);
 
+			// set selected option to current selection
 			if(kitchen == printer.name) option.selected = true;
 			if(receipt == printer.name) option2.selected = true;
 
@@ -95,7 +100,27 @@
 			document.getElementById('kitchen-printers').appendChild(option2);
 
 		});
+
+		document.getElementById('printing-enabled-checkbox').checked = is_printing_enabled;
+
+		let type_options = document.getElementById('printing-type-dropdown');
+
+		let index;
+
+		switch (printing_type) {
+			case "PDF":
+				index = 0;
+				break;
+			case "THERMAL":
+				index = 1;
+				break;
+			default:
+				console.error("Invalid type set for printing type: ", printing_type)
+				return;
+		}
 		
+		type_options.children[index].selected = true;
+
 		
 	});
 	

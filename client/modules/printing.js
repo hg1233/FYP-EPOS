@@ -13,6 +13,9 @@ class PrintingModule {
         this.kitchen_printer = null;
         this.net_manager = null;
         this.printing_type = "PDF";
+        this.is_printing_enabled = false;
+
+        // retrieve data from file
     }
 
     /**
@@ -108,6 +111,22 @@ class PrintingModule {
         
         ipcMain.handle('print:set-receipt-printer', async (event, printer) => {
             return this.setReceiptPrinter(printer);
+        })
+
+        ipcMain.handle('print:get-global-status', async () => {
+            return this.is_printing_enabled;
+        })
+
+        ipcMain.handle('print:set-global-status', async (event, status) => {
+            this.is_printing_enabled = status;
+        })
+
+        ipcMain.handle('print:get-type', async () => {
+            return this.printing_type;
+        })
+
+        ipcMain.handle('print:set-type', async (event, type) => {
+            return this.setPrintingType(type);
         })
 
     }

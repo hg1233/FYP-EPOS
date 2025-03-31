@@ -8,6 +8,10 @@ async function loadPrinters(print_data) {
     return await window.electronAPI.print_loadPrinters(print_data);
 }
 
+async function isPrintingEnabled() {
+    return await window.electronAPI.print_getGlobalStatus();
+}
+
 async function getAllPrinters() {
     return await window.electronAPI.print_getAll();
 }
