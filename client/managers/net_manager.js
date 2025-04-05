@@ -17,7 +17,7 @@ class NetManager {
         
         // send out heartbeat to server on defined interval
         this.heartbeat = setInterval(async () => {
-            console.log("Beat")
+            console.debug(`Sending heartbeat at ${Date.now()} ...`)
             this.check_heartbeat();
         }, this.heartbeat_interval);
 
