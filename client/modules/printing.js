@@ -15,41 +15,46 @@ class PrintingModule {
         this.printing_type = "PDF";
         this.is_printing_enabled = false;
 
-        // retrieve data from file
+        // to allow time for net_manager to be initialised
+        setTimeout(() => {
+            this.getDataFromConfig();
+        }, 1000);
+
+        
     }
 
     /**
-     * Printer data must be imported by the window manager.
+     * Printer data must be imported by the main app file.
      * 
-     * @param {*} printer_data 
+     * @param {list} printer_data 
      */
     async loadPrinters(printer_data) {
         this.available_printers = printer_data;
     }
 
-    async setKitchenPrinter(printer) {
+    async setKitchenPrinter(printer, updateLocalStorage = true) {
         this.kitchen_printer = printer;
-        updateLocalStorage();
+        if(updateLocalStorage) this.updateLocalStorage();
     }
 
-    async setReceiptPrinter(printer) {
+    async setReceiptPrinter(printer, updateLocalStorage = true) {
         this.receipt_printer = printer;
-        updateLocalStorage();
+        if(updateLocalStorage) this.updateLocalStorage();
     }
 
     async getPrintingType() {
         return this.printing_type;
     }
 
-    async setPrintingType(type) {
+    async setPrintingType(type, updateLocalStorage = true) {
         switch (type) {
             case "PDF":
                 this.printing_type = type;
-                updateLocalStorage();
+                if(updateLocalStorage) this.updateLocalStorage();
                 break;
             case "THERMAL":
                 this.printing_type = type;
-                updateLocalStorage();
+                if(updateLocalStorage) this.updateLocalStorage();
                 break;
             default:
                 console.warn(`Cannot set printing type to '${type} - invalid type provided.'`)
@@ -128,6 +133,16 @@ class PrintingModule {
         ipcMain.handle('print:set-type', async (event, type) => {
             return this.setPrintingType(type);
         })
+
+    }
+
+    async getDataFromConfig() {
+        let config_data = this.net_manager.file_manager.config.printing;
+
+        this.is_printing_enabled = config_data.is_enabled;
+        this.setPrintingType(config_data.printing_type, false);
+        this.setKitchenPrinter(config_data.kitchen_printer, false)
+        this.setReceiptPrinter(config_data.receipt_printer, false)
 
     }
 
