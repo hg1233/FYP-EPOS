@@ -13,6 +13,10 @@ windowManager.init();
 // import module manager
 const moduleManager = require("./managers/module_manager.js");
 
+// import file manager
+const {FileManager} = require("./managers/file_manager.js");
+const fileManager = new FileManager(app);
+
 // import network manager
 const netManager = require("./managers/net_manager.js").instance;
 
