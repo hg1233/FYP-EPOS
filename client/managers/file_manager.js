@@ -20,7 +20,6 @@ class FileManager {
             console.debug(user_data_dir)
 
             // TODO import server_host & api key
-            // TODO send test request (heartbeat?) to confirm connection ok
         } catch(error) {
             console.error("Error when reading local config", error)
         }
