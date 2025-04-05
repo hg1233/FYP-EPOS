@@ -17,33 +17,34 @@ const moduleManager = require("./managers/module_manager.js");
 const {FileManager} = require("./managers/file_manager.js");
 const fileManager = new FileManager(app);
 
-// import network manager
-const netManager = require("./managers/net_manager.js").instance;
-
-let modules = [
-    {name: 'products', path: './modules/products.js'},
-    {name: 'categories', path: './modules/categories.js'},
-    {name: 'clerks', path: './modules/clerks.js'},
-    {name: 'venue', path: './modules/venue.js'},
-    {name: 'payment_methods', path: './modules/payment_methods.js'},
-    {name: 'tables', path: './modules/tables.js'},
-    {name: 'orders', path: './modules/orders.js'},
-    {name: 'printing', path: './modules/printing.js'},
-]
-
-// register all modules
-modules.forEach(module => {
-    try {
-        let module_obj = require(module.path).instance
-        module_obj.net_manager = netManager;
-        moduleManager.instance.registerModule(module.name, module_obj)
-    } catch(err) {
-        console.error(`Failed to initalise network manager for module '${module.name}':`)
-        console.error(err)
-    }
-});
-
 app.whenReady().then( () => {
+
+    // import network manager
+    const {NetManager} = require("./managers/net_manager.js");
+    netManager = new NetManager(fileManager);
+
+    let modules = [
+        {name: 'products', path: './modules/products.js'},
+        {name: 'categories', path: './modules/categories.js'},
+        {name: 'clerks', path: './modules/clerks.js'},
+        {name: 'venue', path: './modules/venue.js'},
+        {name: 'payment_methods', path: './modules/payment_methods.js'},
+        {name: 'tables', path: './modules/tables.js'},
+        {name: 'orders', path: './modules/orders.js'},
+        {name: 'printing', path: './modules/printing.js'},
+    ]
+
+    // register all modules
+    modules.forEach(module => {
+        try {
+            let module_obj = require(module.path).instance
+            module_obj.net_manager = netManager;
+            moduleManager.instance.registerModule(module.name, module_obj)
+        } catch(err) {
+            console.error(`Failed to initalise network manager for module '${module.name}':`)
+            console.error(err)
+        }
+    });
 
     // invoke & setup handles for client backend, server backend & client frontend data transfer
     modules.forEach(module => {

@@ -3,10 +3,12 @@ const path = require('path');
 
 class FileManager {
 
+    app;
     user_data_dir;
     config;
 
     constructor(app) {
+        this.app = app;
         this.user_data_dir = app.getPath('userData');
         this.loadLocalConfig();
     }
@@ -22,14 +24,8 @@ class FileManager {
             let config_path = path.join(this.user_data_dir, 'epos_config.json');
 
 
-            await fs.readFile(config_path, (error, data) => {
-                if(error) {
-                    throw new Error(error);
-                }
-
-                this.config = JSON.parse(data);
-
-            });
+            let data = fs.readFileSync(config_path, "utf-8");
+            this.config = JSON.parse(data);
             
             console.debug(`Imported config from '${config_path}`)
         } catch(error) {

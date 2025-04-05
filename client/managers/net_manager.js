@@ -3,6 +3,7 @@ const https = require('http');
 
 class NetManager {
 
+    file_manager;
     server_host;
     api_key;
     use_local_cache;
@@ -10,10 +11,13 @@ class NetManager {
     heartbeat_interval;
     heartbeat_last_res_time;
      
-    constructor() {
-        this.server_host = 'http://localhost:3000' // TODO - move to config file
-        this.api_key = '123456' // TODO - move to config file
-        this.heartbeat_interval = 15000; // TODO - move to config file
+    constructor(file_manager) {
+        this.file_manager = file_manager;
+
+
+        this.server_host = file_manager.config.network.server_host
+        this.api_key = file_manager.config.network.api_key
+        this.heartbeat_interval = file_manager.config.network.heartbeat_interval
         
         // send out heartbeat to server on defined interval
         this.heartbeat = setInterval(async () => {
@@ -146,5 +150,4 @@ class NetManager {
 
 }
 
-const instance = new NetManager();
-module.exports = {instance}
+module.exports = {NetManager};
