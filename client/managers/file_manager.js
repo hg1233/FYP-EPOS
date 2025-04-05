@@ -70,16 +70,24 @@ class FileManager {
 
         }
 
+        writeConfig(default_data);
+
+    }
+
+    async writeConfig(data) {
         // null & 1 used to add whitespace for config readability, rather than it all be in 1 line
-        fs.writeFile(path.join(this.user_data_dir, 'epos_config.json'), JSON.stringify(default_data, null, 1), (error) => {
+        fs.writeFile(path.join(this.user_data_dir, 'epos_config.json'), JSON.stringify(data, null, 1), (error) => {
             if(error) {
-                console.error("Error writing default config:");
+                console.error("Error writing config:");
                 console.error(error);
                 return;
             }
-            console.log("Default config written to disk succesfully.")
+            console.log("Config written to disk succesfully.")
         })
+    }
 
+    async saveCurrentConfig() {
+        this.writeConfig(this.config);
     }
 }
 

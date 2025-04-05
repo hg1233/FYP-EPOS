@@ -148,6 +148,13 @@ class PrintingModule {
 
     updateLocalStorage() {
         // TODO
+        let config_data = this.net_manager.file_manager.config.printing;
+        config_data.is_enabled = this.is_printing_enabled;
+        config_data.printing_type = this.printing_type;
+        config_data.kitchen_printer = this.kitchen_printer;
+        config_data.receipt_printer = this.receipt_printer;
+
+        this.net_manager.file_manager.saveCurrentConfig();
     }
 
 }
