@@ -89,7 +89,19 @@ class PrintingModule {
             return;
         }
 
-        // TODO
+        switch (this.printing_type) {
+            case "PDF":
+                // TODO - trigger generation & print of html doc receipt
+                this.printReceiptPDF(data);
+                break;
+            case "THERMAL":
+                this.printReceiptThermal(data);
+                break;
+            default:
+                console.error("Unable to print receipt - invalid printing type set.")
+                break;
+        }
+       
     }
 
     invokeIPCHandles(moduleManager, ipcMain) {
@@ -154,6 +166,64 @@ class PrintingModule {
         config_data.receipt_printer = this.receipt_printer;
 
         this.net_manager.file_manager.saveCurrentConfig();
+    }
+
+    printReceiptThermal(data) {
+
+        let printer; // TODO - setup correct ESCPOS integration
+        
+        /** Customer Receipt Header */
+        printer.align('ct')
+        printer.font("A")
+        printer.size(2,2)
+        printer.text("The Pub") // TODO - pull from venue attributes 
+        printer.size(0,0)
+        printer.text("141 Broad Lane, Essington") // TODO - pull from venue attributes
+        printer.text("Wolverhampton") // TODO - pull from venue attributes
+        printer.text("WV11 2RH") // TODO - pull from venue attributes
+        printer.text("01902 000000 | www.thepub.co.uk") // TODO - pull from venue attributes
+        printer.feed(1)
+
+        printer.tableCustom(
+            [
+              { text: `Clerk: ${data.clerk}`, align:"LEFT", width: 0.4},
+              { text: `${data.timestamp}`, align:"RIGHT", width: 0.6}
+            ]
+        )
+
+        // styling for order info
+        printer.drawLine();
+        printer.size(1,1)
+        printer.style('B')
+
+        if(data.table !== null) {
+            printer.text(data.table.display_name)
+        } else {
+            printer.text(data.order_id)
+        }
+
+        printer.style('NORMAL')
+        printer.size(0,0)
+
+        if(data.order_name !== null) {
+            printer.text(data.order_name)
+        }
+
+        printer.drawLine();
+
+        // Order items header
+
+        printer.tableCustom(
+        [
+            { text: "Qty", align:"LEFT", width: 0.2, style: "B"},
+            { text: "Item", align:"LEFT", width: 0.45, style: "B"},
+            { text: "Price", align:"RIGHT", width: 0.35, style: "B"}
+        ]
+        )
+        printer.drawLine();
+
+        
+
     }
 
 }
