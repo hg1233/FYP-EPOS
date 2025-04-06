@@ -203,8 +203,9 @@ class OrdersModule {
             // create lines as blank as suborder has just been made, so lines cannot yet exist
             response.suborder_details.lines = [];
 
-            // success - create local object - TODO
-            this.open_orders[order_id].suborders.push(response.suborder_details);
+            // success - create local object
+            let suborders = this.open_orders[order_id].suborders;
+            suborders[suborders.length] = response.suborder_details;
             return response.suborder_details;
         } else {
             return {error: "Error occurred creating suborder", details: response["error"]}

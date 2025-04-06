@@ -12,7 +12,7 @@
       <h2>What would you like to do today?</h2>
       <div class="spacer"></div>
       <div class="nav-buttons">
-        <button class="btn-blue" onclick="showPage('Sale')">Quick Sale</button>
+        <button class="btn-blue" onclick="quickSale()">Quick Sale</button>
         <button class="btn-lime" onclick="showPage('View Tables')">View Tables</button>
         
       </div>
@@ -20,6 +20,7 @@
   </body>
 
   <script src="../frontend/window_manager_link.js"></script>
+  <script src="../frontend/orders_link.js"></script>
   <script src="../frontend/clerks_link.js"></script>
 
   <script>
@@ -54,6 +55,22 @@
       reports_btn.innerText = "Reports";
       buttons_container.appendChild(reports_btn);
 
+
+    }
+
+    async function quickSale() {
+
+      // create new order
+      let order = await createOrder(current_clerk.id, null, null);
+
+      // open suborder against new order
+      let suborder = await createSuborder(order.id, current_clerk.id)
+
+      // set order as active order
+      await setActiveOrder(order.id)
+
+      // show sale page
+      showPage("Sale")
 
     }
 

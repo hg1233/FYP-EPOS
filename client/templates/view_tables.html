@@ -45,12 +45,13 @@
   <script src="../frontend/window_manager_link.js"></script>
   <script src="../frontend/clerks_link.js"></script>
 
-  <script>
+  <script async>
 
     let available_container = document.getElementById('available-tables').children[2];
     let occupied_container = document.getElementById('occupied-tables').children[2];
 
     let clicked_table = null;
+    let current_clerk = null;
 
     async function loadTables() {
 
@@ -88,7 +89,7 @@
       // check if table is occupied
       if(table.orders !== null) {
 
-        let order_id = table.orders[0];
+        let order_id = table.orders.split(",")[0];
         
         let clerk = await getClerkFromOrderID(order_id)
         let order = await getOrderByID(order_id)
@@ -110,6 +111,7 @@
 
     async function getClerkFromOrderID(order_id) {
       let orders = await getOpenOrders();
+      console.log(`getClerkFromOrderID: order_id: ${order_id}, order: ${orders[order_id]}`)
       let clerk_id = orders[order_id].created_by;
       return await getClerkByID(clerk_id);
     }
@@ -159,7 +161,14 @@
       if(clicked_table.orders == null) {
         // create & open new order
         
-        // TODO - create order
+        let order_id = await createOrder(current_clerk.id, null, clicked_table.id);
+        
+        // open suborder against new order
+        let suborder = await createSuborder(order_id, current_clerk.id)
+
+        // set order as active
+        await setActiveOrder(order_id);
+
       } else {
         // open existing order
         await setActiveOrder(clicked_table.orders)
@@ -167,6 +176,10 @@
 
       showPage("Sale");
     }
+
+    document.addEventListener("DOMContentLoaded", async (event) => {
+      current_clerk = await getCurrentClerk();
+    });
 
     // start
     loadTables();

@@ -22,6 +22,10 @@ async function createOrder(clerk_id, order_name, table_id) {
     return await window.electronAPI.orders_create(clerk_id, order_name, table_id);
 }
 
+async function createSuborder(order_id, clerk_id) {
+    return await window.electronAPI.orders_createSuborder(order_id, clerk_id);
+}
+
 async function reloadOrdersData() {
     getOpenOrders();
     getClosedOrders();
