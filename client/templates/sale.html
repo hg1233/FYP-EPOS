@@ -482,6 +482,9 @@
 
                 // TODO - this errors currently because a new suborder needs to be created on table open, orders with no suborders when attempting to read the below will error
                 document.getElementById('ticket-order-id').innerText = `Order # ${order.id}/${order.suborders[order.suborders.length-1].suborder_id}`
+            } else {
+                // new quick sale opened
+                // TODO - create order & suborder
             }
         });
 
