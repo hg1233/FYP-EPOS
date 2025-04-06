@@ -204,6 +204,40 @@ router.post('/set_table', async (request, response) => {
 
 })
 
+router.post('/set_name', async (request, response) => {
+
+    try {
+
+        var order_id = request.body["order_id"];
+        var name = request.body["name"];
+        var order = await Orders.getOrderByID(order_id);
+
+        // check order exists
+        if(order == null) {
+            console.log(`[Orders > Set Name] Unable to set name for order ${order_id} - order not found`)
+            response.status(400).json({error: "Order not found"})
+            return;
+        }
+
+        // check if order already closed
+        if(order.is_open != true) {
+            console.log(`[Orders > Set Name] Order name for order # ${order_id} cannot be changed - order already closed`)
+            response.status(400).json({error: "Cannot change order name - order already closed"})
+            return;
+        }
+
+        var update = await Orders.setName(order_id, name);
+        response.status(200).json({message: "Successfully set name for order", order_details: update});
+
+
+
+    } catch(err) {
+        console.log(err);
+        response.status(500).json({error: "Error setting order name"})
+    }
+
+})
+
 router.post('/pay/:id', async (request, response) => {
 
     try { 

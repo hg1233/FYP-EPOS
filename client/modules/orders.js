@@ -4,10 +4,12 @@ class OrdersModule {
     module_manager;
     open_orders;
     closed_orders;
+    active_order_id;
 
     constructor() {
         this.open_orders = {};
         this.closed_orders = {};
+        this.active_order_id = null;
     }
 
     async init() {
@@ -139,6 +141,37 @@ class OrdersModule {
 
     }
 
+    async setOrderName(order_id, name) {
+        try {
+
+            // check for only open orders, cannot assign table to order if order already closed
+            var order = this.open_orders[order_id];
+
+            // check if order exists
+            if(order == null || order == undefined) {
+                console.warn(`Error setting table for order - order not found.`)
+                return null;
+            }
+
+            // input validation passed - create table
+            var response = await this.net_manager.async_post('/api/orders/set_name', {name: name, order_id: order_id});
+                
+            if(response["message"] != undefined) {
+                
+                // success - update local object
+                this.open_orders[order_id].order_name = name;
+
+                return true;
+            } else {
+                return {error: "Error occurred setting name for order", details: response["error"]}
+            }
+
+        } catch(err) {
+            console.error(`Error setting order name for order ${order_id}: ${err}`);
+            return {error: "An error occurred setting order name"};
+        }
+    }
+
     async createNewSuborder(order_id, clerk_id) {
 
         // check clerk exists
@@ -258,6 +291,14 @@ class OrdersModule {
 
     }
 
+    async getActiveOrder() {
+        return await this.getOrderByID(this.active_order_id);
+    }
+
+    async setActiveOrder(order_id) {
+        this.active_order_id = order_id;
+    }
+
     // TODO - be able to lock orders
 
 
@@ -306,6 +347,17 @@ class OrdersModule {
             return this.payOrderAndClose(order_id, payment_method_id);
         })
 
+        ipcMain.handle('orders:get-active', async () => {
+            return this.getActiveOrder();
+        });
+
+        ipcMain.handle('orders:set-active', async (event, order_id) => {
+            return this.setActiveOrder(order_id);
+        });
+
+        ipcMain.handle('orders:set-name', async (event, order_id, name) => {
+            return this.setOrderName(order_id, name);
+        })
 
 
     }

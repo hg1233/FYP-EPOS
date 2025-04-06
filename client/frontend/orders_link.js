@@ -31,6 +31,18 @@ async function setTableForOrder(order_id, table_id) {
     return await window.electronAPI.orders_setTable(order_id, table_id);
 }
 
+async function setOrderName(order_id, name) {
+    return await window.electronAPI.orders_setName(order_id, name);
+}
+
 async function payOrderAndClose(order_id, payment_method_id) {
     return await window.electronAPI.orders_payAndClose(order_id, payment_method_id);
+}
+
+async function getActiveOrder() {
+    return await window.electronAPI.orders_getActive();
+}
+
+async function setActiveOrder(order_id) {
+    return await window.electronAPI.orders_setActive(order_id);
 }

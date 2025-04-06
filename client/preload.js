@@ -76,5 +76,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   orders_reloadClosed: async () => ipcRenderer.invoke('orders:reload-closed'),
   orders_setTable: async (order_id, table_id) => ipcRenderer.invoke('orders:set-table', order_id, table_id),
   orders_payAndClose: async (order_id, payment_method_id) => ipcRenderer.invoke('orders:pay-and-close', order_id, payment_method_id),
+  orders_getActive: async () => ipcRenderer.invoke('orders:get-active'),
+  orders_setActive: async (order_id) => ipcRenderer.invoke('orders:set-active', order_id),
+  orders_setName: async (order_id, name) => ipcRenderer.invoke('orders:set-name', order_id, name),
 
+  /*** Printing Module ***/
+  
+  print_loadPrinters: async (printer_data) => ipcRenderer.invoke('print:load-printers', printer_data),
+  print_getKitchenPrinter: async () => ipcRenderer.invoke('print:get-kitchen-printer'),
+  print_getReceiptPrinter: async () => ipcRenderer.invoke('print:get-receipt-printer'),
+  print_setKitchenPrinter: async (printer) => ipcRenderer.invoke('print:set-kitchen-printer', printer),
+  print_setReceiptPrinter: async (printer) => ipcRenderer.invoke('print:set-receipt-printer', printer),
+  print_getAll: async () => ipcRenderer.invoke('print:get-all'),
+  print_getType: async () => ipcRenderer.invoke('print:get-type'),
+  print_setType: async (type) => ipcRenderer.invoke('print:set-type', type),
+  print_getGlobalStatus: async () => ipcRenderer.invoke('print:get-global-status'),
+  print_setGlobalStatus: async (status) => ipcRenderer.invoke('print:set-global-status', status),
 })

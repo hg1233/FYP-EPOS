@@ -130,7 +130,11 @@ const Orders = {
 
     setTable: (id, table_id) => {
         return knex('orders').where({id}).update({table_id: table_id}).returning('*');
-    }
+    },
+
+    setName: (id, order_name) => {
+        return knex('orders').where({id}).update({order_name: order_name}).returning('*');
+    },
 
 }
 
