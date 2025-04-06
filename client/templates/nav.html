@@ -61,13 +61,13 @@
     async function quickSale() {
 
       // create new order
-      let order = await createOrder(current_clerk.id, null, null);
+      let order_id = await createOrder(current_clerk.id, null, null);
 
       // open suborder against new order
-      let suborder = await createSuborder(order.id, current_clerk.id)
+      let suborder = await createSuborder(order_id, current_clerk.id)
 
       // set order as active order
-      await setActiveOrder(order.id)
+      await setActiveOrder(order_id)
 
       // show sale page
       showPage("Sale")
