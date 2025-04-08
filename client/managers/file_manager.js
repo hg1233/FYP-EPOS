@@ -67,7 +67,7 @@ class FileManager {
 
         }
 
-        writeConfig(default_data);
+        this.writeConfig(default_data);
 
     }
 
