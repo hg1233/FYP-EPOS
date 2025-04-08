@@ -36,15 +36,12 @@ class FileManager {
     async checkIfLocalConfigExists() {
         try {
             // check file exists, and process has read & write perms
-            var exists = await fs.access(path.join(this.user_data_dir, 'epos_config.json'), fs.constants.R_OK | fs.constants.W_OK, (error) => {
-                if(error) {
-                    return false;
+            var exists = await fs.readFileSync(path.join(this.user_data_dir, 'epos_config.json'), "utf-8");
+                if(exists !== undefined) {
+                    return true;
                 }
 
-                // all ok, return true
-                return true;
-
-            })
+                return false;
             
         } catch(error) {
             console.error("Unknown error occurred checking if local config exists:", error)
