@@ -136,7 +136,7 @@ router.post('/create', async (request, response) => {
     try {
 
         var clerk_id = request.body["clerk_id"];
-        var table_id = request.body["table_id"].toString();
+        var table_id = (request.body["table_id"] != undefined ? request.body["table_id"].toString() : null);
         var order_name = request.body["order_name"];
 
         // parse table id - set to null if undefined

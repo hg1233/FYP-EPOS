@@ -113,7 +113,7 @@ router.post('/create', async (request, response) => {
         }
 
         // check order exists
-        let order = await Orders.getOrderByIDWithSuborders(order_id);
+        let order = await Orders.getOrderByID(order_id);
 
         if(order == null || order == undefined) {
             console.log(`[Suborder > Create] Input validation failed - order not found`);

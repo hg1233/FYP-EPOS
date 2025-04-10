@@ -121,6 +121,9 @@
 
     <script>
 
+        // ensure order data is up to date on browser end
+        getOpenOrders();
+
         qty_modifier_active = false;
 
         async function handleProductClick(product_id) {
@@ -483,8 +486,6 @@
 
             if(order !== null) {
                 // order exists, populate data if it exists
-                
-                // TODO - populate order ID with suborder ID - no exists check req
 
                 // leave order name blank if null
                 document.getElementById('ticket-order-name').innerText = (order.order_name !== null ? order.order_name : "");
@@ -496,13 +497,14 @@
 
                 // TODO - this errors currently because a new suborder needs to be created on table open, orders with no suborders when attempting to read the below will error
                 document.getElementById('ticket-order-id').innerText = `Order # ${order.id}/${order.suborders[order.suborders.length-1].suborder_id}`
-            }
+            } else {
 
-            // the existing order should be defined by the previous page (i.e. on click of quicksale button or on open of table on view tables)
-            
-            console.warn("Order is not found, redirecting user back to Nav")
-            alert("An unexpected error occurred, redirecting you back to the navigation page...")
-            showPage("Nav");
+                // the existing order should be defined by the previous page (i.e. on click of quicksale button or on open of table on view tables)
+                
+                console.warn("Order is not found, redirecting user back to Nav")
+                alert("An unexpected error occurred, redirecting you back to the navigation page...")
+                showPage("Nav");
+            }
         });
 
         async function saveToTable() {

@@ -49,6 +49,10 @@ const Orders = {
         .first()
         .then((response) => {
 
+            if(response == undefined) {
+                return response;
+            }
+
             // sql outputs just as a concatenated string, parse/convert to list
             if(typeof response.suborders == "string") {
                 Object.assign(response, {suborders: response.suborders.split(',')})

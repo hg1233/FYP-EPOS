@@ -200,13 +200,16 @@ class OrdersModule {
             
         if(response["message"] != undefined) {
             
-            // create lines as blank as suborder has just been made, so lines cannot yet exist
-            response.suborder_details.lines = [];
+            var order_details = await this.net_manager.pre_ready_request(`/api/orders/get/${order_id}`);
+            
+            if(order_details["id"] != undefined) {
+                this.open_orders[order_id] = order_details
+                return order_details;
+            } else {
+                return {error: "Error occurred creating suborder", details: order_details["error"]}
+            }
 
-            // success - create local object
-            let suborders = this.open_orders[order_id].suborders;
-            suborders[suborders.length] = response.suborder_details;
-            return response.suborder_details;
+            
         } else {
             return {error: "Error occurred creating suborder", details: response["error"]}
         }
