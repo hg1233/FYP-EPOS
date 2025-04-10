@@ -11,8 +11,9 @@
             <div class="sidebar">
                 <div class="ticket">
                     <!-- ticket/order header-->
-                    <h2 id="ticket-order-id">Order # 203-1</h2> <!-- order_id + '-' + suborder_id -->
-                    <h3 id="ticket-table-seats">Quick Sale</h3> <!-- table display_name & seats-->
+                    
+                    <h2 id="ticket-table-seats">Quick Sale</h2> <!-- table display_name & seats-->
+                    <h3 id="ticket-order-id">Order # 0</h3> <!-- suborder_id -->
                     <h3 id="ticket-order-name"></h3> <!-- order_name -->
                     <div class="spacer"></div>
 
@@ -496,7 +497,7 @@
                 document.getElementById('ticket-table-seats').innerText = (table !== null && table !== undefined ? `${table.display_name} ~ Seats ${table.seats}` : "Quick Sale")
 
                 // TODO - this errors currently because a new suborder needs to be created on table open, orders with no suborders when attempting to read the below will error
-                document.getElementById('ticket-order-id').innerText = `Order # ${order.id}/${order.suborders[order.suborders.length-1].suborder_id}`
+                document.getElementById('ticket-order-id').innerText = `Order # ${order.suborders[order.suborders.length-1].suborder_id}`
             } else {
 
                 // the existing order should be defined by the previous page (i.e. on click of quicksale button or on open of table on view tables)
