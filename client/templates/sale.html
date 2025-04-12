@@ -204,11 +204,11 @@
 
             let line = await createSuborderLine(current_order.id, current_suborder.suborder_id, product_id, products[product_id].name, products[product_id].price, qty, null)
 
-            addLineToOrderDisplayTable(line.line_id, product_id, products[product_id].name, qty, products[product_id].price);
+            addLineToOrderDisplayTable(line.line_id, product_id, products[product_id].name, qty, products[product_id].price, line.line_comments);
 
         }
 
-        async function addLineToOrderDisplayTable(line_id, product_id, name, qty, price) {
+        async function addLineToOrderDisplayTable(line_id, product_id, name, qty, price, comments) {
             let table_body = document.getElementById("order-table").children[0];
 
             let tr = document.createElement('tr');
@@ -224,6 +224,22 @@
 
             let name_col = document.createElement('td');
             name_col.innerText = name;
+
+            if(comments != null) {
+                // build elements for comments
+                let spacer = document.createElement('br');
+                spacer.classList.add('order-line-comment');
+                name_col.appendChild(spacer);
+                
+                let comment_elem = document.createElement('i');
+                comment_elem.classList.add('order-line-comment');
+                comment_elem.innerText = `↪ ${comments}`;
+                name_col.appendChild(comment_elem);
+
+                tr.dataset["hasComments"] = true;
+                tr.dataset["comments"] = comments;
+            }
+
             tr.appendChild(name_col);
         
             let price_col = document.createElement('td');
@@ -336,9 +352,8 @@
                     comments = (comments == "" ? null : comments);
 
                     let order = await getActiveOrder();
-                    let suborder = order.suborders[order.suborders.length-1];
 
-                    await setLineComments(order.id, suborder.suborder_id, line_id, comments)
+                    await setLineComments(order.id, null, line_id, comments)
 
                     // leave blank if no comments entered
                     if(comments == "") return;
@@ -572,7 +587,7 @@
                     let last_line = null;
 
                     suborder.lines.forEach(line => {
-                        last_line = addLineToOrderDisplayTable(line.line_id, line.product_id, line.product_name, line.product_qty, line.subtotal)
+                        last_line = addLineToOrderDisplayTable(line.line_id, line.product_id, line.product_name, line.product_qty, line.subtotal, line.line_comments)
                     });
 
                     last_line.then(function(line) {
