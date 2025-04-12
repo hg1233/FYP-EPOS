@@ -310,7 +310,6 @@ class OrdersModule {
         product_name,
         product_unit_price,
         product_qty,
-        subtotal,
         line_comments
     ) {
         try {
@@ -456,7 +455,6 @@ class OrdersModule {
             product_name,
             product_unit_price,
             product_qty,
-            subtotal,
             line_comments
         ) => {
 
@@ -467,7 +465,6 @@ class OrdersModule {
                 product_name,
                 product_unit_price,
                 product_qty,
-                subtotal,
                 line_comments
             );
 
