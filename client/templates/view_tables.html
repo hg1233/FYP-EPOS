@@ -170,8 +170,12 @@
         await setActiveOrder(order_id);
 
       } else {
+        // open new suborder against existing order
+        let suborder = await createSuborder(clicked_table.orders, current_clerk.id)
+        
         // open existing order
         await setActiveOrder(clicked_table.orders)
+
       }
 
       showPage("Sale");
