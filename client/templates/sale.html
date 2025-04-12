@@ -202,9 +202,9 @@
             let current_order = await getActiveOrder();
             let current_suborder = current_order.suborders[current_order.suborders.length-1];
 
-            let line_id = await createSuborderLine(current_order.id, current_suborder.suborder_id, product_id, products[product_id].name, products[product_id].price, qty, null)
+            let line = await createSuborderLine(current_order.id, current_suborder.suborder_id, product_id, products[product_id].name, products[product_id].price, qty, null)
 
-            addLineToOrderDisplayTable(line_id, product_id, products[product_id].name, qty, products[product_id].price);
+            addLineToOrderDisplayTable(line.line_id, product_id, products[product_id].name, qty, products[product_id].price);
 
         }
 
@@ -330,6 +330,15 @@
                         await item.children[0].remove();
                         await item.children[0].remove();
                     }
+
+                    let line_id = line_row.dataset["line_id"];
+
+                    comments = (comments == "" ? null : comments);
+
+                    let order = await getActiveOrder();
+                    let suborder = order.suborders[order.suborders.length-1];
+
+                    await setLineComments(order.id, suborder.suborder_id, line_id, comments)
 
                     // leave blank if no comments entered
                     if(comments == "") return;

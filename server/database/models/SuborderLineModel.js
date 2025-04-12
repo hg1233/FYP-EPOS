@@ -34,7 +34,7 @@ const SuborderLine = {
         return knex('suborder_line')
         .where({line_id})
         .update({line_comments})
-        .returning('*').first();
+        .returning('*');
     },
 
     updateLineQuantity: (line_id, product_unit_price, product_qty, subtotal) => {

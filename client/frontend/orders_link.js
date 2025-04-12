@@ -54,3 +54,7 @@ async function getActiveOrder() {
 async function setActiveOrder(order_id) {
     return await window.electronAPI.orders_setActive(order_id);
 }
+
+async function setLineComments(order_id, suborder_id, line_id, comments) {
+    return await window.electronAPI.orders_setComments(order_id, suborder_id, line_id, comments);
+}

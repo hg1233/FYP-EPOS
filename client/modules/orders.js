@@ -367,10 +367,10 @@ class OrdersModule {
                         // update order total
                         this.open_orders[order_id].total += line.subtotal;
 
-                        return line;
-
                     }
                 });
+
+                return line;
                 
                 
             } else {
@@ -385,6 +385,58 @@ class OrdersModule {
             console.error(error);
             return {error: "Error occurred creating suborder line"}
         }
+
+    }
+
+    async setLineComments(order_id, suborder_id, line_id, comments) {
+
+        try {
+            // set comments to null if blank string
+            if(comments == "") comments = null;
+
+            // update remote
+            var response = await this.net_manager.async_post(`/api/suborder/line/comments`, 
+                {
+                    line_id: line_id,
+                    comments: comments,
+                }
+            );
+            
+            if(response["message"] != undefined) {
+
+                // update locally if remote update was successful
+
+                let details = response.suborder_line_details;
+                let suborders = this.open_orders[order_id].suborders;
+                
+                for(let index = 0; index < suborders.length; index++) {
+                    if(suborders[index].suborder_id == details.suborder_id) {
+
+                        for(let line_index = 0; line_index < suborders[index].lines.length; line_index++) {
+
+                            if(details.line_id == suborders[index].lines[line_index].line_id) {
+                                suborders[index].lines[line_index].line_comments = comments;
+                                return {line_obj: suborders[index].lines[line_index], comments: comments};
+                            }
+
+                        }
+
+                    }
+                }
+
+                
+                
+
+            } else {
+                return {error: "An error occurred", details: response["error"]}
+            }
+
+        } catch(error) {
+            console.error("Error occurred setting line comments:")
+            console.error(error);
+            return {error: "Error occurred setting line comments"}
+        }
+
 
     }
 
@@ -468,6 +520,10 @@ class OrdersModule {
                 line_comments
             );
 
+        });
+
+        ipcMain.handle('orders:set-line-comments', async (event, order_id, suborder_id, line_id, comments) => {
+            return this.setLineComments(order_id, suborder_id, line_id, comments);
         });
 
 

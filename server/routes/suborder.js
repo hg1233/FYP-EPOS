@@ -193,7 +193,7 @@ router.post("/line/comments", async (request, response) => {
         let comments = request.body["comments"];
 
         // check suborder line exists
-        let line = SuborderLine.getByID(line_id);
+        let line = SuborderLine.getByLineID(line_id);
 
         if(line == null || line == undefined) {
             console.log(`[SuborderLine > SetComments] Input validation failed - line not found`);
@@ -201,9 +201,9 @@ router.post("/line/comments", async (request, response) => {
             return;
         }
 
-        let db_line_obj = await SuborderLine.setSuborderLineComments(line_id, comments);
+        let db_line_obj = (await SuborderLine.setSuborderLineComments(line_id, comments))[0];
         response.status(200).json({message: "Successfully updated line comments", suborder_line_details: db_line_obj})
-        console.log(`[SuborderLine > SetComments] Updated comments for line ID # ${line_id}`)
+        console.log(`[SuborderLine > SetComments] Updated comments for line ID # ${line_id} - New comments: ${db_line_obj.line_comments}`)
 
     } catch(error) {
         console.error("[SuborderLine > SetComments] Failed to set comments for suborder line:")
