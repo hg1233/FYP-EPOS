@@ -44,6 +44,10 @@ const SuborderLine = {
         .returning('*');
     },
 
+    void: (line_id) => {
+        return knex('suborder_line').where({line_id}).del();
+    }
+
 }
 
 module.exports = SuborderLine;

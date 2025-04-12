@@ -259,4 +259,33 @@ router.post("/line/create", async (request, response) => {
     }
 })
 
+router.post("/line/void", async (request, response) => {
+    try {
+
+        let line_id = request.body["line_id"];
+
+        // check suborder line exists
+        let line = SuborderLine.getByLineID(line_id);
+
+        if(line == null || line == undefined) {
+            console.log(`[SuborderLine > Void] Input validation failed - line not found`);
+            response.status(400).json({error: "Failed to void suborder line - line not found"});
+            return;
+        }
+
+        // check line belong to open order (not closed)
+        // TODO
+
+        await SuborderLine.void(line_id);
+        response.status(200).json({message: "Successfully voided line item"})
+        console.log(`[SuborderLine > Void] Voided line ID # ${line_id}`)
+
+    } catch(error) {
+        console.error("[SuborderLine > Void] Failed to void suborder line:")
+        console.log(error);
+        response.status(500).json({error: "Failed to void suborder line"})
+    
+    }
+})
+
 module.exports = router;
