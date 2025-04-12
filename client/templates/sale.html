@@ -349,8 +349,6 @@
 
                     let line_id = line_row.dataset["line_id"];
 
-                    comments = (comments == "" ? null : comments);
-
                     let order = await getActiveOrder();
 
                     await setLineComments(order.id, null, line_id, comments)

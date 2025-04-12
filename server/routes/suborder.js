@@ -192,6 +192,8 @@ router.post("/line/comments", async (request, response) => {
         let line_id = request.body["line_id"];
         let comments = request.body["comments"];
 
+        if(comments == "" || comments == "null") comments = null;
+
         // check suborder line exists
         let line = SuborderLine.getByLineID(line_id);
 
