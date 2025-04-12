@@ -81,6 +81,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   orders_setActive: async (order_id) => ipcRenderer.invoke('orders:set-active', order_id),
   orders_setName: async (order_id, name) => ipcRenderer.invoke('orders:set-name', order_id, name),
   orders_setComments: async (order_id, suborder_id, line_id, comments) => ipcRenderer.invoke('orders:set-line-comments', order_id, suborder_id, line_id, comments),
+  orders_voidLine: async (order_id, line_id) => ipcRenderer.invoke('orders:void-line', order_id, line_id),
 
   /*** Printing Module ***/
   

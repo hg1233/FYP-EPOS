@@ -440,6 +440,54 @@ class OrdersModule {
 
     }
 
+    async voidLine(order_id, line_id) {
+        try {
+
+            // check if order exists
+            let order = this.open_orders[order_id];
+            if(order == null || order == undefined) {
+                console.warn(`Cannot void line ID # ${line_id} - order not found`)
+                return {error: "Order not found"};
+            }
+
+            // check if order is open
+            if(!order.is_open) {
+                console.warn(`Cannot void line ID # ${line_id} - order is closed`)
+                return {error: "Order is closed"};
+            }
+
+            // attempt to update remote
+            var response = await this.net_manager.async_post(`/api/suborder/line/void`, {line_id: line_id});
+            
+            if(response["message"] != undefined) {
+
+                // success, find relevant suborder, and line entry and remove it
+                
+                this.open_orders[order_id].suborders.forEach(suborder => {
+                    
+                    for(let index = 0; index < suborder.lines.length; index++) {
+                        let line = suborder.lines[index];
+
+                        if(line.line_id == line_id) {
+                            suborder.lines.splice(index, 1);
+                        }
+                    }
+
+                });
+
+                return true;
+
+            } else {
+                return {error: "An error occurred", details: response["error"]}
+            }
+
+        } catch(error) {
+            console.error(`Error occurred voiding line with ID # ${line_id} :`);
+            console.error(error);
+            return {error: "Error occurred voiding line", details: error}
+        }
+    }
+
     // TODO - be able to lock orders
 
 
@@ -524,6 +572,10 @@ class OrdersModule {
 
         ipcMain.handle('orders:set-line-comments', async (event, order_id, suborder_id, line_id, comments) => {
             return this.setLineComments(order_id, suborder_id, line_id, comments);
+        });
+
+        ipcMain.handle('orders:void-line', async (event, order_id, line_id) => {
+            return this.voidLine(order_id, line_id);
         });
 
 

@@ -456,13 +456,24 @@
                 if(table_body.children[index].dataset["orderLineSelected"] == "true") {
 
                     let item_row = table_body.children[index];
-                    // TODO - update on backend to remove suborder line 
-
-                    // remove from order total
-                    removeFromOrderTotal(item_row.dataset["price"])
                     
-                    // delete from front end
-                    table_body.deleteRow(index);
+                    let order = await getActiveOrder();
+                    let line_id = table_body.children[index].dataset["line_id"];
+
+                    let response = await voidSuborderLine(order.id, line_id)
+
+                    if(response === true) {
+
+                        // remove from order total
+                        removeFromOrderTotal(item_row.dataset["price"])
+                        
+                        // delete from front end
+                        table_body.deleteRow(index);
+                    } else {
+                        // unable to void item - see console log
+                        // TODO - user facing modal err msg
+                        console.warn(response);
+                    }
 
                 }
             }

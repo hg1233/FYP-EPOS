@@ -17,7 +17,7 @@ const Suborder = {
     },
 
     getSuborderBySuborderID: (suborder_id) => {
-        return knex('suborder').select('*').where({suborder_id}).first();
+        return knex('suborder').select('*').where({suborder_id});
     },
 
     getSubordersByOrderID: (order_id) => {

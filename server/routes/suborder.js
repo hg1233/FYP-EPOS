@@ -265,7 +265,7 @@ router.post("/line/void", async (request, response) => {
         let line_id = request.body["line_id"];
 
         // check suborder line exists
-        let line = SuborderLine.getByLineID(line_id);
+        let line = await SuborderLine.getByLineID(line_id);
 
         if(line == null || line == undefined) {
             console.log(`[SuborderLine > Void] Input validation failed - line not found`);
@@ -274,7 +274,25 @@ router.post("/line/void", async (request, response) => {
         }
 
         // check line belong to open order (not closed)
-        // TODO
+        
+        // get suborder from line ID
+        console.debug(line)
+        console.debug(line.suborder_id);
+        let suborder = await Suborder.getSuborderBySuborderID(line.suborder_id)
+
+        // first sql keyword wants to not work for some unknown reason, do this to just get 1st entry
+        suborder = suborder[0];
+
+        let order = await Orders.getOrderByID(suborder.order_id);
+
+        // see above comment about sql & first
+        order = order[0];
+
+        if(order.is_open != 1 || order.is_open != true) {
+            console.log(`[SuborderLine > Void] Void denied - line belongs to a closed order`);
+            response.status(400).json({error: "Failed to void suborder line - line belongs to a closed order"});
+            return;
+        }
 
         await SuborderLine.void(line_id);
         response.status(200).json({message: "Successfully voided line item"})
