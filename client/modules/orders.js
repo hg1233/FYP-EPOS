@@ -303,6 +303,36 @@ class OrdersModule {
         this.active_order_id = order_id;
     }
 
+    async createSuborderLine(
+        order_id,
+        suborder_id, 
+        product_id,
+        product_name,
+        product_unit_price,
+        product_qty,
+        subtotal,
+        line_comments
+    ) {
+
+        // we pass through `order_id` to allow checking if suborder ID exists
+
+        let does_suborder_exist = false;
+
+        this.open_orders[order_id].suborders.forEach(suborder => {
+            if(suborder.suborder_id == suborder_id) {
+                does_suborder_exist = true;
+            }
+        });
+
+        if(!does_suborder_exist){
+            console.warn(`Cannot create suborder line for suborder ID # ${suborder_id} - suborder not found in order ID supplied`);
+            return {error: "Suborder does not exist"}
+        }
+
+        // make api call
+
+    }
+
     // TODO - be able to lock orders
 
 
@@ -362,6 +392,30 @@ class OrdersModule {
         ipcMain.handle('orders:set-name', async (event, order_id, name) => {
             return this.setOrderName(order_id, name);
         })
+
+        ipcMain.hande('orders:add-line', async (event, 
+            order_id,
+            suborder_id, 
+            product_id,
+            product_name,
+            product_unit_price,
+            product_qty,
+            subtotal,
+            line_comments
+        ) => {
+
+            return this.createSuborderLine(
+                order_id,
+                suborder_id, 
+                product_id,
+                product_name,
+                product_unit_price,
+                product_qty,
+                subtotal,
+                line_comments
+            );
+
+        });
 
 
     }
