@@ -313,23 +313,79 @@ class OrdersModule {
         subtotal,
         line_comments
     ) {
+        try {
+            // we pass through `order_id` to allow checking if suborder ID exists
 
-        // we pass through `order_id` to allow checking if suborder ID exists
+            let does_suborder_exist = false;
 
-        let does_suborder_exist = false;
+            this.open_orders[order_id].suborders.forEach(suborder => {
+                if(suborder.suborder_id == suborder_id) {
+                    does_suborder_exist = true;
+                }
+            });
 
-        this.open_orders[order_id].suborders.forEach(suborder => {
-            if(suborder.suborder_id == suborder_id) {
-                does_suborder_exist = true;
+            if(!does_suborder_exist){
+                console.warn(`Cannot create suborder line for suborder ID # ${suborder_id} - suborder not found in order ID supplied`);
+                return {error: "Suborder does not exist"}
             }
-        });
 
-        if(!does_suborder_exist){
-            console.warn(`Cannot create suborder line for suborder ID # ${suborder_id} - suborder not found in order ID supplied`);
-            return {error: "Suborder does not exist"}
+            // input validation on unit price & qty to enable subtotal calc
+
+            // attempt to parse qty & unit price to number
+            product_unit_price = Number(product_unit_price);
+            product_qty = Number(product_qty);
+
+            if(typeof product_unit_price !== "number" || typeof product_qty !== "number") {
+                console.warn("Cannot create suborder line - input validation failed for unit price or quantity");
+                return {error: "Input validation failed for unit price or quantity"};
+            }
+
+
+            // build data to send
+            let data = {
+                suborder_id: suborder_id,
+                product_id: product_id,
+                product_name: product_name,
+                product_unit_price: product_unit_price,
+                product_qty: product_qty,
+                subtotal: (product_unit_price * product_qty),
+                comments: line_comments
+            }
+
+            var response = await this.net_manager.async_post('/api/suborder/line/create', data);
+            
+            if(response["message"] != undefined) {
+
+                let line = response.suborder_line[0];
+                
+                // success - update local suborder object
+                this.open_orders[order_id].suborders.forEach(suborder => {
+                    if(suborder.suborder_id == suborder_id) {
+
+                        // add line to list
+                        suborder.lines.push(line);
+
+                        // update order total
+                        this.open_orders[order_id].total += line.subtotal;
+
+                        return line;
+
+                    }
+                });
+                
+                
+            } else {
+                return {error: "Error occurred creating suborder line", details: response["error"]}
+            }
+
+
+
+
+        } catch(error) {
+            console.error("Error occurred creating suborder line:")
+            console.error(error);
+            return {error: "Error occurred creating suborder line"}
         }
-
-        // make api call
 
     }
 
@@ -393,7 +449,7 @@ class OrdersModule {
             return this.setOrderName(order_id, name);
         })
 
-        ipcMain.hande('orders:add-line', async (event, 
+        ipcMain.handle('orders:add-line', async (event, 
             order_id,
             suborder_id, 
             product_id,
