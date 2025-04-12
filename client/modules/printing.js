@@ -222,7 +222,39 @@ class PrintingModule {
         )
         printer.drawLine();
 
-        
+        let order_items; // TODO - define this
+
+        order_items.forEach(item => {
+            printer.tableCustom(
+                [
+                  { text:`${item.qty} x`, align:"LEFT", width:0.2, style: 'B' },
+                  { text:`${item.name}`, align:"LEFT", width:0.45},
+                  { text: `${item.subtotal}`, align:"RIGHT", width:0.35, encoding: "UK" }
+                ],
+              );
+        });
+
+        printer.drawLine();
+
+        printer.size(1,1)
+        printer.style('B')
+
+        printer.tableCustom(
+        [
+            { text:"", align:"LEFT", width:0.1, style: 'B' },
+            { text:"TOTAL:", align:"LEFT", width:0.2},
+            { text: `${data.total}`, align:"RIGHT", width:0.2, encoding: "UK" }
+        ],
+        );
+
+        printer.style('NORMAL')
+        printer.size(0,0)
+        printer.feed(2)
+        printer.text("Thank you for your custom.")
+        printer.feed(2)
+
+        printer.cut(true) // TODO - flag to set true/false for partial cut (true) or full cut (false)
+        printer.close();
 
     }
 
