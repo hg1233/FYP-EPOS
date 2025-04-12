@@ -10,8 +10,10 @@
   --info: lightskyblue;
   --info-dark: rgb(0, 144, 201);
   --success: darkseagreen;
+  --success-dark: rgb(3, 105, 3);
   --orange: rgb(255, 203, 107);
   --coral: coral;
+  --magenta: rgb(104, 5, 124);
   --teal: #44bfbf;
   --default-font: 'Lexend', sans-serif !important;
 }

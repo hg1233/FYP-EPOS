@@ -116,6 +116,7 @@
     </body>
     <script src="../frontend/products_link.js"></script>
     <script src="../frontend/orders_link.js"></script>
+    <script src="../frontend/clerks_link.js"></script>
     <script src="../frontend/tables_link.js"></script>
     <script src="../frontend/categories_link.js"></script>
     <script src="../frontend/window_manager_link.js"></script>
@@ -300,6 +301,64 @@
                 }
                 
             });
+
+            let current_clerk = await getCurrentClerk();
+
+            console.debug(current_clerk)
+            if(current_clerk.is_manager) {
+                console.info("Clerk is a manager - generating manager operation buttons")
+                generateManagerButtons();
+            }
+        }
+
+        async function generateManagerButtons() {
+
+            let root = document.querySelector(":root");
+            let root_style = getComputedStyle(root);
+
+            let cat_container = document.createElement('div');
+            cat_container.classList.add('category');
+
+            let cat_header = document.createElement('h2');
+            cat_header.innerText = "Manager Operations";
+            cat_container.appendChild(cat_header);
+
+            let prod_list = document.createElement('div');
+            prod_list.classList.add('product-list');
+
+            // TODO - discount buttons
+
+            let misc_charge = document.createElement('div');
+            misc_charge.classList.add('product');
+            product_nametag = document.createElement('h3');
+            product_nametag.innerText = "Misc Charge";
+            misc_charge.appendChild(product_nametag);
+            misc_charge.setAttribute('onclick', `openMiscChargeModal()`) 
+            misc_charge.style.backgroundColor = root_style.getPropertyValue("--magenta")
+            prod_list.appendChild(misc_charge);
+
+            let disc_percent = document.createElement('div');
+            disc_percent.classList.add('product');
+            product_nametag = document.createElement('h3');
+            product_nametag.innerText = "Discount (%)";
+            disc_percent.appendChild(product_nametag);
+            disc_percent.setAttribute('onclick', `openDiscPercentModal()`) 
+            disc_percent.style.backgroundColor = root_style.getPropertyValue("--info-dark")
+            prod_list.appendChild(disc_percent);
+
+            let disc_amount = document.createElement('div');
+            disc_amount.classList.add('product');
+            product_nametag = document.createElement('h3');
+            product_nametag.innerText = "Discount (£)";
+            disc_amount.appendChild(product_nametag);
+            disc_amount.setAttribute('onclick', `openDiscAmountModal()`) 
+            disc_amount.style.backgroundColor = root_style.getPropertyValue("--success-dark")
+            prod_list.appendChild(disc_amount);
+
+            cat_container.appendChild(prod_list);
+            document.getElementById('products-container').appendChild(cat_container);
+
+
         }
 
         async function showSetQtyModal() {
