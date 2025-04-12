@@ -276,8 +276,6 @@ router.post("/line/void", async (request, response) => {
         // check line belong to open order (not closed)
         
         // get suborder from line ID
-        console.debug(line)
-        console.debug(line.suborder_id);
         let suborder = await Suborder.getSuborderBySuborderID(line.suborder_id)
 
         // first sql keyword wants to not work for some unknown reason, do this to just get 1st entry
