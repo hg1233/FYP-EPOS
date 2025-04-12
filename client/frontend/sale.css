@@ -162,3 +162,7 @@ body {
     background-color: var(--error-dark) !important;
 }
   
+.suborder-end {
+    border-style: none none dashed none;
+    border-width: 2px;
+}

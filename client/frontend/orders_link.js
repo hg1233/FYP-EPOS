@@ -26,6 +26,10 @@ async function createSuborder(order_id, clerk_id) {
     return await window.electronAPI.orders_createSuborder(order_id, clerk_id);
 }
 
+async function createSuborderLine(order_id, suborder_id, product_id, product_name, product_unit_price, product_qty, comments) {
+    return await window.electronAPI.orders_createLine(order_id, suborder_id, product_id, product_name, product_unit_price, product_qty, comments)
+}
+
 async function reloadOrdersData() {
     getOpenOrders();
     getClosedOrders();

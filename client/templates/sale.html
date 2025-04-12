@@ -198,24 +198,32 @@
         }
 
         async function addProductToOrder(product_id, qty) {
-            // TODO - add to a local storage (dont just update the frontend, need to push a new suborder line)
+            
+            let current_order = await getActiveOrder();
+            let current_suborder = current_order.suborders[current_order.suborders.length-1];
 
+            let line_id = await createSuborderLine(current_order.id, current_suborder.suborder_id, product_id, products[product_id].name, products[product_id].price, qty, null)
+
+            addLineToOrderDisplayTable(line_id, product_id, products[product_id].name, qty, products[product_id].price);
+
+        }
+
+        async function addLineToOrderDisplayTable(line_id, product_id, name, qty, price) {
             let table_body = document.getElementById("order-table").children[0];
-            let price = products[product_id].price * qty
 
             let tr = document.createElement('tr');
             tr.dataset.product_id = product_id;
             tr.dataset.qty = qty;
             tr.dataset.price = price;
-            tr.setAttribute('onclick', `selectOrderLine(this)`) // TODO - maybe add line ID here from suborder_line table? 
-            // TODO - add suborder line ID to dataset of line also
+            tr.setAttribute('onclick', `selectOrderLine(this)`) 
+            tr.dataset.line_id = line_id;
             
             let qty_col = document.createElement('td');
             qty_col.innerText = `${qty}x`;
             tr.appendChild(qty_col);
 
             let name_col = document.createElement('td');
-            name_col.innerText = products[product_id].name;
+            name_col.innerText = name;
             tr.appendChild(name_col);
         
             let price_col = document.createElement('td');
@@ -228,6 +236,7 @@
             // update total value displayed at bottom of order "ticket"
             addToOrderTotal(price);
 
+            return tr;
         }
 
         // adds given price value to current order total
@@ -493,11 +502,13 @@
                 
                 // set table name to quick sale if not assigned to a table
                 let table = await getTableByID(order.table_id);
-
                 document.getElementById('ticket-table-seats').innerText = (table !== null && table !== undefined ? `${table.display_name} ~ Seats ${table.seats}` : "Quick Sale")
 
-                // TODO - this errors currently because a new suborder needs to be created on table open, orders with no suborders when attempting to read the below will error
                 document.getElementById('ticket-order-id').innerText = `Order # ${order.suborders[order.suborders.length-1].suborder_id}`
+
+                // load order lines
+                await loadOrderLines(order);
+
             } else {
 
                 // the existing order should be defined by the previous page (i.e. on click of quicksale button or on open of table on view tables)
@@ -531,6 +542,40 @@
             // TODO - backend table store function needs to send data to printer module
 
             alert("// TODO")
+        }
+
+        async function loadOrderLines(order) {
+            order.suborders.forEach(suborder => {
+                    
+                    console.debug(suborder.suborder_id)
+
+                    // check suborder has lines
+                    if(suborder.lines == null) {
+                        // lines is null, skip
+                        return;
+                    }
+                    
+                    if(suborder.lines.length < 1) {
+                        // no lines in suborder, skip
+                        return;
+                    }
+
+                    let last_line = null;
+
+                    suborder.lines.forEach(line => {
+                        last_line = addLineToOrderDisplayTable(line.line_id, line.product_id, line.product_name, line.product_qty, line.subtotal)
+                    });
+
+                    last_line.then(function(line) {
+
+                        if(last_line == null) {
+                        return;
+                    }
+                        line.classList.add('suborder-end');
+                    });
+
+
+                });
         }
 
     </script>
