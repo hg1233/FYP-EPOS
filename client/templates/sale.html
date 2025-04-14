@@ -264,7 +264,13 @@
             tr.appendChild(name_col);
         
             let price_col = document.createElement('td');
-            price_col.innerText = `£${(price / 100).toFixed(2)}`    
+            if(price > 0) {
+                price_col.innerText = `£${(price / 100).toFixed(2)}`  
+            } else {
+                // moves negative before pound sign for better UI
+                price_col.innerText = `-£${((price*-1) / 100).toFixed(2)}`  
+            }
+              
             tr.appendChild(price_col);
 
             // add row to table
