@@ -693,8 +693,9 @@
         
             // null not blank string - used for when no order line is selected, not when a product with a blank name is selected (weird edge case but still works)
             if(line_product_name == null) { 
-                // TODO - show error message for no order line selected
+                // show error message for no order line selected
                 console.warn("Cannot open comments modal - no order line selected.")
+                showMsg("Add Comments", "Please tap on a line in the order to select it to add comments.", 2000)
                 return;
             }
 
