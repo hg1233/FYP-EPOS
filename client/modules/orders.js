@@ -536,6 +536,39 @@ class OrdersModule {
         }
     }
 
+    async confirmSuborder(order_id, suborder_id) {
+
+        try {
+
+            // let API validate suborder - should never be an issue really
+
+            let result = await this.net_manager.async_post(`/api/suborder/confirm`, {suborder_id: suborder_id});
+            
+            if(result["message"] != undefined) {
+
+                // success
+                let order = this.open_orders[order_id];
+
+                order.suborders.forEach(suborder => {
+                    if(suborder.suborder_id == suborder_id) {
+                        suborder.suborder_confirmed = true;
+                    }
+                });
+
+                return true;
+
+            } else {
+                return {error: "Error confirming suborder", details: result.error}
+            }
+
+        } catch(error) {
+            console.error("Error confirming suborder: ")
+            console.error(error)
+            return {error: "Error confirming suborder", details: error};
+        }
+
+    }
+
     // TODO - be able to lock orders
 
 
@@ -628,6 +661,10 @@ class OrdersModule {
 
         ipcMain.handle('orders:cancel', async (event, order_id) => {
             return this.cancelOrder(order_id);
+        })
+
+        ipcMain.handle('orders:confirm-suborder', async (event, order_id, suborder_id) => {
+            return this.confirmSuborder(order_id, suborder_id);
         })
 
 

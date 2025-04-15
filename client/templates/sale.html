@@ -858,28 +858,52 @@
         });
 
         async function saveToTable() {
-            // check if table_id in active order is defined
+            
             let order = await getActiveOrder();
 
             if(order == null) {
-                // this should never be the case
+                // checking if order exists, this should never execute
                 console.error("Error attempting to save order to table - no currently active order.")
                 return;
             }
             
+            // check if table_id in active order is defined
+            if(order.table_id == null) {
+                // TODO - prompt to select table
+                return;
+            }
+
             let last_suborder = order.suborders[order.suborders.length -1];
 
             if(last_suborder == null) {
-                // this should, again, never be the case
+                // checking suborder exists, this should, again, never be the case
                 console.error("Error attempting to save order to table - no suborders found.")
                 return;
             }
 
-            // store to table
+            // store to table / set suborder as confirmed
+            let suborder_id = last_suborder.suborder_id;
+            console.debug("suborder_id", suborder_id)
 
-            // TODO - backend table store function needs to send data to printer module
+            let status = await confirmSuborder(order.id, suborder_id);
+            
+            if(status == true) {
+                // send data to printer module
+                // TODO ^^
+                
+                // show msg then redirect
+                await showMsg("Table Saved!", "The order will be sent to your kitchen printer.", 1500)
+                setTimeout(() => {
+                    setActiveOrder(null);
+                    showPage("Nav");
+                }, 12500);
+            
+            } else {
+                await showMsg("Unable to save table", status.error, 3000);
+                return;
+            }
 
-            alert("// TODO")
+            
         }
 
         async function loadOrderLines(order) {

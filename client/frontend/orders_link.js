@@ -66,3 +66,7 @@ async function voidSuborderLine(order_id, line_id) {
 async function cancelOrder(order_id) {
     return await window.electronAPI.orders_cancel(order_id);
 }
+
+async function confirmSuborder(order_id, suborder_id) {
+    return await window.electronAPI.orders_confirmSuborder(order_id, suborder_id);
+}
