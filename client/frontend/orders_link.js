@@ -62,3 +62,7 @@ async function setLineComments(order_id, suborder_id, line_id, comments) {
 async function voidSuborderLine(order_id, line_id) {
     return await window.electronAPI.orders_voidLine(order_id, line_id);
 }
+
+async function cancelOrder(order_id) {
+    return await window.electronAPI.orders_cancel(order_id);
+}

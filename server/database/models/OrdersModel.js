@@ -132,6 +132,16 @@ const Orders = {
         ).returning('*');
     },
 
+    cancel: (id) => {
+        return knex('orders').where({id}).update(
+            {
+                is_paid: false,
+                is_open: false,
+                is_cancelled: true,
+            }
+        ).returning('*');
+    },
+
     setTable: (id, table_id) => {
         return knex('orders').where({id}).update({table_id: table_id}).returning('*');
     },

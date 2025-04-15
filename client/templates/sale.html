@@ -37,7 +37,7 @@
                     <div class="btn" onclick="showSetQtyModal()">
                         <h3>Set Quantity</h3>
                     </div>
-                    <div class="btn btn-red" onclick="alert('TODO')">
+                    <div class="btn btn-red" onclick="showConfirmCancelOrderModal()">
                         <h3>Cancel Order</h3>
                     </div>
                     <div class="btn btn-blue" onclick="showAddCommentsModal()">
@@ -144,6 +144,20 @@
                         <button class="sale-keypad-key" onclick="hideMiscChargeModal()">Cancel</button>
                     </div>
                 </div>
+            </div>
+            <div class="modal" id="cancel-order-modal">
+                <h1>Cancel Order</h1>
+                <p>Are you sure you wish to cancel this order? This action will cancel this sale and cannot be undone.</p>
+                <div class="sale-keypad">
+                    <div class="sale-keypad-row">
+                        <button class="sale-keypad-key primary-btn" onclick="cancelActiveOrder()">Cancel Order</button>
+                        <button class="sale-keypad-key" onclick="hideSetOrderNameModal()">Abort</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="message">
+                <h1 id="msg-title"></h1>
+                <p id="msg-body"></p>
             </div>
             </div>
         </div>
@@ -519,6 +533,79 @@
 
             hideMiscChargeModal();
 
+        }
+
+        async function showConfirmCancelOrderModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('cancel-order-modal');
+
+            overlay.style.display = "flex";
+            qty_modal.style.display = "block";
+        }
+
+        async function hideConfirmCancelOrderModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let qty_modal = document.getElementById('cancel-order-modal');
+
+            overlay.style.display = "none";
+            qty_modal.style.display = "none";
+        }
+
+        async function cancelActiveOrder() {
+            let order = await getActiveOrder();
+
+            let is_cancelled = await cancelOrder(order.id);
+
+            // hide current popup box, msg will show up in place
+            hideConfirmCancelOrderModal();
+
+            if(is_cancelled == true) {
+                // success - order cancelled
+
+                // success msg - duration set longer than page is shown for 
+                showMsg("Order cancelled successfully", "This order has been cancelled successfully. Redirecting you back to the Navigation screen shortly...", 5000)
+
+                // cancel active order
+                setActiveOrder(null);
+                
+                // redirect to nav after 3sec
+                setTimeout(() => {
+                    showPage("Nav");
+                }, 3000);
+
+            } else {
+                // show err msg to user
+                console.debug(is_cancelled)
+                showMsg("Error cancelling order", is_cancelled.error, 3000);
+            }
+
+        }
+
+        async function showMsg(title, body, duration) {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let msg_modal = document.getElementById('message');
+
+            let title_elem = document.getElementById('msg-title');
+            title_elem.innerText = title;
+
+            let body_elem = document.getElementById('msg-body');
+            body_elem.innerText = body; 
+
+            overlay.style.display = "flex";
+            msg_modal.style.display = "block";
+
+            // hide msg after inputted duration
+            setTimeout(() => {
+                hideMsg();
+            }, duration);
+        }
+
+        async function hideMsg() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let msg_modal = document.getElementById('message');
+
+            overlay.style.display = "none";
+            msg_modal.style.display = "none";
         }
 
         async function showSetQtyModal() {

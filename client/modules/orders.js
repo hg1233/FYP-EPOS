@@ -27,6 +27,7 @@ class OrdersModule {
                 // parse 0 & 1 as true & false
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
+                order["is_cancelled"] = Boolean(order["is_cancelled"])
                 this.addOrderToLocalStorage(order, this.open_orders)
             })
         } catch(err) {
@@ -39,6 +40,7 @@ class OrdersModule {
                 // parse 0 & 1 as true & false
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
+                order["is_cancelled"] = Boolean(order["is_cancelled"])
                 this.addOrderToLocalStorage(order, this.open_orders)
             })
         }
@@ -54,6 +56,7 @@ class OrdersModule {
                 // parse 0 & 1 as true & false
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
+                order["is_cancelled"] = Boolean(order["is_cancelled"])
                 this.addOrderToLocalStorage(order, this.closed_orders)
             })
         } catch(err) {
@@ -66,6 +69,7 @@ class OrdersModule {
                 // parse 0 & 1 as true & false
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
+                order["is_cancelled"] = Boolean(order["is_cancelled"])
                 this.addOrderToLocalStorage(order, this.closed_orders)
             })
         }
@@ -169,6 +173,50 @@ class OrdersModule {
         } catch(err) {
             console.error(`Error setting order name for order ${order_id}: ${err}`);
             return {error: "An error occurred setting order name"};
+        }
+    }
+
+    async cancelOrder(order_id) {
+        try {
+
+            // check for only open orders, cannot assign table to order if order already closed
+            var order = this.open_orders[order_id];
+
+            // check if order exists
+            if(order == null || order == undefined) {
+
+                order = this.closed_orders[order_id];
+
+                if(order == null || order == undefined) {
+                    console.warn(`Error cancelling order - order not found.`)
+                    return {error: "An error occurred cancelling the order - order not found."};
+                } else {
+                    console.warn(`Error cancelling order - order already closed.`)
+                    return {error: "An error occurred cancelling the order - this order is already closed so cannot be cancelled."};
+                }
+                
+            }
+
+            // input validation passed - create table
+            var response = await this.net_manager.async_post('/api/orders/cancel', {order_id: order_id});
+                
+            if(response["message"] != undefined) {
+                
+                // success - move to closed orders
+                let local_order = this.open_orders[order_id];
+                local_order.is_cancelled = true;
+                local_order.is_open = false;
+                this.closed_orders[order_id] = local_order;
+                delete this.open_orders[order_id];
+
+                return true;
+            } else {
+                return {error: "Error occurred cancelling order", details: response["error"]}
+            }
+
+        } catch(err) {
+            console.error(`Error cancelling order ${order_id}: ${err}`);
+            return {error: "An error occurred cancelling order"};
         }
     }
 
@@ -577,6 +625,10 @@ class OrdersModule {
         ipcMain.handle('orders:void-line', async (event, order_id, line_id) => {
             return this.voidLine(order_id, line_id);
         });
+
+        ipcMain.handle('orders:cancel', async (event, order_id) => {
+            return this.cancelOrder(order_id);
+        })
 
 
     }

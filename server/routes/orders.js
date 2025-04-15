@@ -185,6 +185,9 @@ router.post('/set_table', async (request, response) => {
             return;
         }
 
+        // first entry
+        order = order[0];
+
         // check if order already closed
         if(order.is_open != true) {
             console.log(`[Orders > Assign to Table] Order ${order_id} cannot be assigned to table ${table_id} - order already closed`)
@@ -234,6 +237,42 @@ router.post('/set_name', async (request, response) => {
     } catch(err) {
         console.log(err);
         response.status(500).json({error: "Error setting order name"})
+    }
+
+})
+
+router.post('/cancel', async (request, response) => {
+
+    try {
+
+        var order_id = request.body["order_id"];
+        var order = await Orders.getOrderByID(order_id);
+
+        // check order exists
+        if(order == null) {
+            console.log(`[Orders > Cancel] Unable to cancel order ${order_id} - order not found`)
+            response.status(400).json({error: "Order not found"})
+            return;
+        }
+
+        // first entry
+        order = order[0];
+
+        // check if order already closed
+        if(order.is_open != true) {
+            console.log(`[Orders > Cancel] Order # ${order_id} cannot be cancelled - order already closed`)
+            response.status(400).json({error: "Cannot cancel order - order already closed"})
+            return;
+        }
+
+        var update = await Orders.cancel(order_id);
+        response.status(200).json({message: "Successfully cancelled order", order_details: update});
+
+
+
+    } catch(err) {
+        console.log(err);
+        response.status(500).json({error: "Error cancelling order"})
     }
 
 })
