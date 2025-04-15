@@ -249,7 +249,7 @@ router.post("/line/create", async (request, response) => {
 
         
         response.status(200).json({message: "Successfully created new line", suborder_line: line})
-        console.log(`[SuborderLine > Create] Created new line with ID # ${line.line_id}`)
+        console.log(`[SuborderLine > Create] Created new line with ID # ${line[0].line_id}`)
 
     } catch(error) {
         console.error("[SuborderLine > Create] Failed to create suborder line")
