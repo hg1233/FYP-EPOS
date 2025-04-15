@@ -4,6 +4,7 @@ const https = require('http');
 class NetManager {
 
     file_manager;
+    module_manager;
     server_host;
     api_key;
     use_local_cache;
@@ -11,9 +12,9 @@ class NetManager {
     heartbeat_interval;
     heartbeat_last_res_time;
      
-    constructor(file_manager) {
+    constructor(file_manager, module_manager) {
         this.file_manager = file_manager;
-
+        this.module_manager = module_manager;
 
         this.server_host = file_manager.config.network.server_host
         this.api_key = file_manager.config.network.api_key

@@ -21,7 +21,7 @@ app.whenReady().then( () => {
 
     // import network manager
     const {NetManager} = require("./managers/net_manager.js");
-    netManager = new NetManager(fileManager);
+    netManager = new NetManager(fileManager, moduleManager);
 
     let modules = [
         {name: 'products', path: './modules/products.js'},

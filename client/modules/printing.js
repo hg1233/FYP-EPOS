@@ -178,7 +178,7 @@ class PrintingModule {
 
     printReceiptThermal(data) {
 
-
+        let venue_info = this.net_manager.module_manager.instance.getModuleByName('venue').venue_info;
         let printer = new escpos.Printer(device);
         
         device.open(function(error) {
@@ -187,12 +187,24 @@ class PrintingModule {
             printer.align('ct')
             printer.font("A")
             printer.size(2,2)
-            printer.text("The Pub") // TODO - pull from venue attributes 
+
+            // prevent overflow
+            if(venue_info.venue_name.length > 15)
+                printer.size(1,1);
+
+            printer.text(venue_info.venue_name) 
             printer.size(0,0)
-            printer.text("141 Broad Lane, Essington") // TODO - pull from venue attributes
-            printer.text("Wolverhampton") // TODO - pull from venue attributes
-            printer.text("WV11 2RH") // TODO - pull from venue attributes
-            printer.text("01902 000000 | www.thepub.co.uk") // TODO - pull from venue attributes
+            // spacer between name & address
+            printer.text('');
+
+            let address_lines = venue_info.venue_address.split(',')
+            address_lines.forEach(line => {
+                printer.text(line);
+            });
+
+            // spacer between address & phone no
+            printer.text('');
+            printer.text(venue_info.venue_phone)
             printer.feed(1)
 
             printer.tableCustom(
