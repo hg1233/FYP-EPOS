@@ -176,6 +176,15 @@
         // open existing order
         await setActiveOrder(clicked_table.orders)
 
+        while(true) {
+          let active = await getActiveOrder();
+
+          if(active.id == clicked_table.orders) {
+            break;
+          }
+
+        }
+
       }
 
       showPage("Sale");
