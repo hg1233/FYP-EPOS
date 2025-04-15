@@ -142,6 +142,49 @@ router.post('/create', async (request, response) => {
     }
 })
 
+router.post('/confirm', async (request, response) => {
+    try {
+
+        var suborder_id = request.body["suborder_id"];
+
+        if(suborder_id == null || suborder_id == undefined) {
+            console.log(`[Suborder > Confirm] Input validation failed - suborder undefined`);
+            response.status(400).json({error: "Failed to confirm suborder - suborder undefined"});
+            return;
+        }
+
+        // check suborder exists
+        let suborder = await Suborder.getSuborderBySuborderID(suborder_id);
+
+        // get 1st result
+        suborder = suborder[0];
+
+        if(suborder == null || suborder == undefined) {
+            console.log(`[Suborder > Confirm] Input validation failed - suborder not found`);
+            response.status(400).json({error: "Failed to confirm suborder - suborder not found"});
+            return;
+        }
+        
+        // check if suborder already confirmed
+        if(suborder.suborder_confirmed == true) {
+            console.log(`[Suborder > Confirm] Cannot confirm suborder - suborder already confirmed`);
+            response.status(400).json({error: "Cannot confirm suborder - suborder already confirmed"});
+            return;
+        }
+
+        // suborder exists & is unconfirmed, good to confirm
+        let status = await Suborder.confirmSuborder(suborder_id);
+
+        response.status(200).json({message: "Suborder confirmed", new_details: status[0]})
+        console.log(`[Suborder > Confirm] Confirmed suborder ID # ${status[0].suborder_id}`)
+
+    } catch(err) {
+        console.error(`[Suborder > Create] Error occurred creating suborder:`);
+        console.error(err);
+        response.status(500).json({error: "Error occurred creating suborder"});
+    }
+})
+
 router.get("/line/get/all", async (request, response) => {
     try {
         var lines = await SuborderLine.getAll();
