@@ -10,7 +10,12 @@
   "description": "",
   "dependencies": {
     "chromedriver": "^129.0.4",
-    "electron": "^32.2.0"
+    "electron": "^32.2.0",
+    "escpos": "^3.0.0-alpha.6",
+    "escpos-usb": "^3.0.0-alpha.4"
+  },
+  "overrides": {
+    "usb": "^1.9.2"
   },
   "devDependencies": {
     "@wdio/cli": "^9.1.5",

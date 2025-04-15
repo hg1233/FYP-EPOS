@@ -96,4 +96,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   print_setType: async (type) => ipcRenderer.invoke('print:set-type', type),
   print_getGlobalStatus: async () => ipcRenderer.invoke('print:get-global-status'),
   print_setGlobalStatus: async (status) => ipcRenderer.invoke('print:set-global-status', status),
+  print_printReceipt: async (data) => ipcRenderer.invoke('print:print-receipt', data),
 })

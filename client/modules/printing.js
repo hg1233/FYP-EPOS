@@ -1,3 +1,7 @@
+const escpos = require('escpos');
+escpos.USB = require('escpos-usb');
+const device  = new escpos.USB();
+
 class PrintingModule {
 
     net_manager;
@@ -110,6 +114,10 @@ class PrintingModule {
             this.loadPrinters(printer_data);
         })
 
+        ipcMain.handle('print:print-receipt', async (event, data) => {
+            return this.printToReceipt(data);
+        });
+
         ipcMain.handle('print:get-all', async () => {
             return this.available_printers;
         })
@@ -170,91 +178,99 @@ class PrintingModule {
 
     printReceiptThermal(data) {
 
-        let printer; // TODO - setup correct ESCPOS integration
+
+        let printer = new escpos.Printer(device);
         
-        /** Customer Receipt Header */
-        printer.align('ct')
-        printer.font("A")
-        printer.size(2,2)
-        printer.text("The Pub") // TODO - pull from venue attributes 
-        printer.size(0,0)
-        printer.text("141 Broad Lane, Essington") // TODO - pull from venue attributes
-        printer.text("Wolverhampton") // TODO - pull from venue attributes
-        printer.text("WV11 2RH") // TODO - pull from venue attributes
-        printer.text("01902 000000 | www.thepub.co.uk") // TODO - pull from venue attributes
-        printer.feed(1)
+        device.open(function(error) {
 
-        printer.tableCustom(
-            [
-              { text: `Clerk: ${data.clerk}`, align:"LEFT", width: 0.4},
-              { text: `${data.timestamp}`, align:"RIGHT", width: 0.6}
-            ]
-        )
+            /** Customer Receipt Header */
+            printer.align('ct')
+            printer.font("A")
+            printer.size(2,2)
+            printer.text("The Pub") // TODO - pull from venue attributes 
+            printer.size(0,0)
+            printer.text("141 Broad Lane, Essington") // TODO - pull from venue attributes
+            printer.text("Wolverhampton") // TODO - pull from venue attributes
+            printer.text("WV11 2RH") // TODO - pull from venue attributes
+            printer.text("01902 000000 | www.thepub.co.uk") // TODO - pull from venue attributes
+            printer.feed(1)
 
-        // styling for order info
-        printer.drawLine();
-        printer.size(1,1)
-        printer.style('B')
-
-        if(data.table !== null) {
-            printer.text(data.table.display_name)
-        } else {
-            printer.text(data.order_id)
-        }
-
-        printer.style('NORMAL')
-        printer.size(0,0)
-
-        if(data.order_name !== null) {
-            printer.text(data.order_name)
-        }
-
-        printer.drawLine();
-
-        // Order items header
-
-        printer.tableCustom(
-        [
-            { text: "Qty", align:"LEFT", width: 0.2, style: "B"},
-            { text: "Item", align:"LEFT", width: 0.45, style: "B"},
-            { text: "Price", align:"RIGHT", width: 0.35, style: "B"}
-        ]
-        )
-        printer.drawLine();
-
-        let order_items; // TODO - define this
-
-        order_items.forEach(item => {
             printer.tableCustom(
                 [
-                  { text:`${item.qty} x`, align:"LEFT", width:0.2, style: 'B' },
-                  { text:`${item.name}`, align:"LEFT", width:0.45},
-                  { text: `${item.subtotal}`, align:"RIGHT", width:0.35, encoding: "UK" }
-                ],
-              );
+                { text: `Clerk: ${data.clerk}`, align:"LEFT", width: 0.4},
+                { text: `${data.timestamp}`, align:"RIGHT", width: 0.6}
+                ]
+            )
+
+            // styling for order info
+            printer.drawLine();
+            printer.size(1,1)
+            printer.style('B')
+
+            if(data.table !== null) {
+                printer.text(data.table.display_name)
+            } else {
+                printer.text(data.order_id)
+            }
+
+            printer.style('NORMAL')
+            printer.size(0,0)
+
+            if(data.order_name !== null) {
+                printer.text(data.order_name)
+            }
+
+            printer.drawLine();
+
+            // Order items header
+
+            printer.tableCustom(
+            [
+                { text: "Qty", align:"LEFT", width: 0.2, style: "B"},
+                { text: "Item", align:"LEFT", width: 0.45, style: "B"},
+                { text: "Price", align:"RIGHT", width: 0.35, style: "B"}
+            ]
+            )
+            printer.drawLine();
+
+            let order_items = data.order_items
+
+            order_items.forEach(item => {
+                printer.tableCustom(
+                    [
+                    { text:`${item.qty} x`, align:"LEFT", width:0.2, style: 'B' },
+                    { text:`${item.name}`, align:"LEFT", width:0.45},
+                    { text: `${item.subtotal}`, align:"RIGHT", width:0.35, encoding: "UK" }
+                    ],
+                );
+            });
+
+            printer.drawLine();
+
+            printer.size(1,1)
+            printer.style('B')
+
+            printer.tableCustom(
+            [
+                { text:"", align:"LEFT", width:0.1, style: 'B' },
+                { text:"TOTAL:", align:"LEFT", width:0.2},
+                { text: `${data.total}`, align:"RIGHT", width:0.2, encoding: "UK" }
+            ],
+            );
+
+            printer.style('NORMAL')
+            printer.size(0,0)
+            printer.feed(2)
+            printer.text("Thank you for your custom.")
+            printer.feed(2)
+
+            printer.cut(true) // TODO - flag to set true/false for partial cut (true) or full cut (false)
+            printer.close();
+
         });
 
-        printer.drawLine();
 
-        printer.size(1,1)
-        printer.style('B')
-
-        printer.tableCustom(
-        [
-            { text:"", align:"LEFT", width:0.1, style: 'B' },
-            { text:"TOTAL:", align:"LEFT", width:0.2},
-            { text: `${data.total}`, align:"RIGHT", width:0.2, encoding: "UK" }
-        ],
-        );
-
-        printer.style('NORMAL')
-        printer.size(0,0)
-        printer.feed(2)
-        printer.text("Thank you for your custom.")
-        printer.feed(2)
-
-        printer.cut(true) // TODO - flag to set true/false for partial cut (true) or full cut (false)
-        printer.close();
+        
 
     }
 
