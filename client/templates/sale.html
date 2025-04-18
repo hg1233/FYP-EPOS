@@ -46,7 +46,7 @@
                     <div class="btn btn-blue" onclick="alert('TODO')">
                         <h3>Print Bill</h3>
                     </div>
-                    <div class="btn" onclick="alert('TODO')">
+                    <div class="btn" onclick="openPaymentModal()">
                         <h3>Pay Now</h3>
                     </div>
                     <div class="btn" onclick="saveToTable()">
@@ -159,6 +159,15 @@
                 <h1 id="msg-title"></h1>
                 <p id="msg-body"></p>
             </div>
+            <div class="modal" id="payment-modal">
+                <h1 id="payment-modal-total">Order Total: £0.00</h1>
+                <p>Please tap the payment method to mark the order as paid:</p>
+                <div class="sale-keypad">
+                    <div class="sale-keypad-row" id="payment-btns">
+                        <button class="sale-keypad-key" onclick="hidePaymentModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
 
@@ -230,7 +239,6 @@
                         product_pricetag.innerText = '£' + (product.price / 100).toFixed(2).toString();
                         product_elem.appendChild(product_pricetag);
 
-                        // TODO - add on click event for product elem (div) to add to ticket
                         product_elem.setAttribute('onclick', `handleProductClick(${product.id})`) 
 
 
@@ -938,6 +946,45 @@
 
 
                 });
+        }
+
+        async function openPaymentModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let modal = document.getElementById('payment-modal');
+
+            let order = await getActiveOrder();
+            document.getElementById('payment-modal-total').innerText = `Order Total: £${(order.total / 100).toFixed(2)}`;
+
+            //<button class="sale-keypad-key primary-btn" onclick="applyMiscCharge()">Confirm</button>
+
+            let buttons_container = document.getElementById('payment-btns');
+            let payment_methods = await getAllPaymentMethods();
+
+            payment_methods.forEach(method => {
+                let button = document.createElement('button');
+                button.classList.add('sale-keypad-key', 'primary-btn')
+                button.dataset.method_id = method.id
+                button.dataset.method_name = method.method
+                button.innerText = capitaliseFirstLetter(method.method);
+                button.setAttribute('onclick', `payOrder(this)`);
+                buttons_container.appendChild(button);
+            });
+
+            overlay.style.display = "flex";
+            modal.style.display = "block";
+            
+        }
+
+        async function hidePaymentModal() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let modal = document.getElementById('payment-modal');
+
+            overlay.style.display = "none";
+            modal.style.display = "none";
+        }
+
+        function capitaliseFirstLetter(string) {
+            return String(string).charAt(0).toUpperCase() + String(string).slice(1);
         }
 
     </script>

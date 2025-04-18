@@ -22,7 +22,13 @@ class PaymentMethodsModule {
 
     }
 
-    invokeIPCHandles(moduleManager, ipcMain) {}
+    invokeIPCHandles(moduleManager, ipcMain) {
+
+        ipcMain.handle('payment:get-all-methods', async (event, order_id, name) => {
+            return this.methods.methods;
+        })
+
+    }
 
 }
 
