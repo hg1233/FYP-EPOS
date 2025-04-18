@@ -955,8 +955,6 @@
             let order = await getActiveOrder();
             document.getElementById('payment-modal-total').innerText = `Order Total: £${(order.total / 100).toFixed(2)}`;
 
-            //<button class="sale-keypad-key primary-btn" onclick="applyMiscCharge()">Confirm</button>
-
             let buttons_container = document.getElementById('payment-btns');
             let payment_methods = await getAllPaymentMethods();
 
@@ -985,6 +983,23 @@
 
         function capitaliseFirstLetter(string) {
             return String(string).charAt(0).toUpperCase() + String(string).slice(1);
+        }
+
+        async function payOrder(payment_button) {
+
+            let order = await getActiveOrder();
+            let method_id = payment_button.dataset.method_id;
+            
+            // mark order as paid  & close order with relevant payment method
+            // TODO
+
+            // show msg
+            showMsg("Paid!", "This order has been paid, you will now be redirected back to the Navigation page...", 2000);
+
+            setTimeout(() => {
+                showPage("Nav");
+            }, 1750);
+
         }
 
     </script>
