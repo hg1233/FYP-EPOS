@@ -157,6 +157,11 @@ body {
     background-color: var(--info-dark) !important;
 }
 
+.btn-green {
+    border-color: var(--success) !important;
+    background-color: var(--success-dark) !important;
+}
+
 .btn-red {
     border-color: var(--error) !important;
     background-color: var(--error-dark) !important;
