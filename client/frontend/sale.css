@@ -112,6 +112,10 @@ body {
     justify-content: space-between;
 }
 
+.sale-keypad-row.solo {
+    justify-content: center !important;
+}
+
 .sale-keypad-key {
     font-family: var(--default-font);
     width: 30%;
