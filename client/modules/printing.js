@@ -10,6 +10,7 @@ class PrintingModule {
     receipt_printer;
     kitchen_printer;
     printing_type;
+    thermal_partial_cut;
 
     constructor() {
         this.available_printers = [];
@@ -18,6 +19,7 @@ class PrintingModule {
         this.net_manager = null;
         this.printing_type = "PDF";
         this.is_printing_enabled = false;
+        this.thermal_partial_cut = false;
 
         // to allow time for net_manager to be initialised
         setTimeout(() => {
@@ -64,6 +66,12 @@ class PrintingModule {
                 console.warn(`Cannot set printing type to '${type} - invalid type provided.'`)
                 return null;
         }
+    }
+
+    async setThermalCut(value, updateLocalStorage = true) {
+        let partial_cut = Boolean(value);
+        this.thermal_partial_cut = partial_cut;
+        if(updateLocalStorage) this.updateLocalStorage();
     }
 
     async printToKitchen(data) {
@@ -163,6 +171,7 @@ class PrintingModule {
         this.setPrintingType(config_data.printing_type, false);
         this.setKitchenPrinter(config_data.kitchen_printer, false)
         this.setReceiptPrinter(config_data.receipt_printer, false)
+        this.setThermalCut(config_data.thermal_partial_cut, false);
 
     }
 
@@ -172,6 +181,7 @@ class PrintingModule {
         config_data.printing_type = this.printing_type;
         config_data.kitchen_printer = this.kitchen_printer;
         config_data.receipt_printer = this.receipt_printer;
+        config_data.thermal_partial_cut = this.thermal_partial_cut;
 
         this.net_manager.file_manager.saveCurrentConfig();
     }
@@ -276,7 +286,7 @@ class PrintingModule {
             printer.text("Thank you for your custom.")
             printer.feed(2)
 
-            printer.cut(true) // TODO - flag to set true/false for partial cut (true) or full cut (false)
+            printer.cut(this.thermal_partial_cut)
             printer.close();
 
         });
