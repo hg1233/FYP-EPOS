@@ -44,6 +44,12 @@ class FileManager {
                 return false;
             
         } catch(error) {
+
+            if(error.code == "ENOENT") {
+                // file does not exist
+                return false;
+            }
+
             console.error("Unknown error occurred checking if local config exists:", error)
             return false;
         }
@@ -63,6 +69,7 @@ class FileManager {
                 printing_type: "PDF",
                 kitchen_printer: "",
                 receipt_printer: "",
+                thermal_partial_cut: false,
             },
 
         }

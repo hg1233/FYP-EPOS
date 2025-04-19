@@ -21,7 +21,7 @@ app.whenReady().then( () => {
 
     // import network manager
     const {NetManager} = require("./managers/net_manager.js");
-    netManager = new NetManager(fileManager, moduleManager);
+    netManager = new NetManager(fileManager, moduleManager, close);
 
     let modules = [
         {name: 'products', path: './modules/products.js'},
@@ -66,6 +66,11 @@ app.whenReady().then( () => {
         windowManager.instance.showPage(page);
     });
 
+    ipcMain.on('winmngr:close', () => {
+        windowManager.closeWindow();
+        app.quit();
+    })
+
     sendPrinterDataToPrinterModule();
 
 
@@ -81,4 +86,9 @@ async function sendPrinterDataToPrinterModule() {
         console.error(err);
         return;
     }
+}
+
+function close() {
+    windowManager.instance.closeWindow();
+    app.quit();
 }

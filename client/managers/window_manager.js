@@ -69,6 +69,10 @@ class PageManager {
 
     }
 
+    closeWindow() {
+        this.window.destroy();
+    }
+
 }
 
 class Page {

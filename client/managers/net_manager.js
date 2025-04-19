@@ -1,9 +1,11 @@
-const { app, net } = require("electron/main");
+const { app, net, dialog } = require("electron/main");
 const https = require('http');
 
 class NetManager {
 
     file_manager;
+    close_func;
+    is_crashing;
     module_manager;
     server_host;
     api_key;
@@ -12,9 +14,11 @@ class NetManager {
     heartbeat_interval;
     heartbeat_last_res_time;
      
-    constructor(file_manager, module_manager) {
+    constructor(file_manager, module_manager, close_func) {
         this.file_manager = file_manager;
         this.module_manager = module_manager;
+        this.close_func = close_func;
+        this.is_crashing = false;
 
         this.server_host = file_manager.config.network.server_host
         this.api_key = file_manager.config.network.api_key
@@ -30,8 +34,8 @@ class NetManager {
 
     async pre_ready_request(endpoint) {
         // TODO - implement try/catch to prevent error if unable to reach server
-        
-        return new Promise( (resolve, reject) => {
+
+        let promise = new Promise( (resolve, reject) => {
             
             // TODO - send API key here (missing)
 
@@ -45,7 +49,12 @@ class NetManager {
 
                     // all data received
                     response.on('end', (e) => {
-                        resolve(JSON.parse(data)); // return 
+                        try {
+                            let output = JSON.parse(data);
+                            resolve(output);
+                        } catch(error) {
+                            reject(error);
+                        }
                     });
                     
                 }
@@ -53,6 +62,30 @@ class NetManager {
                 reject(error);
             });
         })
+
+        promise.catch((error) => {
+            console.error("Error making network request: ")
+            console.error(error);
+            // this means there is a network or server error that isnt handled using json
+            // exit app to be safe
+
+            // prevent spam of err msgs
+            if(this.is_crashing) return;
+
+            // process err code
+            let message = "Unfortunately, a critical network error has occurred and the EPOS system cannot continue running. Please verify your network settings and try again.";
+
+            if(error.code = "ENOTFOUND") message = "The server host defined in the configuration cannot be found. Please confirm your settings and try again.";
+
+            // add exit warning
+            message = message + " This application will now exit."
+
+            dialog.showErrorBox("Network Error",message)
+            this.close_func();
+            this.is_crashing = true;
+        })
+
+        return promise;
     }
 
     async async_get(endpoint) {
