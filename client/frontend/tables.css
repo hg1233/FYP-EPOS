@@ -23,3 +23,19 @@
     color: var(--grey);
     padding: 15px;
 }
+
+.buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}
+
+.button {
+    padding: 20px 30px;
+    font-size: 18px;
+}
+
+.button.lime {
+    background-color: var(--lime-green);
+}
