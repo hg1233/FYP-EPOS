@@ -273,7 +273,9 @@
 
             let line = await createSuborderLine(current_order.id, current_suborder.suborder_id, product_id, products[product_id].name, products[product_id].price, qty, null)
 
-            addLineToOrderDisplayTable(line.line_id, product_id, products[product_id].name, qty, products[product_id].price, line.line_comments);
+            addLineToOrderDisplayTable(line.line_id, product_id, products[product_id].name, qty, products[product_id].price * qty, line.line_comments);
+
+            qty_modifier_active = false;
 
         }
 
