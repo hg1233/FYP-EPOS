@@ -43,7 +43,7 @@
                     <div class="btn btn-blue" onclick="showAddCommentsModal()">
                         <h3>Add Comments</h3>
                     </div>
-                    <div class="btn btn-blue" onclick="alert('TODO')">
+                    <div class="btn btn-blue" onclick="printBill()">
                         <h3>Print Bill</h3>
                     </div>
                     <div class="btn btn-green" onclick="openPaymentModal()">
@@ -1079,7 +1079,7 @@
                     let line_item = {};
                     line_item.qty = line.product_qty;
                     line_item.name = line.product_name;
-                    line_item.total = line.subtotal;
+                    line_item.total = (line.subtotal / 100).toFixed(2);;
 
                     // add line item to output
                     order_items.push(line_item);
