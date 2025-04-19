@@ -1,6 +1,12 @@
 const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
-const device  = new escpos.USB();
+let device;
+try {
+    device = new escpos.USB();
+} catch(error) {
+    console.warn("Unable to use USB Thermal Printing: ", error)
+}
+
 
 class PrintingModule {
 
