@@ -164,7 +164,6 @@
                 <p>Please tap the payment method to mark the order as paid:</p>
                 <div class="sale-keypad">
                     <div class="sale-keypad-row" id="payment-btns">
-                        <button class="sale-keypad-key" onclick="hidePaymentModal()">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -956,6 +955,15 @@
             document.getElementById('payment-modal-total').innerText = `Order Total: £${(order.total / 100).toFixed(2)}`;
 
             let buttons_container = document.getElementById('payment-btns');
+
+            // generate cancel btn dynamically, makes clearing generated buttons easier
+
+            let cancel_btn = document.createElement('button');
+            cancel_btn.classList.add('sale-keypad-key');
+            cancel_btn.setAttribute('onclick', 'hidePaymentModal()');
+            cancel_btn.innerText = "Cancel";
+            buttons_container.appendChild(cancel_btn);
+
             let payment_methods = await getAllPaymentMethods();
 
             payment_methods.forEach(method => {
@@ -979,6 +987,11 @@
 
             overlay.style.display = "none";
             modal.style.display = "none";
+
+            // clear buttons on hide of modal
+            // buttons auto-generated on modal open for different payment methods
+            let buttons_container = document.getElementById('payment-btns');
+            buttons_container.innerHTML = '';
         }
 
         function capitaliseFirstLetter(string) {
