@@ -834,13 +834,17 @@
             // update on backend
             let response = await setOrderName(order.id, name)
 
+            // hide modal
+            hideSetOrderNameModal();
+
             if(response == true) {
                 // success, update at top of ticket
                 document.getElementById('ticket-order-name').innerText = (name !== null ? name : "");
+            } else {
+                // something went wrong - show user err msg
+                showMsg(response.error, response.details, 3000);
+                return;
             }
-
-            // hide modal
-            hideSetOrderNameModal();
         }
 
 

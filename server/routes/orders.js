@@ -213,7 +213,7 @@ router.post('/set_name', async (request, response) => {
 
         var order_id = request.body["order_id"];
         var name = request.body["name"];
-        var order = await Orders.getOrderByID(order_id);
+        var order = (await Orders.getOrderByID(order_id))[0];
 
         // check order exists
         if(order == null) {
@@ -223,9 +223,9 @@ router.post('/set_name', async (request, response) => {
         }
 
         // check if order already closed
-        if(order.is_open != true) {
+        if(Boolean(order.is_open) !== true) {
             console.log(`[Orders > Set Name] Order name for order # ${order_id} cannot be changed - order already closed`)
-            response.status(400).json({error: "Cannot change order name - order already closed"})
+            response.status(400).json({error: `Cannot change order name - order already closed - ${order}`})
             return;
         }
 
