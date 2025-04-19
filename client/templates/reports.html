@@ -26,15 +26,17 @@
         <h2>Month to Date Earnings</h2>
         <p>This report shows information about your earnings and sales since the start of the month!</p>
       </div>
-      <div class="report-entry">
+      <div class="report-entry" onclick="openTablesReport()">
         <h2>Open Tables</h2>
         <p>This report shows information about your currently open tables!</p>
       </div>
 
     </div>
   </div>
-  <div class="modal-overlay">
-    
+  <div id="modal-overlay">
+    <div class="modal report" id="open-tables">
+      <h2 id="open-tables-header">You currently have 0 open tables.</h2>
+    </div>
     
   </div>
 </body>
@@ -45,7 +47,46 @@
 
 <script async>
   
-  
+  async function openTablesReport() {
+
+    let tables = await getAllTablesWithOrderData(true);
+    let report_header = document.getElementById('open-tables-header');
+
+    let open_tables = [];
+
+    tables.forEach(table => {
+      // disregard tables with no open orders
+      if(table.orders == null) return;
+      // extract tables with open orders, store in array
+      open_tables.push(table);
+    });
+
+    console.debug(open_tables)
+
+    report_header.innerText = `You currently have ${open_tables.length} open table${open_tables.length == 1 ? "" : "s"}.`
+
+    showModal("open-tables");
+
+  }
+
+  async function showModal(modal_element_id) {
+    let overlay = document.getElementById('modal-overlay');
+    let modal = document.getElementById(modal_element_id);
+
+    overlay.style.display = "flex";
+    modal.style.display = "block";
+  }
+
+  async function hideModal(modal_element_id) {
+    let overlay = document.getElementById('modal-overlay');
+    let modal = document.getElementById(modal_element_id);
+
+    overlay.style.display = "none";
+    modal.style.display = "none";
+  }
+
+
+
   
 </script>
 
