@@ -214,42 +214,52 @@
 
                 let cat_header = document.createElement('h2');
                 cat_header.innerText = category.name;
-                cat_container.appendChild(cat_header);
+                
 
                 let prod_list = document.createElement('div');
                 prod_list.classList.add('product-list');
             
-                // TODO - got to be a better way to iterate through all categories & associate with products for this
-                // time complexity on the below would be awful
-                // TODO - could use await window.electronAPI.categories_getAll() and just lookup the indexes?
-                for(index = 1; index <= Object.keys(products).length; index++) {
+                category.products.forEach(product_id => {
+                    let product = products[product_id];
 
-                    product = products[index];
-                    
-                    if(category.products.includes(index.toString())) {
-                        
-                        product_elem = document.createElement('div');
-                        product_elem.classList.add('product');
-                        
-                        product_nametag = document.createElement('h3');
-                        product_nametag.innerText = product.name;
-                        product_elem.appendChild(product_nametag);
-
-                        product_pricetag = document.createElement('p');
-                        product_pricetag.dataset['price'] = product.price;
-                        product_pricetag.innerText = '£' + (product.price / 100).toFixed(2).toString();
-                        product_elem.appendChild(product_pricetag);
-
-                        product_elem.setAttribute('onclick', `handleProductClick(${product.id})`) 
-
-
-                        prod_list.appendChild(product_elem);
+                    // skip if product disabled
+                    if(!product.enabled) {
+                        console.debug(`Button for product ID # ${product_id} not generated - product is disabled.`)
+                        return;
                     }
+
+                    product_elem = document.createElement('div');
+                    product_elem.classList.add('product');
+                    
+                    product_nametag = document.createElement('h3');
+                    product_nametag.innerText = product.name;
+                    product_elem.appendChild(product_nametag);
+
+                    product_pricetag = document.createElement('p');
+                    product_pricetag.dataset['price'] = product.price;
+                    product_pricetag.innerText = '£' + (product.price / 100).toFixed(2).toString();
+                    product_elem.appendChild(product_pricetag);
+
+                    product_elem.setAttribute('onclick', `handleProductClick(${product.id})`) 
+
+
+                    prod_list.appendChild(product_elem);
+
+
+                });
+
+                // check if any products generated, don't do anything if there's no active products for that container
+                if(prod_list.children.length == 0) {
+                    console.debug(`Not displaying category # ${category.id} - products associated but none are enabled`)
+                    return;
                 }
 
-                cat_container.appendChild(prod_list);
+                // at least 1 product has been generated, add the header & products list to the container
 
-                document.getElementById('products-container').appendChild(cat_container);       
+                cat_container.appendChild(cat_header);
+                cat_container.appendChild(prod_list);
+                document.getElementById('products-container').appendChild(cat_container);
+
             } else {
                 console.info(`Not displaying category # ${category.id} - no products associated`);
             } 
