@@ -16,7 +16,7 @@ class PaymentMethodsModule {
         const methods = await this.net_manager.pre_ready_request('/api/payment_methods/get/all');
 
         // no pre-processing required, basic db structure
-        this.methods = methods;
+        this.methods = methods.methods;
 
         console.log(`Loaded payment methods (total: ${Object.keys(this.methods).length}).`)
 
@@ -25,7 +25,7 @@ class PaymentMethodsModule {
     invokeIPCHandles(moduleManager, ipcMain) {
 
         ipcMain.handle('payment:get-all-methods', async (event, order_id, name) => {
-            return this.methods.methods;
+            return this.methods;
         })
 
     }

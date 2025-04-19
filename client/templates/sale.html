@@ -1017,17 +1017,24 @@
 
             let order = await getActiveOrder();
             let method_id = payment_button.dataset.method_id;
-            
+
+            hidePaymentModal();
+
             // mark order as paid  & close order with relevant payment method
-            // TODO
+            let result = await payOrderAndClose(order.id, method_id);
 
-            // show msg
-            showMsg("Paid!", "This order has been paid, you will now be redirected back to the Navigation page...", 2000);
-
-            setTimeout(() => {
-                showPage("Nav");
-            }, 1750);
-
+            if(result.message) {
+                // show msg
+                showMsg("Order paid!", "This order has been paid and closed. You will now be redirected back to the Navigation page...", 2000);
+                
+                setTimeout(() => {
+                    showPage("Nav");
+                }, 1750);
+            } else {
+                console.error(result)
+                showMsg("Error recording payment for order", result.error, 3000);
+                return;
+            }
         }
 
     </script>

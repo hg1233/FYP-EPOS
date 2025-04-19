@@ -309,12 +309,20 @@ class OrdersModule {
             var order = this.open_orders[order_id];
 
             if(order == null || order == undefined) {
-                console.warn("Unable to pay & close order - order not found");
-                return {error: "Unable to pay & close order - order not found"};
+                console.warn("Unable to pay & close order - order not found or is not open.");
+                return {error: "Unable to pay & close order - order not found or is not open."};
             }
 
             // check payment method exists
-            var payment_method = this.module_manager.getModuleByName('payment_methods').methods[payment_method_id];
+            var payment_methods = this.module_manager.getModuleByName('payment_methods').methods;
+
+            let payment_method = null;
+
+            payment_methods.forEach(method => {
+                if(method.id == payment_method_id) { 
+                    payment_method = method;
+                }
+            });
 
             if(payment_method == null || payment_method == undefined) {
                 console.warn(`Failed to pay & close order # ${order_id} - payment method not found`);
@@ -327,11 +335,16 @@ class OrdersModule {
             
             if(response["message"] != undefined) {
 
-                // LOCAL UPDATE:
-                delete this.open_orders[order_id];
-                this.closed_orders[order_id] = order;
+                
+                // success, update locally
 
-                return response["order_details"];
+                order.is_open = false;
+                order.is_paid = true;
+                order.payment_method = payment_method_id;
+                this.closed_orders[order_id] = order;
+                delete this.open_orders[order_id];
+
+                return response;
 
             } else {
                 return {error: "An error occurred", details: response["error"]}
