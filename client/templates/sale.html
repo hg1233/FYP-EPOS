@@ -387,7 +387,6 @@
 
             let current_clerk = await getCurrentClerk();
 
-            console.debug(current_clerk)
             if(current_clerk.is_manager) {
                 console.info("Clerk is a manager - generating manager operation buttons")
                 generateManagerButtons();
@@ -927,8 +926,6 @@
 
         async function loadOrderLines(order) {
             order.suborders.forEach(suborder => {
-                    
-                    console.debug(suborder.suborder_id)
 
                     // check suborder has lines
                     if(suborder.lines == null) {
