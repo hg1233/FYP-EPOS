@@ -1,0 +1,11 @@
+.report-entry {
+    background-color: var(--mid-grey);
+    padding: 10px 25px;
+    border-radius: 15px;
+    text-align: left;
+    margin: 15px 0;
+}
+
+.report-entry > h2 {
+    margin-bottom:0;
+}
