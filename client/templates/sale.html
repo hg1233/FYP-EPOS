@@ -910,11 +910,11 @@
                 // TODO ^^
                 
                 // show msg then redirect
-                await showMsg("Table Saved!", "The order will be sent to your kitchen printer.", 1500)
+                await showMsg("Table Saved!", "The order will be sent to your kitchen printer.", 2000)
                 setTimeout(() => {
                     setActiveOrder(null);
                     showPage("Nav");
-                }, 12500);
+                }, 1750);
             
             } else {
                 await showMsg("Unable to save table", status.error, 3000);

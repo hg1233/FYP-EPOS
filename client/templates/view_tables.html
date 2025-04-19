@@ -89,7 +89,16 @@
       // check if table is occupied
       if(table.orders !== null) {
 
-        let order_id = table.orders.split(",")[0];
+        let order_id;
+
+        if(isNaN(Number((table.orders)))) {
+          // must be a list, get 1st entry
+          order_id = table.orders.split(",")[0];
+        } else {
+          order_id = Number(table.orders);
+        }
+
+        
         
         let clerk = await getClerkFromOrderID(order_id)
         let order = await getOrderByID(order_id)
@@ -126,7 +135,14 @@
       // show order data if table has open order
       if(clicked_table.orders !== null) {
 
-        let order_id = clicked_table.orders[0];
+        let order_id;
+
+        if(isNaN(Number((clicked_table.orders)))) {
+          // must be a list, get 1st entry
+          order_id = clicked_table.orders.split(",")[0];
+        } else {
+          order_id = Number(clicked_table.orders);
+        }
 
         let clerk = await getClerkFromOrderID(order_id)
         let order = await getOrderByID(order_id)
