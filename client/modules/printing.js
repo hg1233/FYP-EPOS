@@ -238,7 +238,7 @@ class PrintingModule {
             if(data.table !== null) {
                 printer.text(data.table.display_name)
             } else {
-                printer.text(data.order_id)
+                printer.text("Sale # " + data.order_id)
             }
 
             printer.style('NORMAL')

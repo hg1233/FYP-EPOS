@@ -1037,6 +1037,62 @@
             }
         }
 
+        async function printBill() {
+
+            let order = await getActiveOrder();
+
+            let data = {}
+
+            // include date/time receipt was printed
+            let now = new Date(Date.now());
+            data.timestamp = now.toLocaleString('en-GB').replace(',','');
+
+            // include clerk details who opened sale
+            let clerk = await getClerkByID(order.created_by);
+            data.clerk = clerk.name;
+
+            // include sale (order) # (not suborder)
+            data.order_id = order.id;
+
+            // is table sale instead of quick sale
+            if(order.table_id !== null) {
+                // order is stored to table, include table info
+                let table = await getTableByID(order.table_id);
+                data.table = table;
+            }
+
+            // include order name
+            if(order.order_name !== null) {
+                data.order_name = order.order_name;
+            }
+
+            // include order total
+            data.total = (order.total / 100).toFixed(2);
+
+            // include order items
+            let order_items = [];
+
+            order.suborders.forEach(suborder => {
+                suborder.lines.forEach(line => {
+                    
+                    // build order item line for receipt printing
+                    let line_item = {};
+                    line_item.qty = line.product_qty;
+                    line_item.name = line.product_name;
+                    line_item.total = line.subtotal;
+
+                    // add line item to output
+                    order_items.push(line_item);
+                });
+            });
+
+            data.order_items = order_items;
+
+            // TODO - pass data to printing module
+            console.debug(data)
+
+        }
+
     </script>
 
 </html>
