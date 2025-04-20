@@ -28,6 +28,7 @@ class OrdersModule {
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
                 order["is_cancelled"] = Boolean(order["is_cancelled"])
+                order["created_at"] = new Date(order["created_at"]);
                 this.addOrderToLocalStorage(order, this.open_orders)
             })
         } catch(err) {
@@ -41,6 +42,7 @@ class OrdersModule {
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
                 order["is_cancelled"] = Boolean(order["is_cancelled"])
+                order["created_at"] = new Date(order["created_at"]);
                 this.addOrderToLocalStorage(order, this.open_orders)
             })
         }
@@ -57,6 +59,7 @@ class OrdersModule {
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
                 order["is_cancelled"] = Boolean(order["is_cancelled"])
+                order["created_at"] = new Date(order["created_at"]);
                 this.addOrderToLocalStorage(order, this.closed_orders)
             })
         } catch(err) {
@@ -70,6 +73,7 @@ class OrdersModule {
                 order["is_open"] = Boolean(order["is_open"])
                 order["is_paid"] = Boolean(order["is_paid"])
                 order["is_cancelled"] = Boolean(order["is_cancelled"])
+                order["created_at"] = new Date(order["created_at"]);
                 this.addOrderToLocalStorage(order, this.closed_orders)
             })
         }

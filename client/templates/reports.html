@@ -40,6 +40,10 @@
       </div>
       <button class="btn" onclick="hideModal('open-tables'); document.getElementById('open-tables-list').innerHTML = '';">Close Report</button>
     </div>
+
+    <div class="modal report" id="todays-sales">
+      <h2 id="todays-sales-header">Today's Sales: 00/00/0000 | Revenue: £0000.00</h2>
+    </div>
     
   </div>
 </body>
@@ -116,7 +120,62 @@
     modal.style.display = "none";
   }
 
+  async function todaysRevenueReport() {
+    let [ revenue, orders ] = await generatetodaysSalesData();
+    let today = new Date();
 
+    console.debug(revenue, orders)
+
+    let header = document.getElementById('todays-sales-header');
+    header.innerText = `Today's Sales: ${today.toLocaleDateString()} | Revenue: £${(revenue / 100).toFixed(2)}`
+
+    showModal('todays-sales');
+  }
+
+  async function generatetodaysSalesData() {
+    // order must be closed to be paid
+    let orders = await getClosedOrders();
+    let todays_date = new Date().setHours(0,0,0,0);
+
+    let todays_orders = [];
+    let todays_revenue = 0;
+
+    Object.keys(orders).forEach(index => {
+
+      let order = orders[index];
+
+      // exclude cancelled orders in calc
+      if(order.is_cancelled) return;
+
+      let order_date = new Date(order.created_at).setHours(0,0,0,0);
+
+      if(order_date == todays_date) {
+        todays_orders.push(order);
+        todays_revenue += order.total;
+      }
+
+    });
+
+    return [todays_revenue, todays_orders]
+  }
+
+  async function getMergedOrders() {
+    let open = await getOpenOrders();
+    let closed = await getClosedOrders();
+    
+    let all = [];
+
+    Object.keys(open).forEach(index => {
+      all.push(open[index]);
+    });
+
+    Object.keys(closed).forEach(index => {
+      all.push(closed[index]);
+    });
+
+    return all;
+    
+  }
 
   
 </script>
