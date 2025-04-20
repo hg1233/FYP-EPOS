@@ -45,6 +45,8 @@
       <h2 id="todays-sales-header">Today's Sales: 00/00/0000 | Revenue: £0000.00</h2>
       <p><span>Number of orders taken: </span><b><span id="todays-sales-ordercount">0</span></b></p>
       <p><span>Average order value: <b>£</span><span id="todays-sales-avgorder">00.00</span></b></p>
+      <p><span>Minimum order value: <b>£</span><span id="todays-sales-minorder">00.00</span></b></p>
+      <p><span>Maximum order value: <b>£</span><span id="todays-sales-maxorder">00.00</span></b></p>
     </div>
     
   </div>
@@ -137,6 +139,10 @@
     // set avg order value
     document.getElementById('todays-sales-avgorder').innerText = (payment_methods.average_total / 100).toFixed(2);
 
+    // set min & max order value
+    document.getElementById('todays-sales-minorder').innerText = ((payment_methods.min_order_value == null ? 0 : payment_methods.min_order_value) / 100).toFixed(2);
+    document.getElementById('todays-sales-maxorder').innerText = ((payment_methods.max_order_value == null ? 0 : payment_methods.max_order_value) / 100).toFixed(2);
+
 
     showModal('todays-sales');
   }
@@ -146,6 +152,12 @@
     let orders = await getClosedOrders();
     let payment_methods = await getAllPaymentMethods();
     let todays_date = new Date().setHours(0,0,0,0);
+
+    // set to 0 if undefined
+    if(payment_methods.overall_total == undefined || payment_methods.overall_total == null) payment_methods.overall_total = 0;
+    // set to opposite max integer values for comparing with less than & greater than
+    if(payment_methods.min_order_value == undefined || payment_methods.min_order_value == null) payment_methods.min_order_value = Number.MAX_SAFE_INTEGER;
+    if(payment_methods.max_order_value == undefined || payment_methods.max_order_value == null) payment_methods.max_order_value = Number.MIN_SAFE_INTEGER;
 
     let todays_orders = [];
 
@@ -170,10 +182,19 @@
             // log payment against method
             method.total += order.total
           }
+          
+          // check & set min & max if applicable
+
+          if(order.total < payment_methods.min_order_value) payment_methods.min_order_value = order.total;
+          if(order.total > payment_methods.max_order_value) payment_methods.max_order_value = order.total;
+
+
         });
 
-        // set to 0 if undefined
-        if(payment_methods.overall_total == undefined || payment_methods.overall_total == null) payment_methods.overall_total = 0;
+        // set back to null if no orders change this
+        if(payment_methods.min_order_value == Number.MAX_SAFE_INTEGER) payment_methods.min_order_value = null;
+        if(payment_methods.max_order_value == Number.MIN_SAFE_INTEGER) payment_methods.max_order_value = null;
+
 
         payment_methods.overall_total += order.total;
 
