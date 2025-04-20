@@ -43,6 +43,7 @@
 
     <div class="modal report" id="todays-sales">
       <h2 id="todays-sales-header">Today's Sales: 00/00/0000 | Revenue: £0000.00</h2>
+      <span>Number of orders taken: </span><b><span id="todays-sales-ordercount">0</span></b>
     </div>
     
   </div>
@@ -128,6 +129,8 @@
 
     let header = document.getElementById('todays-sales-header');
     header.innerText = `Today's Sales: ${today.toLocaleDateString()} | Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
+
+    let order_count = document.getElementById('todays-sales-ordercount').innerText = orders.length;
 
     showModal('todays-sales');
   }
