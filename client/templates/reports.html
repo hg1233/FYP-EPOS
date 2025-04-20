@@ -121,13 +121,13 @@
   }
 
   async function todaysRevenueReport() {
-    let [ revenue, orders ] = await generatetodaysSalesData();
+    let [ payment_methods, orders ] = await generatetodaysSalesData();
     let today = new Date();
 
-    console.debug(revenue, orders)
+    console.debug(payment_methods, orders)
 
     let header = document.getElementById('todays-sales-header');
-    header.innerText = `Today's Sales: ${today.toLocaleDateString()} | Revenue: £${(revenue / 100).toFixed(2)}`
+    header.innerText = `Today's Sales: ${today.toLocaleDateString()} | Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
 
     showModal('todays-sales');
   }
@@ -135,10 +135,10 @@
   async function generatetodaysSalesData() {
     // order must be closed to be paid
     let orders = await getClosedOrders();
+    let payment_methods = await getAllPaymentMethods();
     let todays_date = new Date().setHours(0,0,0,0);
 
     let todays_orders = [];
-    let todays_revenue = 0;
 
     Object.keys(orders).forEach(index => {
 
@@ -151,12 +151,28 @@
 
       if(order_date == todays_date) {
         todays_orders.push(order);
-        todays_revenue += order.total;
+
+        payment_methods.forEach(method => {
+
+          // set to 0 if undefined
+          if(method.total == undefined || method.total == null) method.total = 0;
+
+          if(method.id == order.payment_method) {
+            // log payment against method
+            method.total += order.total
+          }
+        });
+
+        // set to 0 if undefined
+        if(payment_methods.overall_total == undefined || payment_methods.overall_total == null) payment_methods.overall_total = 0;
+
+        payment_methods.overall_total += order.total;
+
       }
 
     });
 
-    return [todays_revenue, todays_orders]
+    return [payment_methods, todays_orders]
   }
 
   async function getMergedOrders() {
