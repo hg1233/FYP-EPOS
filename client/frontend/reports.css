@@ -26,3 +26,14 @@
     padding: 10px 15px;
     color: var(--grey);
 }
+
+.table-entry {
+    margin: 10px;
+    background-color: var(--near-white-grey);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.table-entry > h3, .table-entry > p {
+    margin: 0;
+}

@@ -36,6 +36,9 @@
   <div id="modal-overlay">
     <div class="modal report" id="open-tables">
       <h2 id="open-tables-header">You currently have 0 open tables.</h2>
+      <div id="open-tables-list">
+      </div>
+      <button class="btn" onclick="hideModal('open-tables'); document.getElementById('open-tables-list').innerHTML = '';">Close Report</button>
     </div>
     
   </div>
@@ -51,6 +54,7 @@
 
     let tables = await getAllTablesWithOrderData(true);
     let report_header = document.getElementById('open-tables-header');
+    let tables_list = document.getElementById('open-tables-list');
 
     let open_tables = [];
 
@@ -61,9 +65,36 @@
       open_tables.push(table);
     });
 
-    console.debug(open_tables)
-
+    // generate header (with correct gramatical - i.e. plural - use of the word table)
     report_header.innerText = `You currently have ${open_tables.length} open table${open_tables.length == 1 ? "" : "s"}.`
+
+    // check if 1 or more table open
+    if(open_tables.length > 0) {
+
+      // create entry for each open table in scrollable list
+      open_tables.forEach(async (table) => {
+        let order = await getOrderByID(table.orders);
+        let clerk = await getClerkByID(order.created_by);
+        let created_at = new Date(order.created_at)
+        
+        let entry = document.createElement('div');
+        entry.classList.add("table-entry");
+        
+        let header = document.createElement('h3');
+        header.innerText = table.display_name;
+        entry.appendChild(header);
+
+        let subtext = document.createElement('p');
+        subtext.innerText = `Opened ${created_at.toLocaleString().replace(",","")} by ${clerk.name}. Current total: £${(order.total / 100).toFixed(2)}`        
+        entry.appendChild(subtext);
+
+        // add to list
+        tables_list.appendChild(entry);
+
+      });
+
+      console.debug(open_tables)
+    }
 
     showModal("open-tables");
 
