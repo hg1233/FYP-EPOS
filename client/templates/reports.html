@@ -54,6 +54,23 @@
       </div>
       <button class="btn" onclick="hideModal('todays-sales');">Close Report</button>
     </div>
+
+    <div class="modal report" id="month-td-revenue">
+      <h2 id="month-td-header">Sales this month to date ~ Revenue: £0000.00</h2>
+      <div class="spacer"></div>
+      <p><span>Number of orders taken: </span><b><span id="month-td-ordercount">0</span></b></p>
+      <p><span>Average order value: <b>£</span><span id="month-td-avgorder">00.00</span></b></p>
+      <p><span>Minimum order value: <b>£</span><span id="month-td-minorder">00.00</span></b></p>
+      <p><span>Maximum order value: <b>£</span><span id="month-td-maxorder">00.00</span></b></p>
+      <div class="spacer"></div>
+      <h3>Totals by Payment Method:</h3>
+      <div id="month-td-payments">
+      </div>
+      <div class="spacer"></div>
+      <h3>Date Analysis</h3>
+
+      <button class="btn" onclick="hideModal('month-td-revenue');">Close Report</button>
+    </div>
   </div>
 </body>
 <script src="../frontend/orders_link.js"></script>
@@ -250,6 +267,11 @@
     
   }
 
+  async function monthTDRevenueReport() {
+
+
+    showModal('month-td-revenue');
+  }
 
   function capitaliseFirstLetter(string) {
     return String(string).charAt(0).toUpperCase() + String(string).slice(1);
