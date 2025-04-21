@@ -14,7 +14,7 @@
     <p>Browse available reports and get valuable data and insights from your point-of-sale system!</p>
     <div class="spacer" style="margin: 15px 0;"></div>
     <div class="reports-list">
-      <div class="report-entry">
+      <div class="report-entry" onclick="todaysRevenueReport()">
         <h2>Today's Earnings</h2>
         <p>This report shows information about your earnings and sales today!</p>
       </div>
@@ -42,11 +42,16 @@
     </div>
 
     <div class="modal report" id="todays-sales">
-      <h2 id="todays-sales-header">Today's Sales: 00/00/0000 | Revenue: £0000.00</h2>
+      <h2 id="todays-sales-header">Today's Sales: 00/00/0000 ~ Revenue: £0000.00</h2>
+      <div class="spacer"></div>
       <p><span>Number of orders taken: </span><b><span id="todays-sales-ordercount">0</span></b></p>
       <p><span>Average order value: <b>£</span><span id="todays-sales-avgorder">00.00</span></b></p>
       <p><span>Minimum order value: <b>£</span><span id="todays-sales-minorder">00.00</span></b></p>
       <p><span>Maximum order value: <b>£</span><span id="todays-sales-maxorder">00.00</span></b></p>
+      <div class="spacer"></div>
+      <h3>Totals by Payment Method:</h3>
+      <div id="todays-sales-payments">
+      </div>
     </div>
     
   </div>
@@ -131,7 +136,7 @@
     console.debug(payment_methods, orders)
 
     let header = document.getElementById('todays-sales-header');
-    header.innerText = `Today's Sales: ${today.toLocaleDateString()} | Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
+    header.innerText = `Today's Sales: ${today.toLocaleDateString('en-GB')} ~ Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
 
     // set order count
     document.getElementById('todays-sales-ordercount').innerText = orders.length;
@@ -143,6 +148,25 @@
     document.getElementById('todays-sales-minorder').innerText = ((payment_methods.min_order_value == null ? 0 : payment_methods.min_order_value) / 100).toFixed(2);
     document.getElementById('todays-sales-maxorder').innerText = ((payment_methods.max_order_value == null ? 0 : payment_methods.max_order_value) / 100).toFixed(2);
 
+    let methods_list = document.getElementById('todays-sales-payments');
+
+    payment_methods.forEach(method => {
+
+      let p = document.createElement('p');
+      p.innerText = capitaliseFirstLetter(`${method.method} - `);
+      p.dataset.method_id = method.id;
+
+      if(method.total == null || method.total == undefined) method.total = 0;
+
+      let span = document.createElement('span');
+      span.innerText = `£${(method.total / 100).toFixed(2)}`;
+      span.style.fontWeight = "bold";
+      p.appendChild(span);
+
+      methods_list.appendChild(p);
+      
+    });
+    
 
     showModal('todays-sales');
   }
@@ -189,12 +213,7 @@
           if(order.total > payment_methods.max_order_value) payment_methods.max_order_value = order.total;
 
 
-        });
-
-        // set back to null if no orders change this
-        if(payment_methods.min_order_value == Number.MAX_SAFE_INTEGER) payment_methods.min_order_value = null;
-        if(payment_methods.max_order_value == Number.MIN_SAFE_INTEGER) payment_methods.max_order_value = null;
-
+        }); 
 
         payment_methods.overall_total += order.total;
 
@@ -202,7 +221,11 @@
 
     });
 
-    payment_methods.average_total = payment_methods.overall_total / todays_orders.length;
+    // set back to null if no orders change this
+    if(payment_methods.min_order_value == Number.MAX_SAFE_INTEGER) { payment_methods.min_order_value = null; }
+    if(payment_methods.max_order_value == Number.MIN_SAFE_INTEGER) { payment_methods.max_order_value = null; }
+
+    payment_methods.average_total = (isNaN(payment_methods.overall_total / todays_orders.length) ? null : payment_methods.overall_total / todays_orders.length);
 
     return [payment_methods, todays_orders]
   }
@@ -225,6 +248,10 @@
     
   }
 
+
+  function capitaliseFirstLetter(string) {
+    return String(string).charAt(0).toUpperCase() + String(string).slice(1);
+  }
   
 </script>
 
