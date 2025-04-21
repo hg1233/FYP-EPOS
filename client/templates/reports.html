@@ -18,7 +18,7 @@
         <h2>Today's Earnings</h2>
         <p>This report shows information about your earnings and sales today!</p>
       </div>
-      <div class="report-entry">
+      <div class="report-entry" onclick="revenueReport7D()">
         <h2>Last 7 days Earnings</h2>
         <p>This report shows information about your earnings and sales over the last 7 days!</p>
       </div>
@@ -72,6 +72,25 @@
       <p><span>Worst day: <span id="month-td-worstdate">01/01/1990</span> ~ <b>£</span><span id="month-td-worstdate-revenue">00.00</span></b></p>
       <p><span>Average Daily Revenue: <b>£<span id="month-td-avg-daily-revenue">00.00</span></span></b></p>
       <button class="btn" onclick="hideModal('month-td-revenue');">Close Report</button>
+    </div>
+
+    <div class="modal report" id="7d-revenue">
+      <h2 id="7d-header">Last 7 days earnings: £0000.00</h2>
+      <div class="spacer"></div>
+      <p><span>Number of orders taken: </span><b><span id="7d-ordercount">0</span></b></p>
+      <p><span>Average order value: <b>£</span><span id="7d-avgorder">00.00</span></b></p>
+      <p><span>Minimum order value: <b>£</span><span id="7d-minorder">00.00</span></b></p>
+      <p><span>Maximum order value: <b>£</span><span id="7d-maxorder">00.00</span></b></p>
+      <div class="spacer"></div>
+      <h3>Totals by Payment Method:</h3>
+      <div id="7d-payments">
+      </div>
+      <div class="spacer"></div>
+      <h3>Date Analysis</h3>
+      <p><span>Best day: <span id="7d-bestdate">01/01/1990</span> ~ <b>£</span><span id="7d-bestdate-revenue">00.00</span></b></p>
+      <p><span>Worst day: <span id="7d-worstdate">01/01/1990</span> ~ <b>£</span><span id="7d-worstdate-revenue">00.00</span></b></p>
+      <p><span>Average Daily Revenue: <b>£<span id="7d-avg-daily-revenue">00.00</span></span></b></p>
+      <button class="btn" onclick="hideModal('7d-revenue');">Close Report</button>
     </div>
   </div>
 </body>
@@ -321,6 +340,188 @@
     payment_methods.average_total = (isNaN(payment_methods.overall_total / orders_to_date.length) ? null : payment_methods.overall_total / orders_to_date.length);
 
     return [payment_methods, orders_to_date, sales_by_day]
+  }
+
+  async function generateRolling7DSalesData() {
+    // order must be closed to be paid
+    let orders = await getClosedOrders();
+    let payment_methods = await getAllPaymentMethods();
+
+    let sales_by_day = [];
+
+    let current_date = new Date().setHours(0,0,0,0)
+    // minus 6 to include current date aswell, not 7 
+    let oldest_date = new Date(current_date);
+    oldest_date.setDate(oldest_date.getDate() - 6);
+
+    // set to 0 if undefined
+    if(payment_methods.overall_total == undefined || payment_methods.overall_total == null) payment_methods.overall_total = 0;
+    // set to opposite max integer values for comparing with less than & greater than
+    if(payment_methods.min_order_value == undefined || payment_methods.min_order_value == null) payment_methods.min_order_value = Number.MAX_SAFE_INTEGER;
+    if(payment_methods.max_order_value == undefined || payment_methods.max_order_value == null) payment_methods.max_order_value = Number.MIN_SAFE_INTEGER;
+
+    let orders_to_date = [];
+
+    Object.keys(orders).forEach(index => {
+
+      let order = orders[index];
+
+      // exclude cancelled orders in calc
+      if(order.is_cancelled) return;
+
+      // set order date to 1 to only look at month
+      let order_date = new Date(order.created_at).setHours(0,0,0,0)
+
+      if(order_date >= oldest_date) {
+        orders_to_date.push(order);
+
+        if(sales_by_day[order_date] == null || sales_by_day[order_date] == undefined) {
+          sales_by_day[order_date] = order.total;
+        } else {
+          sales_by_day[order_date] += order.total;
+        }
+
+        payment_methods.forEach(method => {
+
+          // set to 0 if undefined
+          if(method.total == undefined || method.total == null) method.total = 0;
+
+          if(method.id == order.payment_method) {
+            // log payment against method
+            method.total += order.total
+          }
+          
+          // check & set min & max if applicable
+
+          if(order.total < payment_methods.min_order_value) payment_methods.min_order_value = order.total;
+          if(order.total > payment_methods.max_order_value) payment_methods.max_order_value = order.total;
+
+
+        }); 
+
+        payment_methods.overall_total += order.total;
+
+      }
+
+    });
+
+    // set back to null if no orders change this
+    if(payment_methods.min_order_value == Number.MAX_SAFE_INTEGER) { payment_methods.min_order_value = null; }
+    if(payment_methods.max_order_value == Number.MIN_SAFE_INTEGER) { payment_methods.max_order_value = null; }
+
+    payment_methods.average_total = (isNaN(payment_methods.overall_total / orders_to_date.length) ? null : payment_methods.overall_total / orders_to_date.length);
+
+    return [payment_methods, orders_to_date, sales_by_day]
+  }
+
+  async function revenueReport7D() {
+    let [payment_methods, orders, sales_by_day] = await generateMonthTDSalesData();
+
+    let header = document.getElementById('7d-header');
+    header.innerText = `Last 7 days Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
+
+    // set order count
+    document.getElementById('7d-ordercount').innerText = orders.length;
+
+    // set avg order value
+    document.getElementById('7d-avgorder').innerText = (payment_methods.average_total / 100).toFixed(2);
+
+    // set min & max order value
+    document.getElementById('7d-minorder').innerText = ((payment_methods.min_order_value == null ? 0 : payment_methods.min_order_value) / 100).toFixed(2);
+    document.getElementById('7d-maxorder').innerText = ((payment_methods.max_order_value == null ? 0 : payment_methods.max_order_value) / 100).toFixed(2);
+
+    let methods_list = document.getElementById('7d-payments');
+    // clear list on each run of the report
+    methods_list.innerHTML = '';
+
+    payment_methods.forEach(method => {
+
+      let p = document.createElement('p');
+      p.innerText = capitaliseFirstLetter(`${method.method} - `);
+      p.dataset.method_id = method.id;
+
+      if(method.total == null || method.total == undefined) method.total = 0;
+
+      let span = document.createElement('span');
+      span.innerText = `£${(method.total / 100).toFixed(2)}`;
+      span.style.fontWeight = "bold";
+      p.appendChild(span);
+
+      methods_list.appendChild(p);
+      
+    });
+
+    let best = null;
+    let worst = null;
+
+    Object.keys(sales_by_day).forEach((key) => {
+
+      let current_days_sales = sales_by_day[key];
+
+      // check if best defined
+      if(best == null) best = [key, current_days_sales];
+
+      // check if worst defined
+      if(worst == null) worst = [key, current_days_sales];
+
+      // check if already set
+      if(best != null && worst != null) {
+
+        if(best[1] < current_days_sales) {
+          // current day is better than best one, update
+          best = [key, current_days_sales]
+        }
+
+        if(worst[1] > current_days_sales) {
+          // current day is worse than worst one, update
+          worst = [key, current_days_sales]
+        }
+
+      }
+
+    });
+
+    // check sales found
+    if(best == null) {
+      // no sales taken
+      document.getElementById('7d-bestdate').innerText = "No sales data"
+      document.getElementById('7d-bestdate-revenue').innerText = "0.00";
+
+    } else {
+      let best_date = new Date(Number(best[0]));
+      let best_revenue = best[1];
+
+      // we have a best day for sales, update on frontend
+      document.getElementById('7d-bestdate').innerText = best_date.toLocaleDateString('en-GB');
+      document.getElementById('7d-bestdate-revenue').innerText = (best_revenue / 100).toFixed(2);
+
+    }
+
+    if(worst == null) {
+      // no sales taken
+      document.getElementById('7d-worstdate').innerText = "No sales data"
+      document.getElementById('7d-worstdate-revenue').innerText = "0.00";
+    } else {
+      let worst_date = new Date(Number(worst[0]));
+      let worst_revenue = worst[1];
+
+      // we have a worst day for sales, update on frontend
+      document.getElementById('7d-worstdate').innerText = worst_date.toLocaleDateString('en-GB');
+      document.getElementById('7d-worstdate-revenue').innerText = (worst_revenue / 100).toFixed(2);
+
+    }
+
+    // show day's average revenue
+    let days_avg = 0;
+
+    if(Object.keys(sales_by_day).length != 0) {
+      days_avg = payment_methods.overall_total / Object.keys(sales_by_day).length;
+    }
+    
+    document.getElementById('7d-avg-daily-revenue').innerText = (days_avg / 100).toFixed(2);
+
+
+    showModal('7d-revenue');
   }
 
 
