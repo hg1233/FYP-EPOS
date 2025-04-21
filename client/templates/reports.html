@@ -70,6 +70,7 @@
       <h3>Date Analysis</h3>
       <p><span>Best day: <span id="month-td-bestdate">01/01/1990</span> ~ <b>£</span><span id="month-td-bestdate-revenue">00.00</span></b></p>
       <p><span>Worst day: <span id="month-td-worstdate">01/01/1990</span> ~ <b>£</span><span id="month-td-worstdate-revenue">00.00</span></b></p>
+      <p><span>Average Daily Revenue: <b>£<span id="month-td-avg-daily-revenue">00.00</span></span></b></p>
       <button class="btn" onclick="hideModal('month-td-revenue');">Close Report</button>
     </div>
   </div>
@@ -254,9 +255,12 @@
     // order must be closed to be paid
     let orders = await getClosedOrders();
     let payment_methods = await getAllPaymentMethods();
+
+    let sales_by_day = [];
+
     // set date to 1 to look at month td
-    let month_date = new Date().setHours(0,0,0,0)
-    month_date = new Date(month_date).setDate(1);
+    let current_date = new Date().setHours(0,0,0,0)
+    let current_month = new Date(current_date).setDate(1);
 
     // set to 0 if undefined
     if(payment_methods.overall_total == undefined || payment_methods.overall_total == null) payment_methods.overall_total = 0;
@@ -264,7 +268,7 @@
     if(payment_methods.min_order_value == undefined || payment_methods.min_order_value == null) payment_methods.min_order_value = Number.MAX_SAFE_INTEGER;
     if(payment_methods.max_order_value == undefined || payment_methods.max_order_value == null) payment_methods.max_order_value = Number.MIN_SAFE_INTEGER;
 
-    let todays_orders = [];
+    let orders_to_date = [];
 
     Object.keys(orders).forEach(index => {
 
@@ -275,10 +279,16 @@
 
       // set order date to 1 to only look at month
       let order_date = new Date(order.created_at).setHours(0,0,0,0)
-      order_date = new Date(order_date).setDate(1);
+      let order_month = new Date(order_date).setDate(1);
 
-      if(order_date == month_date) {
-        todays_orders.push(order);
+      if(order_month == current_month) {
+        orders_to_date.push(order);
+
+        if(sales_by_day[order_date] == null || sales_by_day[order_date] == undefined) {
+          sales_by_day[order_date] = order.total;
+        } else {
+          sales_by_day[order_date] += order.total;
+        }
 
         payment_methods.forEach(method => {
 
@@ -308,9 +318,9 @@
     if(payment_methods.min_order_value == Number.MAX_SAFE_INTEGER) { payment_methods.min_order_value = null; }
     if(payment_methods.max_order_value == Number.MIN_SAFE_INTEGER) { payment_methods.max_order_value = null; }
 
-    payment_methods.average_total = (isNaN(payment_methods.overall_total / todays_orders.length) ? null : payment_methods.overall_total / todays_orders.length);
+    payment_methods.average_total = (isNaN(payment_methods.overall_total / orders_to_date.length) ? null : payment_methods.overall_total / orders_to_date.length);
 
-    return [payment_methods, todays_orders]
+    return [payment_methods, orders_to_date, sales_by_day]
   }
 
 
@@ -333,7 +343,7 @@
   }
 
   async function monthTDRevenueReport() {
-    let [payment_methods, orders] = await generateMonthTDSalesData();
+    let [payment_methods, orders, sales_by_day] = await generateMonthTDSalesData();
 
     let header = document.getElementById('month-td-header');
     header.innerText = `Month to Date Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
@@ -368,6 +378,76 @@
       methods_list.appendChild(p);
       
     });
+
+    let best = null;
+    let worst = null;
+
+    Object.keys(sales_by_day).forEach((key) => {
+
+      let current_days_sales = sales_by_day[key];
+
+      // check if best defined
+      if(best == null) best = [key, current_days_sales];
+
+      // check if worst defined
+      if(worst == null) worst = [key, current_days_sales];
+
+      // check if already set
+      if(best != null && worst != null) {
+
+        if(best[1] < current_days_sales) {
+          // current day is better than best one, update
+          best = [key, current_days_sales]
+        }
+
+        if(worst[1] > current_days_sales) {
+          // current day is worse than worst one, update
+          worst = [key, current_days_sales]
+        }
+
+      }
+
+    });
+
+    // check sales found
+    if(best == null) {
+      // no sales taken
+      document.getElementById('month-td-bestdate').innerText = "No sales data"
+      document.getElementById('month-td-bestdate-revenue').innerText = "0.00";
+
+    } else {
+      let best_date = new Date(Number(best[0]));
+      let best_revenue = best[1];
+
+      // we have a best day for sales, update on frontend
+      document.getElementById('month-td-bestdate').innerText = best_date.toLocaleDateString('en-GB');
+      document.getElementById('month-td-bestdate-revenue').innerText = (best_revenue / 100).toFixed(2);
+
+    }
+
+    if(worst == null) {
+      // no sales taken
+      document.getElementById('month-td-worstdate').innerText = "No sales data"
+      document.getElementById('month-td-worstdate-revenue').innerText = "0.00";
+    } else {
+      let worst_date = new Date(Number(worst[0]));
+      let worst_revenue = worst[1];
+
+      // we have a worst day for sales, update on frontend
+      document.getElementById('month-td-worstdate').innerText = worst_date.toLocaleDateString('en-GB');
+      document.getElementById('month-td-worstdate-revenue').innerText = (worst_revenue / 100).toFixed(2);
+
+    }
+
+    // show day's average revenue
+    let days_avg = 0;
+
+    if(Object.keys(sales_by_day).length != 0) {
+      days_avg = payment_methods.overall_total / Object.keys(sales_by_day).length;
+    }
+    
+    document.getElementById('month-td-avg-daily-revenue').innerText = (days_avg / 100).toFixed(2);
+
 
     showModal('month-td-revenue');
   }
