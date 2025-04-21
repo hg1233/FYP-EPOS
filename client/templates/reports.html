@@ -149,6 +149,8 @@
     document.getElementById('todays-sales-maxorder').innerText = ((payment_methods.max_order_value == null ? 0 : payment_methods.max_order_value) / 100).toFixed(2);
 
     let methods_list = document.getElementById('todays-sales-payments');
+    // clear list on each run of the report
+    methods_list.innerHTML = '';
 
     payment_methods.forEach(method => {
 
