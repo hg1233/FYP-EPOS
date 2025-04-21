@@ -22,7 +22,7 @@
         <h2>Last 7 days Earnings</h2>
         <p>This report shows information about your earnings and sales over the last 7 days!</p>
       </div>
-      <div class="report-entry">
+      <div class="report-entry" onclick="monthTDRevenueReport()">
         <h2>Month to Date Earnings</h2>
         <p>This report shows information about your earnings and sales since the start of the month!</p>
       </div>
@@ -56,7 +56,7 @@
     </div>
 
     <div class="modal report" id="month-td-revenue">
-      <h2 id="month-td-header">Sales this month to date ~ Revenue: £0000.00</h2>
+      <h2 id="month-td-header">Month to Date Revenue: £0000.00</h2>
       <div class="spacer"></div>
       <p><span>Number of orders taken: </span><b><span id="month-td-ordercount">0</span></b></p>
       <p><span>Average order value: <b>£</span><span id="month-td-avgorder">00.00</span></b></p>
@@ -68,7 +68,8 @@
       </div>
       <div class="spacer"></div>
       <h3>Date Analysis</h3>
-
+      <p><span>Best day: <span id="month-td-bestdate">01/01/1990</span> ~ <b>£</span><span id="month-td-bestdate-revenue">00.00</span></b></p>
+      <p><span>Worst day: <span id="month-td-worstdate">01/01/1990</span> ~ <b>£</span><span id="month-td-worstdate-revenue">00.00</span></b></p>
       <button class="btn" onclick="hideModal('month-td-revenue');">Close Report</button>
     </div>
   </div>
@@ -249,6 +250,70 @@
     return [payment_methods, todays_orders]
   }
 
+  async function generateMonthTDSalesData() {
+    // order must be closed to be paid
+    let orders = await getClosedOrders();
+    let payment_methods = await getAllPaymentMethods();
+    // set date to 1 to look at month td
+    let month_date = new Date().setHours(0,0,0,0)
+    month_date = new Date(month_date).setDate(1);
+
+    // set to 0 if undefined
+    if(payment_methods.overall_total == undefined || payment_methods.overall_total == null) payment_methods.overall_total = 0;
+    // set to opposite max integer values for comparing with less than & greater than
+    if(payment_methods.min_order_value == undefined || payment_methods.min_order_value == null) payment_methods.min_order_value = Number.MAX_SAFE_INTEGER;
+    if(payment_methods.max_order_value == undefined || payment_methods.max_order_value == null) payment_methods.max_order_value = Number.MIN_SAFE_INTEGER;
+
+    let todays_orders = [];
+
+    Object.keys(orders).forEach(index => {
+
+      let order = orders[index];
+
+      // exclude cancelled orders in calc
+      if(order.is_cancelled) return;
+
+      // set order date to 1 to only look at month
+      let order_date = new Date(order.created_at).setHours(0,0,0,0)
+      order_date = new Date(order_date).setDate(1);
+
+      if(order_date == month_date) {
+        todays_orders.push(order);
+
+        payment_methods.forEach(method => {
+
+          // set to 0 if undefined
+          if(method.total == undefined || method.total == null) method.total = 0;
+
+          if(method.id == order.payment_method) {
+            // log payment against method
+            method.total += order.total
+          }
+          
+          // check & set min & max if applicable
+
+          if(order.total < payment_methods.min_order_value) payment_methods.min_order_value = order.total;
+          if(order.total > payment_methods.max_order_value) payment_methods.max_order_value = order.total;
+
+
+        }); 
+
+        payment_methods.overall_total += order.total;
+
+      }
+
+    });
+
+    // set back to null if no orders change this
+    if(payment_methods.min_order_value == Number.MAX_SAFE_INTEGER) { payment_methods.min_order_value = null; }
+    if(payment_methods.max_order_value == Number.MIN_SAFE_INTEGER) { payment_methods.max_order_value = null; }
+
+    payment_methods.average_total = (isNaN(payment_methods.overall_total / todays_orders.length) ? null : payment_methods.overall_total / todays_orders.length);
+
+    return [payment_methods, todays_orders]
+  }
+
+
   async function getMergedOrders() {
     let open = await getOpenOrders();
     let closed = await getClosedOrders();
@@ -268,7 +333,41 @@
   }
 
   async function monthTDRevenueReport() {
+    let [payment_methods, orders] = await generateMonthTDSalesData();
 
+    let header = document.getElementById('month-td-header');
+    header.innerText = `Month to Date Revenue: £${(payment_methods.overall_total / 100).toFixed(2)}`
+
+    // set order count
+    document.getElementById('month-td-ordercount').innerText = orders.length;
+
+    // set avg order value
+    document.getElementById('month-td-avgorder').innerText = (payment_methods.average_total / 100).toFixed(2);
+
+    // set min & max order value
+    document.getElementById('month-td-minorder').innerText = ((payment_methods.min_order_value == null ? 0 : payment_methods.min_order_value) / 100).toFixed(2);
+    document.getElementById('month-td-maxorder').innerText = ((payment_methods.max_order_value == null ? 0 : payment_methods.max_order_value) / 100).toFixed(2);
+
+    let methods_list = document.getElementById('month-td-payments');
+    // clear list on each run of the report
+    methods_list.innerHTML = '';
+
+    payment_methods.forEach(method => {
+
+      let p = document.createElement('p');
+      p.innerText = capitaliseFirstLetter(`${method.method} - `);
+      p.dataset.method_id = method.id;
+
+      if(method.total == null || method.total == undefined) method.total = 0;
+
+      let span = document.createElement('span');
+      span.innerText = `£${(method.total / 100).toFixed(2)}`;
+      span.style.fontWeight = "bold";
+      p.appendChild(span);
+
+      methods_list.appendChild(p);
+      
+    });
 
     showModal('month-td-revenue');
   }
