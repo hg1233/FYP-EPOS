@@ -92,7 +92,18 @@ class PrintingModule {
             return;
         }
 
-        // TODO
+        switch (this.printing_type) {
+            case "PDF":
+                // TODO - trigger generation & print of html doc receipt
+                this.printReceiptPDF(data);
+                break;
+            case "THERMAL":
+                this.printKitchenThermal(data);
+                break;
+            default:
+                console.error("Unable to print receipt - invalid printing type set.")
+                break;
+        }
     }
 
     async printToReceipt(data) {
@@ -130,6 +141,10 @@ class PrintingModule {
 
         ipcMain.handle('print:print-receipt', async (event, data) => {
             return this.printToReceipt(data);
+        });
+
+        ipcMain.handle('print:print-kitchen', async (event, data) => {
+            return this.printToKitchen(data);
         });
 
         ipcMain.handle('print:get-all', async () => {
@@ -196,6 +211,7 @@ class PrintingModule {
 
         let venue_info = this.net_manager.module_manager.instance.getModuleByName('venue').venue_info;
         let printer = new escpos.Printer(device);
+        let thermal_partial_cut = this.thermal_partial_cut;
         
         device.open(function(error) {
 
@@ -235,7 +251,7 @@ class PrintingModule {
             printer.size(1,1)
             printer.style('B')
 
-            if(data.table !== null) {
+            if(data.table != null && data.table != undefined) {
                 printer.text(data.table.display_name)
             } else {
                 printer.text("Sale # " + data.order_id)
@@ -244,7 +260,7 @@ class PrintingModule {
             printer.style('NORMAL')
             printer.size(0,0)
 
-            if(data.order_name !== null) {
+            if(data.order_name != null && data.order_name != undefined) {
                 printer.text(data.order_name)
             }
 
@@ -255,8 +271,8 @@ class PrintingModule {
             printer.tableCustom(
             [
                 { text: "Qty", align:"LEFT", width: 0.2, style: "B"},
-                { text: "Item", align:"LEFT", width: 0.45, style: "B"},
-                { text: "Price", align:"RIGHT", width: 0.35, style: "B"}
+                { text: "Item", align:"LEFT", width: 0.65, style: "B"},
+                { text: "Price", align:"RIGHT", width: 0.15, style: "B"}
             ]
             )
             printer.drawLine();
@@ -267,8 +283,8 @@ class PrintingModule {
                 printer.tableCustom(
                     [
                     { text:`${item.qty} x`, align:"LEFT", width:0.2, style: 'B' },
-                    { text:`${item.name}`, align:"LEFT", width:0.45},
-                    { text: `${item.subtotal}`, align:"RIGHT", width:0.35, encoding: "UK" }
+                    { text:`${item.name}`, align:"LEFT", width:0.65},
+                    { text: `${item.total}`, align:"RIGHT", width:0.15, encoding: "UK" }
                     ],
                 );
             });
@@ -280,9 +296,9 @@ class PrintingModule {
 
             printer.tableCustom(
             [
-                { text:"", align:"LEFT", width:0.1, style: 'B' },
+                { text:"", align:"LEFT", width:0.05, style: 'B' },
                 { text:"TOTAL:", align:"LEFT", width:0.2},
-                { text: `${data.total}`, align:"RIGHT", width:0.2, encoding: "UK" }
+                { text: `${data.total}`, align:"RIGHT", width:0.25, encoding: "UK" }
             ],
             );
 
@@ -292,7 +308,7 @@ class PrintingModule {
             printer.text("Thank you for your custom.")
             printer.feed(2)
 
-            printer.cut(this.thermal_partial_cut)
+            printer.cut(thermal_partial_cut)
             printer.close();
 
         });
@@ -300,6 +316,56 @@ class PrintingModule {
 
         
 
+    }
+
+    printKitchenThermal(data) {
+        let venue_info = this.net_manager.module_manager.instance.getModuleByName('venue').venue_info;
+        let printer = new escpos.Printer(device);
+        
+        device.open(function(error) {
+
+            // padding at top of kitchen order
+            // used to have enough paper to clip into ticket rail
+
+            printer.align("CT")
+            printer.font("A")
+            printer.style("B")
+            printer.feed(4)
+            printer.size(0,0)
+
+            // kitchen order header
+
+            printer.drawLine();
+            printer.size(3,3)
+            printer.text(`ORDER # 1`) // suborder_id
+            printer.text(`${table.display_name}`)
+            printer.size(2,2)
+            printer.text(`SEATS ${table.seats}`)
+            printer.style("NORMAL")
+            printer.size(1,1)
+            if(order.name !== null) printer.text(`${order.name}`)
+            printer.size(0,0)
+            printer.drawLine();
+
+            // order contents
+
+            printer.align("LT")
+            printer.size(1,1)
+            
+
+            printer.text("1x Fish & Chips")
+            printer.text("1x Lasagna")
+            printer.text(" - EXTRA CHEESE")
+            printer.text("1x Onion Rings")
+            
+
+            // footer
+            printer.size(0,0)
+            printer.drawLine();
+            printer.feed(2);
+            printer.cut(true);
+            printer.close();
+        });
     }
 
 }

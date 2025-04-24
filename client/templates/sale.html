@@ -177,6 +177,7 @@
     <script src="../frontend/orders_link.js"></script>
     <script src="../frontend/clerks_link.js"></script>
     <script src="../frontend/tables_link.js"></script>
+    <script src="../frontend/print_link.js"></script>
     <script src="../frontend/categories_link.js"></script>
     <script src="../frontend/window_manager_link.js"></script>
 
@@ -1090,7 +1091,7 @@
             data.order_items = order_items;
 
             // TODO - pass data to printing module
-            console.debug(data)
+            await printReceipt(data);
 
         }
 

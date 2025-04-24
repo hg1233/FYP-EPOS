@@ -4,6 +4,14 @@ async function setupPrinters() {
     loadPrinters(await window.webContents.getPrintersAsync())
 }
 
+async function printReceipt(data) {
+    return await window.electronAPI.print_printReceipt(data);
+}
+
+async function printKitchen(data) {
+    return await window.electronAPI.print_printKitchen(data);
+}
+
 async function loadPrinters(print_data) {
     return await window.electronAPI.print_loadPrinters(print_data);
 }

@@ -98,6 +98,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   print_getGlobalStatus: async () => ipcRenderer.invoke('print:get-global-status'),
   print_setGlobalStatus: async (status) => ipcRenderer.invoke('print:set-global-status', status),
   print_printReceipt: async (data) => ipcRenderer.invoke('print:print-receipt', data),
+  print_printKitchen: async (data) => ipcRenderer.invoke('print:print-kitchen', data),
 
   /*** Payment Methods Module ***/
   payment_getAllMethods: async () => ipcRenderer.invoke('payment:get-all-methods'),
