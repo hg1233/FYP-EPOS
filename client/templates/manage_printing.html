@@ -112,6 +112,7 @@
 				break;
 			case "THERMAL":
 				index = 1;
+				togglePrinterSelectionIfThermal(true);
 				break;
 			default:
 				console.error("Invalid type set for printing type: ", printing_type)
@@ -119,9 +120,22 @@
 		}
 		
 		type_options.children[index].selected = true;
-
 		
 	});
+
+	async function togglePrinterSelectionIfThermal(value) {
+		document.getElementById('receipt-printers').disabled = value;
+		document.getElementById('kitchen-printers').disabled = value;
+	}
+
+	// auto disable printer selection when set print type to thermal
+	document.getElementById('printing-type-dropdown').addEventListener("change", function() {
+		if(document.getElementById('printing-type-dropdown').children[0].selected == true) {
+			togglePrinterSelectionIfThermal(false);
+		} else {
+			togglePrinterSelectionIfThermal(true);
+		}
+	})
 	
   </script>
 
