@@ -704,6 +704,9 @@
         
         async function showAddCommentsModal() {
 
+            // clear comments input when form opened to prevent persistent comments
+            document.getElementById('comments-entry').value = "";
+
             let table_body = document.getElementById("order-table").children[0];
             let line_product_name = null;
 
@@ -742,8 +745,6 @@
             overlay.style.display = "none";
             qty_modal.style.display = "none";
 
-            // clear comments input when form closed to prevent persistent commetns
-            document.getElementById('comments-entry').value = "";
 
         }
 
@@ -909,16 +910,22 @@
 
             // store to table / set suborder as confirmed
             let suborder_id = last_suborder.suborder_id;
-            console.debug("suborder_id", suborder_id)
 
             let status = await confirmSuborder(order.id, suborder_id);
             
             if(status == true) {
                 // send data to printer module
-                // TODO ^^
+                let did_it_print = await sendOrderToKitchen(order.id, suborder_id);
+
+                if(did_it_print == true) {
+                    // show msg then redirect
+                    await showMsg("Table Saved!", "The order will be sent to your kitchen printer.", 2000)
+                } else {
+                    // show msg then redirect
+                    await showMsg("Table Saved!", "No printable items were added to the order, so no order will be printed to the kitchen printer.", 2000)
+                }
                 
-                // show msg then redirect
-                await showMsg("Table Saved!", "The order will be sent to your kitchen printer.", 2000)
+                // redirect
                 setTimeout(() => {
                     setActiveOrder(null);
                     showPage("Nav");
@@ -930,6 +937,78 @@
             }
 
             
+        }
+
+        async function sendOrderToKitchen(order_id, suborder_id) {
+            let data = {};
+            let order = await getActiveOrder();
+            
+            let active_suborder = null;
+
+            Object.values(order.suborders).forEach(suborder => {
+                if(suborder.suborder_id == suborder_id) {
+                    active_suborder = suborder;
+                    return;
+                }
+            });
+
+            if(active_suborder == null) {
+                console.error("Cannot print to kitchen - invalid suborder ID provided");
+                return;
+            }
+
+            data.order_id = active_suborder.suborder_id;
+
+            // include date/time receipt was printed
+            let now = new Date(Date.now());
+            data.timestamp = now.toLocaleString('en-GB').replace(',','');
+
+            // include clerk details who sent order
+            let clerk = await getClerkByID(active_suborder.created_by);
+            data.clerk = clerk.name;
+
+            // is table sale instead of quick sale
+            if(order.table_id !== null) {
+                // order is stored to table, include table info
+                let table = await getTableByID(order.table_id);
+                data.table = table;
+            }
+
+            // include order name
+            if(order.order_name !== null) {
+                data.order_name = order.order_name;
+            }
+
+            // include order total
+            data.total = (order.total / 100).toFixed(2);
+
+            // include order items
+            let order_items = [];
+
+            active_suborder.lines.forEach(line => {
+                console.debug(line)
+                
+                // build order item line for receipt printing
+                let line_item = {};
+                line_item.qty = line.product_qty;
+                line_item.name = line.product_name;
+                line_item.comments = line.line_comments;
+
+                // add line item to output
+                order_items.push(line_item);
+            });
+
+            data.order_items = order_items;
+
+            if(data.order_items.length == 0) {
+                // no order items, no receipt printed
+                return false;
+            }
+
+            // send to kitchen
+            printKitchen(data);
+            return true;
+
         }
 
         async function loadOrderLines(order) {
@@ -1081,8 +1160,7 @@
                     let line_item = {};
                     line_item.qty = line.product_qty;
                     line_item.name = line.product_name;
-                    line_item.total = (line.subtotal / 100).toFixed(2);;
-
+                    line_item.total = (line.subtotal / 100).toFixed(2);
                     // add line item to output
                     order_items.push(line_item);
                 });
@@ -1090,8 +1168,9 @@
 
             data.order_items = order_items;
 
-            // TODO - pass data to printing module
-            await printReceipt(data);
+            // pass data to printing module
+            printReceipt(data);
+
 
         }
 

@@ -321,6 +321,7 @@ class PrintingModule {
     printKitchenThermal(data) {
         let venue_info = this.net_manager.module_manager.instance.getModuleByName('venue').venue_info;
         let printer = new escpos.Printer(device);
+        let thermal_partial_cut = this.thermal_partial_cut;
         
         device.open(function(error) {
 
@@ -333,17 +334,26 @@ class PrintingModule {
             printer.feed(4)
             printer.size(0,0)
 
+            printer.tableCustom(
+                [
+                    { text:`${data.timestamp}`, align:"LEFT", width:0.6},
+                    { text: `${data.clerk}`, align:"RIGHT", width:0.4}
+                ],
+                );
+
             // kitchen order header
 
             printer.drawLine();
-            printer.size(3,3)
-            printer.text(`ORDER # 1`) // suborder_id
-            printer.text(`${table.display_name}`)
             printer.size(2,2)
-            printer.text(`SEATS ${table.seats}`)
+            printer.text(`Sale # ${data.order_id}`) // suborder_id
+            if(data.table != null && data.table != undefined) {
+                printer.text(`${data.table.display_name}`)
+                printer.size(2,2)
+                printer.text(`Seats ${data.table.seats}`)
+            }
             printer.style("NORMAL")
             printer.size(1,1)
-            if(order.name !== null) printer.text(`${order.name}`)
+            if(data.order_name !== null) printer.text(`${data.order_name}`)
             printer.size(0,0)
             printer.drawLine();
 
@@ -352,18 +362,19 @@ class PrintingModule {
             printer.align("LT")
             printer.size(1,1)
             
-
-            printer.text("1x Fish & Chips")
-            printer.text("1x Lasagna")
-            printer.text(" - EXTRA CHEESE")
-            printer.text("1x Onion Rings")
-            
+            data.order_items.forEach(line => {
+                printer.text(`${line.qty}x ${line.name}`)
+                if(line.comments != null && line.comments != undefined) {
+                    printer.text(`- '${line.comments}'`)
+                }
+            });           
 
             // footer
             printer.size(0,0)
+            printer.align("CT")
             printer.drawLine();
             printer.feed(2);
-            printer.cut(true);
+            printer.cut(thermal_partial_cut);
             printer.close();
         });
     }
