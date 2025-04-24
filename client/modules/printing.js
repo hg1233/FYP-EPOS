@@ -5,6 +5,7 @@ try {
     device = new escpos.USB();
 } catch(error) {
     console.warn("Unable to use USB Thermal Printing: ", error)
+    device = null;
 }
 
 
@@ -209,6 +210,12 @@ class PrintingModule {
 
     printReceiptThermal(data) {
 
+        if(device == null) {
+            console.error("Unable to print thermal receipt, error with printer.")
+            return;
+        }
+
+
         let venue_info = this.net_manager.module_manager.instance.getModuleByName('venue').venue_info;
         let printer = new escpos.Printer(device);
         let thermal_partial_cut = this.thermal_partial_cut;
@@ -319,7 +326,12 @@ class PrintingModule {
     }
 
     printKitchenThermal(data) {
-        let venue_info = this.net_manager.module_manager.instance.getModuleByName('venue').venue_info;
+
+        if(device == null) {
+            console.error("Unable to print thermal receipt, error with printer.")
+            return;
+        }
+        
         let printer = new escpos.Printer(device);
         let thermal_partial_cut = this.thermal_partial_cut;
         
