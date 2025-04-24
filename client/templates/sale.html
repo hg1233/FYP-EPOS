@@ -796,7 +796,7 @@
                         table_body.deleteRow(index);
                     } else {
                         // unable to void item - see console log
-                        // TODO - user facing modal err msg
+                        showMsg('Unable to void this item.', 'An error occurred attempting to void this item. Please try again later.', 2000)
                         console.warn(response);
                     }
 
