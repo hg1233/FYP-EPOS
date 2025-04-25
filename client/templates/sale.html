@@ -1107,7 +1107,14 @@
             if(result.message) {
                 // show msg
                 showMsg("Order paid!", "This order has been paid and closed. You will now be redirected back to the Navigation page...", 2000);
-                
+                // print customer receipt
+                printBill();
+
+                // send order to kitchen if quick sale
+                if(order.table_id == null || order.table_id == undefined) {
+                    sendOrderToKitchen(order.id, order.suborders[order.suborders.length-1].suborder_id);
+                }
+
                 setTimeout(() => {
                     showPage("Nav");
                 }, 1750);
