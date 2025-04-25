@@ -109,3 +109,15 @@ body {
   display: grid;
   grid-template-columns: 50% 50%;
 }
+
+#message {
+  padding: 15px;
+}
+
+#msg-title {
+  color: var(--grey);
+}
+
+#msg-body {
+  color: var(--grey);
+}

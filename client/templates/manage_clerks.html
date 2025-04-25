@@ -50,12 +50,43 @@
 
 				</form>
 			</div>
+			<div class="modal" id="message">
+                <h1 id="msg-title"></h1>
+                <p id="msg-body"></p>
+            </div>
 		</div>
 	</div>
 
   </body>
 
   <script>
+
+async function showMsg(title, body, duration) {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let msg_modal = document.getElementById('message');
+
+            let title_elem = document.getElementById('msg-title');
+            title_elem.innerText = title;
+
+            let body_elem = document.getElementById('msg-body');
+            body_elem.innerText = body; 
+
+            overlay.style.display = "flex";
+            msg_modal.style.display = "block";
+
+            // hide msg after inputted duration
+            setTimeout(() => {
+                hideMsg();
+            }, duration);
+        }
+
+        async function hideMsg() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let msg_modal = document.getElementById('message');
+
+            overlay.style.display = "none";
+            msg_modal.style.display = "none";
+        }
 
 	async function updateCategory() {
 
@@ -87,6 +118,7 @@
 		}
 
 		document.getElementsByClassName('modal-overlay')[0].style.display = 'none';
+		modal_container.style.display = 'none';
 
 
 	}
@@ -112,6 +144,31 @@
 	}
 
 	async function toggleClerkStatus(id, current_status) {
+
+		// if user currently enabled
+		if(current_status) {	
+
+			let does_another_manager_exist = false;
+
+			Object.values(clerks).forEach(clerk => {
+				// if another manager exists
+				if(clerk.enabled && clerk.is_manager && clerk.id != id) {
+					does_another_manager_exist = true;
+					// dont need to keep looping if another manager exists
+					return;
+				}
+			});
+		
+
+			if(!does_another_manager_exist) {
+				// prevent user from disabling the only manager
+				
+				showMsg('Unable to change clerk status', 'This would disable the only manager currently accessible. Please promote another user to the Manager role, then try again.', 3000);
+
+				return;
+			}
+		}
+
 
 		await setClerkStatus(id, !current_status)
 
