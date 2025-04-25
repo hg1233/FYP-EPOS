@@ -73,6 +73,21 @@
           console.log(`Table ${table.id} has more than 1 order (i.e. occupied)`)
         }
       }
+
+      setTimeout(() => {
+        if(available_container.children.length == 0) {
+          let message = document.createElement('h3');
+          message.innerText = "No tables available!";
+          available_container.appendChild(message);
+        }
+
+        if(occupied_container.children.length == 0) {
+          let message = document.createElement('h3');
+          message.innerText = "No tables occupied!";
+          occupied_container.appendChild(message);
+        }
+      }, 250);
+
     }
 
     async function generateTableEntry(table) {
