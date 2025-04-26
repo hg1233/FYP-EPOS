@@ -20,6 +20,10 @@ async function isPrintingEnabled() {
     return await window.electronAPI.print_getGlobalStatus();
 }
 
+async function setIsPrintingEnabled(value) {
+    return await window.electronAPI.print_setGlobalStatus(value);
+}
+
 async function getAllPrinters() {
     return await window.electronAPI.print_getAll();
 }
