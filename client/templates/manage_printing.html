@@ -43,18 +43,6 @@
 						<option value="THERMAL">USB Thermal Printer</option>
 					</select>
 				</div>
-
-				<div class="line-container receipt-printer">
-					<label>Select printer for receipts:</label>
-					<select id="receipt-printers" required>
-					</select>
-				</div>
-
-				<div class="line-container kitchen-printer">
-					<label>Select printer for kitchen orders:</label>
-					<select id="kitchen-printers" required>
-					</select>
-				</div>
 				<div class="line-container thermal-part-cut">
 					<label>Should the thermal printer only partially cut the paper?</label>
 					<input class="styled-checkbox" id="thermal-part-cut-checkbox" type="checkbox"></input>
@@ -84,24 +72,6 @@
 		let is_printing_enabled = await isPrintingEnabled();
 
 		let printing_type = await getPrintingType();
-
-		// generate printer options
-		printers.forEach(printer => {
-			let option = document.createElement('option');
-			option.value = printer.name;
-			option.innerText = printer.displayName;
-
-			// create an element copy as HTML is weird with select options
-			let option2 = option.cloneNode(true);
-
-			// set selected option to current selection
-			if(kitchen == printer.name) option.selected = true;
-			if(receipt == printer.name) option2.selected = true;
-
-			document.getElementById('receipt-printers').appendChild(option);
-			document.getElementById('kitchen-printers').appendChild(option2);
-
-		});
 
 		document.getElementById('printing-enabled-checkbox').checked = is_printing_enabled;
 
