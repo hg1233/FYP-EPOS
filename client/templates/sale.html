@@ -216,13 +216,15 @@
 
     <script>
 
-        function customerReceiptPDF(data) {
+        async function customerReceiptPDF(data) {
             let receipt = document.getElementById('pdf-customer-receipt');
+
+            let venue_data = await getAllAttributes();
             
             // set venue details
-            document.getElementById('receipt-venue-name').innerText = "The Lounge"; // TODO change to use venue data
-            document.getElementById('receipt-venue-addr').innerText = "Birmingham"; // TODO see above
-            document.getElementById('receipt-venue-tel').innerText = "0121 204 0000"; // TODO see above
+            document.getElementById('receipt-venue-name').innerText = venue_data.venue_name; 
+            document.getElementById('receipt-venue-addr').innerText = venue_data.venue_address; 
+            document.getElementById('receipt-venue-tel').innerText = venue_data.venue_phone; 
 
             // set clerk name
             document.getElementById('receipt-clerk-name').innerText = data.clerk;
