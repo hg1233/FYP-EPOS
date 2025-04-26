@@ -183,3 +183,15 @@ body {
     border-style: none none dashed none;
     border-width: 2px;
 }
+
+.selectable-table {
+    background-color: var(--near-white-grey);
+    padding: 15px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.selectable-table > h3, .selectable-table > p {
+    margin:0;
+    text-align: left;
+}

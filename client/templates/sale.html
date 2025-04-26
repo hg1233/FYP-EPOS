@@ -169,6 +169,15 @@
                     </div>
                 </div>
             </div>
+            <div class="modal" id="select-table-modal">
+                <h1>Select A Table</h1>
+                <p>This order is currently a quick sale - please select a table to save this order to:</p>
+                <div id="select-table-list">
+                </div>
+                <div class="sale-keypad-row solo">
+                    <button class="sale-keypad-key" onclick="cancelSelectingTable()">Cancel</button>
+                </div>
+            </div>
             </div>
         </div>
 
@@ -884,6 +893,91 @@
             }
         });
 
+        async function cancelSelectingTable() {
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let modal = document.getElementById('select-table-modal');
+
+            overlay.style.display = 'none';
+            modal.style.display = 'none';
+        }
+
+        async function selectTable() {
+
+            let overlay = document.getElementsByClassName("modal-overlay")[0];
+            let modal = document.getElementById('select-table-modal');
+            let tables_container = document.getElementById('select-table-list');
+
+            // check if any tables available
+            let tables = await getAllTablesWithOrderData(true);
+
+            // clear contents first
+            tables_container.innerHTML = '';
+
+            Object.values(tables).forEach(table => {
+                
+                // exclude disabled tables
+                if(!table.enabled) return;
+
+                // exclude occupied tables
+                if(table.orders !== null) return;
+
+                let table_elem = document.createElement('div');
+                table_elem.classList.add('selectable-table');
+                table_elem.dataset.table_id = table.id;
+                table_elem.setAttribute('onclick', 'selectThisTable(this)');
+                
+                let header = document.createElement('h3');
+                header.innerText = table.display_name;
+                table_elem.appendChild(header);
+
+                let subtitle = document.createElement('p');
+                subtitle.innerText = `Seats ${table.seats}`;
+                table_elem.appendChild(subtitle);
+
+                tables_container.appendChild(table_elem);
+
+            });
+        
+            if(tables_container.children.length == 0) {
+
+                let error = document.createElement('h3');
+                error.style.textAlign = 'center';
+                error.innerText = "Unfortunately, there are currently no available tables to allocate this order to. Please take payment for this order."
+                tables_container.appendChild(error);
+
+            }
+
+
+
+            overlay.style.display = "flex";
+            modal.style.display = "block";
+
+
+
+
+        }
+
+        async function selectThisTable(table) {
+            let table_id = table.dataset.table_id;
+
+            let order = await getActiveOrder();
+
+            let result = await setTableForOrder(order.id, table_id);
+
+            if(result) {
+
+                // refresh front end to show assigned to table
+                let table = await getTableByID(table_id);
+                document.getElementById('ticket-table-seats').innerText = (table !== null && table !== undefined ? `${table.display_name} ~ Seats ${table.seats}` : "Quick Sale")
+
+
+            } 
+
+            // hide modal
+            cancelSelectingTable();
+        }
+
+
         async function saveToTable() {
             
             let order = await getActiveOrder();
@@ -896,7 +990,8 @@
             
             // check if table_id in active order is defined
             if(order.table_id == null) {
-                // TODO - prompt to select table
+                // prompt to select table
+                selectTable();
                 return;
             }
 
