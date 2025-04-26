@@ -365,7 +365,7 @@ class PrintingModule {
 
             printer.drawLine();
             printer.size(2,2)
-            printer.text(`Sale # ${data.order_id}`) // suborder_id
+            printer.text(`Order # ${data.order_id}`) // suborder_id
             if(data.table != null && data.table != undefined) {
                 printer.text(`${data.table.display_name}`)
                 printer.size(2,2)
@@ -373,7 +373,7 @@ class PrintingModule {
             }
             printer.style("NORMAL")
             printer.size(1,1)
-            if(data.order_name !== null) printer.text(`${data.order_name}`)
+            if(data.order_name != null || data.order_name != undefined) { printer.text(`${data.order_name}`) }
             printer.size(0,0)
             printer.drawLine();
 
