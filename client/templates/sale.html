@@ -181,16 +181,116 @@
             </div>
         </div>
 
+        <div id="pdf-customer-receipt" style="display:none;">
+            <div class="receipt-header">
+                <h1 id="receipt-venue-name"></h1>
+                <h3 id="receipt-venue-addr"></h3>
+                <h3 id="receipt-venue-tel"></h3>
+            </div>
+            <div class="pre-order-header">
+                <p>Clerk: <span id="receipt-clerk-name"></span></p>
+                <p id="receipt-current-time"></p>
+            </div>
+            <div class="order-header">
+                <h2 id="receipt-table-displayname"></h2>
+                <h3 id="receipt-order-name"></h3>
+            </div>
+            <div id="receipt-order-items"></div>
+            <div>
+                <h2 id="receipt-total">TOTAL:</h2>
+            </div>
+            <div class="receipt-footer">
+                <p>Thank you for your custom.</p>
+            </div>
+        </div>
+
     </body>
     <script src="../frontend/products_link.js"></script>
     <script src="../frontend/orders_link.js"></script>
     <script src="../frontend/clerks_link.js"></script>
+    <script src="../frontend/venue_link.js"></script>
     <script src="../frontend/tables_link.js"></script>
     <script src="../frontend/print_link.js"></script>
     <script src="../frontend/categories_link.js"></script>
     <script src="../frontend/window_manager_link.js"></script>
 
     <script>
+
+        function customerReceiptPDF(data) {
+            let receipt = document.getElementById('pdf-customer-receipt');
+            
+            // set venue details
+            document.getElementById('receipt-venue-name').innerText = "The Lounge"; // TODO change to use venue data
+            document.getElementById('receipt-venue-addr').innerText = "Birmingham"; // TODO see above
+            document.getElementById('receipt-venue-tel').innerText = "0121 204 0000"; // TODO see above
+
+            // set clerk name
+            document.getElementById('receipt-clerk-name').innerText = data.clerk;
+
+            // set timestamp
+            document.getElementById('receipt-current-time').innerText = data.timestamp;
+            
+            // set order header
+            if(data.table != null && data.table != undefined) {
+                document.getElementById('receipt-table-displayname').innerText = data.table.display_name;
+            } else {
+                document.getElementById('receipt-table-displayname').innerText = `Sale # ${data.order_id}`;
+            }
+
+            if(data.order_name != null && data.order_name != undefined) {
+                document.getElementById('receipt-order-name').innerText = data.order_name;
+            }
+
+            // order items 
+
+            // clear contents first
+            document.getElementById("receipt-order-items").innerHTML = '';
+
+            data.order_items.forEach(item => {
+                let line = document.createElement('div')
+                line.classList.add('line')
+
+                let qty = document.createElement('p');
+                qty.innerText = `${item.qty} x`;
+                line.appendChild(qty);
+
+                let name = document.createElement('p');
+                name.innerText = item.name;
+                line.appendChild(name);
+
+                let price = document.createElement('p');
+                price.innerText = (item.total < 0 ? `-£${item.total * -1}` : `£${item.total}`)
+                line.appendChild(price);
+
+                document.getElementById("receipt-order-items").appendChild(line);
+            });
+
+            // total
+
+            document.getElementById('receipt-total').innerText = `TOTAL: £${data.total}`;
+
+
+
+            // create new window
+            let popup = window.open();
+            
+            // write html boilerplate
+            popup.document.write('<html><head>');
+
+            // include css
+            popup.document.write('<link rel="stylesheet" href="../frontend/pdf_receipts.css" />')
+            popup.document.write('</head><body>')
+
+            popup.document.write(receipt.innerHTML);
+            popup.document.write('</body></html>');
+            popup.document.close();
+
+            setTimeout(() => {
+                popup.print();
+                popup.close();
+            }, 250);
+            
+        }
 
         // ensure order data is up to date on browser end
         getOpenOrders();
@@ -1222,6 +1322,11 @@
 
         async function printBill() {
 
+            let print_type = await getPrintingType();
+            let is_printing_enabled = await isPrintingEnabled();
+
+            
+
             let order = await getActiveOrder();
 
             let data = {}
@@ -1270,7 +1375,15 @@
 
             data.order_items = order_items;
 
-            // pass data to printing module
+            if(print_type == "PDF" && is_printing_enabled) {
+
+                // print pdf directly
+                customerReceiptPDF(data);
+                
+
+            }
+
+            // pass data to printing module for thermal printing
             printReceipt(data);
 
 
