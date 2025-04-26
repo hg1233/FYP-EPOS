@@ -100,8 +100,6 @@
 	});
 
 	async function togglePrinterSelectionIfThermal(value) {
-		document.getElementById('receipt-printers').disabled = value;
-		document.getElementById('kitchen-printers').disabled = value;
 		document.getElementById('thermal-part-cut-checkbox').disabled = !value;
 	}
 
