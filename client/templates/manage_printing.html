@@ -124,6 +124,9 @@
 		
 		type_options.children[index].selected = true;
 		
+		document.getElementById('thermal-part-cut-checkbox').checked = await getThermalPartCut();
+		
+
 	});
 
 	async function togglePrinterSelectionIfThermal(value) {
@@ -152,10 +155,21 @@
 	// autosave value of global is printing enabled flag
 	document.getElementById('printing-enabled-checkbox').addEventListener("change", async function() {
 
-		setIsPrintingEnabled(document.getElementById('printing-enabled-checkbox').checked);
+setIsPrintingEnabled(document.getElementById('printing-enabled-checkbox').checked);
+
+});
+
+	// autosave value of thermal part cut flag
+	document.getElementById('thermal-part-cut-checkbox').addEventListener("change", async function() {
+
+		setThermalPartCut(document.getElementById('thermal-part-cut-checkbox').checked);
 
 	});
-	
+
+
+
+
+
   </script>
 
 

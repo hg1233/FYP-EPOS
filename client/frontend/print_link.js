@@ -48,6 +48,14 @@ async function getPrintingType() {
     return await window.electronAPI.print_getType();
 }
 
+async function getThermalPartCut() {
+    return await window.electronAPI.print_getPartCut();
+}
+
+async function setThermalPartCut(value) {
+    return await window.electronAPI.print_setPartCut(value);
+}
+
 async function setPrintingType(type) {
     switch (type) {
         case "PDF":

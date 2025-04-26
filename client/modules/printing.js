@@ -183,6 +183,14 @@ class PrintingModule {
         ipcMain.handle('print:set-type', async (event, type) => {
             return this.setPrintingType(type);
         })
+        
+        ipcMain.handle('print:get-thermal-part-cut', async () => {
+            return this.thermal_partial_cut;
+        })
+
+        ipcMain.handle('print:set-thermal-part-cut', async (event, status) => {
+            return this.setThermalCut(status);
+        })
 
     }
 

@@ -99,6 +99,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   print_setGlobalStatus: async (status) => ipcRenderer.invoke('print:set-global-status', status),
   print_printReceipt: async (data) => ipcRenderer.invoke('print:print-receipt', data),
   print_printKitchen: async (data) => ipcRenderer.invoke('print:print-kitchen', data),
+  print_getPartCut: async () => ipcRenderer.invoke('print:get-thermal-part-cut'),
+  print_setPartCut: async (value) => ipcRenderer.invoke('print:set-thermal-part-cut', value),
 
   /*** Payment Methods Module ***/
   payment_getAllMethods: async () => ipcRenderer.invoke('payment:get-all-methods'),
