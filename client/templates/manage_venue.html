@@ -86,7 +86,8 @@
 		// populate form values with current data
 		document.getElementById("edit-venue-input-name").value = attribute;
 		document.getElementById("edit-venue-input-value").value = value;
-		document.getElementById("edit-table-modal-header").innerText = `Editing Venue Attribute '${attribute}'`
+		document.getElementById("edit-table-modal-header").innerText = `Editing Venue Attribute '${attribute.replace('_', ' ')}'`
+		document.getElementById("edit-table-modal-header").style.textTransform = 'capitalize';
 
 		// show modal box and overlay
 		document.getElementById('edit-venue-form').style.display = 'block';
