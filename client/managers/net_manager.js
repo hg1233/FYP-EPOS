@@ -33,7 +33,6 @@ class NetManager {
     }
 
     async pre_ready_request(endpoint) {
-        // TODO - implement try/catch to prevent error if unable to reach server
 
         let promise = new Promise( (resolve, reject) => {
             
