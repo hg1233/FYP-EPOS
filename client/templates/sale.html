@@ -126,7 +126,7 @@
             <div class="modal" id="disc-percent-modal">
                 <h1>Apply Discount (%)</h1>
                 <p>Enter your percentage to discount below:</p>
-                <input class="modal-input" id="disc-percent-entry" type="number" step="1" min="1" max="100" placeholder="e.g. 10%">
+                <input class="modal-input" id="disc-percent-entry" type="number" min="1" max="100" placeholder="e.g. 10%" required>
                 <div class="sale-keypad">
                     <div class="sale-keypad-row">
                         <button class="sale-keypad-key primary-btn" onclick="applyDiscPercent()">Confirm</button>
@@ -685,6 +685,11 @@
 
         async function applyDiscPercent() {
             let input = document.getElementById('disc-percent-entry').value;
+
+            if(input < 0 || input > 100) {
+                alert("Please enter a percentage between 0 and 100.");
+                return;
+            }
 
 
             // removes decimals with rounding for percentages
