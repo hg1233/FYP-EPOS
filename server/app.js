@@ -20,7 +20,7 @@ const APIKeys = require('./database/models/APIKeysModel.js');
 app.use(async function(request, response, next) {
 
     let api_key = request.headers["epos_api_key"];
-    
+
     if(api_key == null || api_key == undefined) {
         response.status(401).send({"error": "No API key supplied"});
         console.warn("Request refused, no API key supplied")
@@ -39,13 +39,12 @@ app.use(async function(request, response, next) {
 
 })
 
-
-
-
-
 app.get("/heartbeat", async (request, response) => {
 
-    // TODO - implement server-side logging of till ID (api key) and last heartbeat time
+    let api_key = request.headers['epos_api_key'];
+
+    await APIKeys.updateLastHeartbeat(api_key, Date.now());
+
     response.send({"status": "ok"})
 });
 
