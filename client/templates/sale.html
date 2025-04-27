@@ -204,6 +204,20 @@
             </div>
         </div>
 
+        <div id="pdf-order-receipt" style="display:none;">
+            <div class="order-receipt-preheader">
+                <p id="order-receipt-timestamp"></p>
+                <p id="order-receipt-clerk"></p>
+            </div>
+            <div class="order-header">
+                <h2 id="receipt-order-orderid"></h2>
+                <h2 id="receipt-order-tablename"></h2>
+                <h3 id="receipt-order-seats"></h3>
+                <h3 id="receipt-order-ordername"></h3>
+            </div>
+            <div id="order-receipt-items"></div>
+        </div>
+
     </body>
     <script src="../frontend/products_link.js"></script>
     <script src="../frontend/orders_link.js"></script>
@@ -292,6 +306,66 @@
                 popup.close();
             }, 250);
             
+        }
+
+        async function orderReceiptPDF(data) {
+            let receipt = document.getElementById('pdf-order-receipt');
+
+            // set clerk name
+            document.getElementById('order-receipt-clerk').innerText = data.clerk;
+
+            // set timestamp
+            document.getElementById('order-receipt-timestamp').innerText = data.timestamp;
+            
+            // set order number
+            document.getElementById('receipt-order-orderid').innerText = `Order # ${data.order_id}`;
+
+            if(data.table != null && data.table != undefined) {
+                document.getElementById('receipt-order-tablename').innerText = data.table.display_name;
+                document.getElementById('receipt-order-seats').innerText = `Seats ${data.table.seats}`;
+            }
+
+            if(data.order_name != null && data.order_name != undefined) {
+                document.getElementById('receipt-order-ordername').innerText = data.order_name;
+            }
+
+            let items_container = document.getElementById('order-receipt-items');
+
+            data.order_items.forEach(line => {
+                
+                let line_elem = document.createElement('p');
+                line_elem.innerText = `${line.qty}x ${line.name}`
+                items_container.appendChild(line_elem);
+
+                if(line.comments != null && line.comments != undefined) {
+                    let comments_elem = document.createElement('p');
+                    comments_elem.innerText = ` - '${line.comments}'`;
+                    items_container.appendChild(comments_elem);
+                }
+
+
+            });
+
+            // create new window
+            let popup = window.open();
+            
+            // write html boilerplate
+            popup.document.write('<html><head>');
+
+            // include css
+            popup.document.write('<link rel="stylesheet" href="../frontend/pdf_receipts.css" />')
+            popup.document.write('</head><body>')
+
+            popup.document.write(receipt.innerHTML);
+            popup.document.write('</body></html>');
+            popup.document.close();
+
+            setTimeout(() => {
+                popup.print();
+                popup.close();
+            }, 250);
+
+
         }
 
         // ensure order data is up to date on browser end
@@ -1202,6 +1276,16 @@
                 return false;
             }
 
+            let is_printing_enabled = await isPrintingEnabled();
+            let printing_type = await getPrintingType();
+
+
+            if(is_printing_enabled && printing_type == "PDF") {
+                orderReceiptPDF(data); 
+                return true;
+
+            }
+
             // send to kitchen
             printKitchen(data);
             return true;
@@ -1305,11 +1389,11 @@
                 // show msg
                 showMsg("Order paid!", "This order has been paid and closed. You will now be redirected back to the Navigation page...", 2000);
                 // print customer receipt
-                printBill();
+                await printBill();
 
                 // send order to kitchen if quick sale
                 if(order.table_id == null || order.table_id == undefined) {
-                    sendOrderToKitchen(order.id, order.suborders[order.suborders.length-1].suborder_id);
+                    await sendOrderToKitchen(order.id, order.suborders[order.suborders.length-1].suborder_id);
                 }
 
                 setTimeout(() => {
