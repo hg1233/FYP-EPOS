@@ -9,7 +9,6 @@ const Categories = {
     },
 
     getAll: () => {
-        // TODO Bug - the order by priority section prioritises nulls above defined priorities
         return knex('categories').select('*').orderBy('priority', 'asc') // lower the priority = higher up the list
     },
 
