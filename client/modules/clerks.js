@@ -15,7 +15,7 @@ class ClerksModule {
     }
 
     async cacheClerks() {
-        var clerks = await this.net_manager.pre_ready_request('/api/clerks/get/all');
+        var clerks = await this.net_manager.async_get('/api/clerks/get/all');
 
         clerks.forEach(clerk => {
             // parse 0 & 1 as true & false

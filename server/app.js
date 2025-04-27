@@ -15,7 +15,36 @@ app.listen(port, () => {
     console.log("> Listening on port", port);
 });
 
-app.get("/heartbeat", (request, response) => {
+const APIKeys = require('./database/models/APIKeysModel.js');
+
+app.use(async function(request, response, next) {
+
+    let api_key = request.headers["epos_api_key"];
+    
+    if(api_key == null || api_key == undefined) {
+        response.status(401).send({"error": "No API key supplied"});
+        console.warn("Request refused, no API key supplied")
+        return;
+    }
+
+    let result = await APIKeys.isKeyValid(api_key);
+
+    if(result == null || result == undefined) {
+        response.status(401).send({"error": "Invalid API key"});
+        console.warn("Request refused, invalid API key supplied")
+        return;
+    }
+
+    next();
+
+})
+
+
+
+
+
+app.get("/heartbeat", async (request, response) => {
+
     // TODO - implement server-side logging of till ID (api key) and last heartbeat time
     response.send({"status": "ok"})
 });

@@ -12,7 +12,7 @@ class CategoriesModule {
     }
 
     async loadCategories() {
-        const cats = await this.net_manager.pre_ready_request('/api/categories/get/all');
+        const cats = await this.net_manager.async_get('/api/categories/get/all');
 
         cats.forEach(cat => {
             // parse 0 & 1 as true & false

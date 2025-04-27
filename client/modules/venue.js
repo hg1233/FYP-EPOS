@@ -12,7 +12,7 @@ class VenueModule {
     }
 
     async loadVenueData() {
-        var data = await this.net_manager.pre_ready_request('/api/venue/get/all');
+        var data = await this.net_manager.async_get('/api/venue/get/all');
         data.forEach(entry => {
             this.venue_info[entry["attribute"]] = entry["value"];
         });

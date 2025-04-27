@@ -21,7 +21,7 @@ class OrdersModule {
     async cacheOpenOrders() {
         try {
             // have to use pre-ready request as electron net not enabled until app.onReady is done
-            const open_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/true');
+            const open_orders = await this.net_manager.async_get('/api/orders/get/is_open/true');
             
             open_orders.forEach(order => {
                 // parse 0 & 1 as true & false
@@ -52,7 +52,7 @@ class OrdersModule {
     async cacheClosedOrders() {
         try {
             // have to use pre-ready request as electron net not enabled until app.onReady is done
-            const closed_orders = await this.net_manager.pre_ready_request('/api/orders/get/is_open/false');
+            const closed_orders = await this.net_manager.async_get('/api/orders/get/is_open/false');
             
             closed_orders.forEach(order => {
                 // parse 0 & 1 as true & false
@@ -252,7 +252,7 @@ class OrdersModule {
             
         if(response["message"] != undefined) {
             
-            var order_details = await this.net_manager.pre_ready_request(`/api/orders/get/${order_id}`);
+            var order_details = await this.net_manager.async_get(`/api/orders/get/${order_id}`);
             
             if(order_details["id"] != undefined) {
                 this.open_orders[order_id] = order_details

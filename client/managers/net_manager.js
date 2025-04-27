@@ -32,13 +32,17 @@ class NetManager {
 
     }
 
-    async pre_ready_request(endpoint) {
+    async async_get(endpoint) {
 
         let promise = new Promise( (resolve, reject) => {
             
-            // TODO - send API key here (missing)
+            let request_options = {
+                headers: {
+                    'EPOS_API_KEY': this.api_key,
+                }
+            }
 
-            https.get(this.server_host + endpoint, (response) => {
+            let request = https.get(this.server_host + endpoint, request_options, (response) => {
                 let data = '' 
 
                     // data returned in buffers, need to add in batches to overall output
@@ -57,9 +61,12 @@ class NetManager {
                     });
                     
                 }
-            ).on('error', function(error) {
+            );
+            
+            request.on('error', function(error) {
                 reject(error);
             });
+
         })
 
         promise.catch((error) => {
@@ -87,22 +94,6 @@ class NetManager {
         return promise;
     }
 
-    async async_get(endpoint) {
-        var response = await net.fetch(this.server_host + endpoint, {
-            headers: {
-                'EPOS_API_KEY': this.api_key,
-            },
-        }
-        )
-
-        if(response.ok) {
-            return await response.json()
-        } else {
-            return new Error('Fetch request error')
-        }
-
-    }
-
     async async_post(endpoint, data) {
         return new Promise( (resolve, reject) => {
             try { 
@@ -118,6 +109,7 @@ class NetManager {
                     path: endpoint,
                     headers: {
                         'Content-Type': 'application/json',
+                        'EPOS_API_KEY': this.api_key,
                     }
                 })
 
@@ -150,7 +142,7 @@ class NetManager {
     
     async check_heartbeat() {
         try {
-            let response = await this.pre_ready_request("/heartbeat");
+            let response = await this.async_get("/heartbeat");
 
             if(response["status"] == "ok") {
                 // heartbeat successful

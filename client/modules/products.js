@@ -17,7 +17,7 @@ class ProductsModule {
 
     async loadProducts() {
         // have to use pre-ready request as electron net not enabled until app.onReady is done
-        const products = await this.net_manager.pre_ready_request('/api/products/get/all');
+        const products = await this.net_manager.async_get('/api/products/get/all');
 
         products.forEach(product => {
             // parse 0 & 1 as true & false

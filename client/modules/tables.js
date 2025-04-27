@@ -13,7 +13,7 @@ class TablesModule {
     }
 
     async cacheTableData() {
-        var tables = await this.net_manager.pre_ready_request('/api/tables/get/all');
+        var tables = await this.net_manager.async_get('/api/tables/get/all');
 
         tables.forEach(table => {
             // parse 0 & 1 as true & false
@@ -46,7 +46,7 @@ class TablesModule {
     }
 
     async getAllTablesWithOrderData(order_status) {
-        var advanced_table_data = await this.net_manager.pre_ready_request(`/api/tables/get/all/${order_status}`);
+        var advanced_table_data = await this.net_manager.async_get(`/api/tables/get/all/${order_status}`);
 
         advanced_table_data.forEach(table => {
             // parse 0 & 1 as true & false
@@ -57,7 +57,7 @@ class TablesModule {
     }
 
     async getTableByIDWithOrderData(id, order_status) {
-        var table = await this.net_manager.pre_ready_request(`/api/tables/get/${id}/${order_status}`);
+        var table = await this.net_manager.async_get(`/api/tables/get/${id}/${order_status}`);
         
         table["enabled"] = Boolean(table["enabled"])
 
