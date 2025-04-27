@@ -95,8 +95,7 @@ class PrintingModule {
 
         switch (this.printing_type) {
             case "PDF":
-                // TODO - trigger generation & print of html doc receipt
-                this.printReceiptPDF(data);
+                // no action taken - pdf printing handled by browser
                 break;
             case "THERMAL":
                 this.printKitchenThermal(data);
@@ -121,8 +120,7 @@ class PrintingModule {
 
         switch (this.printing_type) {
             case "PDF":
-                // TODO - trigger generation & print of html doc receipt
-                this.printReceiptPDF(data);
+                // no action taken - pdf printing handled by browser
                 break;
             case "THERMAL":
                 this.printReceiptThermal(data);
